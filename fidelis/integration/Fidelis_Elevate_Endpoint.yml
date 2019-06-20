@@ -1,0 +1,1597 @@
+commonfields:
+  id: Fidelis Elevate Endpoint
+  version: -1
+name: Fidelis Elevate Endpoint
+display: Fidelis Elevate Endpoint
+category: Endpoint
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAIAAAAiOjnJAAAGiklEQVR42u3da08TWRyAcb8iM22lnbZzbSkFWqC0xQrlYqu0pQVcdd0VNbsx7gYvEdTNAi4gKPu1dsgazSZ9s+bM7fRJnvea4Ze5nM75z7WU4xAJ7xqHgIBFwCJgEQGLgEXAIgIWAYuARQQsAhYBiwhYBCwCFhGwCFgELCJgEbAIWOSWLdpOzXTqIc2umnrJ0nLAilTF9WznKLZ9Obb9d0jb+qz0TtX2Qbz6IGWULWBFIGPW2jxVQ0tqKLLFn1P6jAWsUFfayERI1dc2DmOFpg6s8LZwV4siLLf+uVJc04EFLE9sheG8BSzZYLl1DmPuAyOwgCU+914eWMDy5Dkx2DUIYMkJy632IAUsYImv/Tau5YEFLNFtnqoBXg2BJS2srcsxu2oCC1jiyzcMYAFLfMVVHVjAAhawgAUsYAELWMACFrCABSxgAQtYwAIWsIAFLGABC1jAAhawgAUsMeUWebsBWOJfe+d9LGB5UO9EDXATGLCkhdXaTwQ4iwZY0sJauKexSwdYghucK8EOnwGWnLCqD7RgjyGwJIR15494dsoGFrCEbic8U5yaGfgxBJZUsHon6sRNIwzHEFhDiuhEv/bbuFMzQnIMgTUko2R1P0RpBqn7v63e19IFOzzHEFjDyzeM2+/i4b/wLT8bn7mT0aftsB3AKMHSco5TNyt3tfWXie6x6sGPa8r668S3H25zjl6yjHJIy0zaYf5jRQaWXTVX964PPik+DGmxF0zO2fLDck9U5W5mcKH4dolZfJRChvywKjuae5Hy895l6ddxZEgOy70z9f+mGFiSwzJnrd5fKrCAJbgbu8lAHuOBJTOsTNH284YdWKMCq9QJ7HcVYMkMq/EkCSxgiW/txXVgAUt87YM4sIAlvtvvgQUsYBGwgDXSsFr7wAKWF0+FezwVAsuLdaynrGMBy4PKXVbegeVB2Wl+KwSWR283PObtBmB58T7WnLV5yvtYwPKg2c3M1iWwgCW8nLNwT9u+BBawPLA1v5Xun/u4S2eXXTojs6/QqZlrLxL+jCxjX+Fo7YR2y9WNxd1k+yDeOVZ7J+Jr7Scmlr7shNYmrnZzWPPBZMxamaINLL8vjtkpWy+JT8t/+SfyDcNF1v+oDC6CafNM7RzF3JN0ZScdwtEMksLyOH3G6hyHaNqMe3WuPUwFOFsbWGKabmVDOFvGtT4Z3CdMgCWgyk5YJ/pdjpU6mVQOWNEszKMiB5+U6XYWWMASn/tIEf4FEWBFD5bb+qvE1wdYYAFL5PDBwrIOLGCJb/nZOLCA5cFd/IUSqjHJwJIElluhqQMLWOKb30oDC1jiqz9MAQtYHsD6CVjAAhYBC1jAAhawgAUsYAFrdGHNDVjHAhYr78RvhcDi7QZgAUvs+1hN3scClujWXvIGKbCEv/N+xjvvwPJgl85Ui1067CsU/SQ420tH4hgCa9hO6HYYd0J3P6iTTXZCR312w1GIZjf0TtQbj5PZqSiNBgHW8Jy62XqTCPwU1Xx+vdzNGGUrcgcwarByVzOryr2Me8Q7hzHh40lb+/GJpW+XG/ck4f5RAynMq+qywTLnrKVfkv2P3s6M7J8rdpWJfqMBS8tdfSK6f+bTGNIbu0lkyA9LyzuLj5J+DuVmavJIwKre93tVCVjyw5puZ/mAALBErydN24GsJwFLcliVnTQfaQKW+Hv27gcVWMASXKGp8yFMYImv9mMKWMAS38pvfGwcWB60/ioBLGCJ7/a7OLCA5QGs98ACFrAIWMACFrCABSwCFrCABSxgAYuABSxgAQtYwCJgAQtYwAIWsAhYwAIWsIAFLGABC1jAAhawgAUsYAELWMACFrCABSxgAQtYwAIWsIAFLGABC1jAAhawgCU/rFuvmY8FLA9a+T2wiX6Np3zyRF5Yi48Cm0FauashQ1pYAX7mNN8wkCEtrHTB9voLckPrHMVgITOsq6vhbgBXw8pOGhaSw7Lmrc0zX09a3WNVn7FgITkst4UffP2mXGkjg4mRgKXlnKY/XxK4HGs8YZVhZGC5ZYr26l7Ch0XRqH/fG1jf84TYeJrc+uzJ/dbgQqk/TLmnRjSMHKx/r4mTK7rwHxBvvUlM3DRSqBpZWF945Z2pW9nm8/HOYWxw/p0nsP5HZePP2PKz8cKyDilg/ffGa9K25k2nZjr1/1nNNOcsbqeARcAiAhYBi4BFBCwCFgGLCFgELAIWAYtDQMAiYBGwiIBFwCJgEQGLgEXAIgIWhb1/AAw8b7myEQMeAAAAAElFTkSuQmCC
+description: Fidelis Elevate Endpoint integration
+detaileddescription: "***Fidelis Endpoint EDR Platform***\n\n**Overview**\nThis integration
+  allows for the retrieval of alerts from the Fidelis Endpoint Platform (with optional
+  event enrichment). It allows the execution of several commands for event and evidence
+  look-ups. "
+configuration:
+- display: Host / IP Address
+  name: ip
+  defaultvalue: 127.0.0.1
+  type: 0
+  required: true
+- display: Username
+  name: authentication
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Ignore SSL Errors
+  name: ignoressl
+  defaultvalue: "false"
+  type: 8
+  required: true
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Get Event Data
+  name: enrich
+  defaultvalue: "false"
+  type: 8
+  required: true
+- display: Initial number of daysto go back to for first import
+  name: firstdate
+  defaultvalue: 5 days
+  type: 15
+  required: false
+  options:
+  - 5 days
+  - 10 days
+  - 30 days
+  - 90 days
+  - unlimited
+script:
+  script: |+
+    import requests
+    from urllib.parse import unquote
+    from urllib.parse import quote
+    import pprint
+    from datetime import datetime
+    from datetime import timedelta
+    import time
+    import io
+    import re
+
+    class fidelisEndpoint:
+
+        def __init__(self, host, username, password):
+            self.host = host
+            self.baseURL = "https://{0}/endpoint/api".format(host)
+            self.username = username
+            self.password = password
+            self.lastError = ""
+            self.lastSuccess = ""
+            self.authToken = self.getAuthToken(self.username, self.password)
+            self.headers = {"Content-Type": "application/json;charset=UTF-8", "Authorization": "bearer {0}".format(self.authToken)}
+            self.ignoressl = False
+            self.checkURL = True
+
+        def getAuthToken(self, username, password):
+            url = "{0}/authenticate?username={1}&password={2}".format(self.baseURL, quote(username), quote(password))
+            requests.packages.urllib3.disable_warnings()
+            try:
+                r = requests.get(url, verify=False)
+            except Exception as err:
+                self.lastError = "Error performing get request to URL- {0}".format(err)
+                return None
+            try:
+                if type(r.content) == bytes:
+                    rData = json.loads(r.content.decode("utf-8"))
+                else:
+                    rData = json.loads(r.content)
+            except Exception as err:
+                self.lastError = "Error parsing JSON data returned from authentication URL - {0}".format(err)
+                return None
+            if (rData["success"] == False):
+                self.lastError = "Error returned from authentication request - {0}".format(rData["error"]["message"])
+                return None
+            try:
+                return rData["data"]["token"]
+            except Exception as err:
+                self.lastError = err
+                return None
+
+        def printConfig(self):
+            print("Host: {0}".format(self.host))
+            print("Username: {0}".format(self.username))
+            print("Auth Token: {0}".format(self.authToken))
+
+        def __findWithSearchCriteria__(self, url, searchCriteria, searchName):
+            if self.ignoressl:
+                requests.packages.urllib3.disable_warnings()
+            headers = self.headers
+            if searchCriteria:
+                url = "{0}&{1}={2}".format(url, searchName, searchCriteria)
+            try:
+                r = requests.get(url, headers = headers, verify=self.checkURL)
+                if type(r.content) == bytes:
+                    rData = json.loads(r.content.decode("utf-8"))
+                else:
+                    rData = json.loads(r.content)
+            except Exception as err:
+                self.lastError = err
+                return None
+            try:
+                if rData["success"] == False:
+                    self.lastError = rData["error"]
+                    return None
+                return rData
+            except Exception as err:
+                self.lastError = err
+                return None
+
+        def getHostInfo(self):
+            url = "{0}/product-info".format(self.baseURL)
+            if self.ignoressl:
+                requests.packages.urllib3.disable_warnings()
+            headers = self.headers
+            try:
+                r = requests.get(url, headers = headers, verify=self.checkURL)
+                if type(r.content) == bytes:
+                    rData = json.loads(r.content.decode("utf-8"))
+                else:
+                    rData = json.loads(r.content)
+            except Exception as err:
+                self.lastError = err
+                return None
+            if rData["success"] == False:
+                self.lastError = rData["error"]
+                return None
+            try:
+                return rData["data"]
+            except Exception as err:
+                self.lastError = err
+                return None
+
+        def fileSearch(self, searchCriteria):
+            url = "{0}/files/search".format(self.baseURL)
+            if self.ignoressl:
+                requests.packages.urllib3.disable_warnings()
+            headers = self.headers
+            try:
+                r = requests.post(url, headers = headers, data = json.dumps(searchCriteria), verify=self.checkURL)
+                if type(r.content) == bytes:
+                    rData = json.loads(r.content.decode("UTF-8"))
+                else:
+                    rData = json.loads(r.content)
+            except Exception as err:
+                self.lastError = err
+                return None
+            try:
+                return rData
+            except Exception as err:
+                self.lastError = err
+                return None
+
+        def searchScripts(self, searchCriteria, limit):
+            url = "{0}/playbooks/PlaybooksAndScripts?filterType=0&isManagementRequest=false&platformFilter=0&skip=0&sort=&take={1}".format(self.baseURL, limit)
+            data = self.__findWithSearchCriteria__(url, searchCriteria, "search")
+            try:
+                return data["data"]["entities"]
+            except Exception as err:
+                self.lastError = err
+                return None
+
+        def getAllTasks(self):
+            allTasksURL = "https://{0}/endpoint/api/packages".format(self.host)
+            if self.ignoressl:
+                requests.packages.urllib3.disable_warnings()
+            try:
+                r = requests.get(allTasksURL, headers=self.headers, verify=self.checkURL)
+                if type(r.content) == bytes:
+                    rData = json.loads(r.content.decode("utf-8"))
+                else:
+                    rData = json.loads(r.content)
+                return rData
+            except Exception as err:
+                return {"success": False, "error": err}
+
+        def getScriptPackageMetaData(self, packageId):
+            url = "{0}/packages/{1}?type=Metadata".format(self.baseURL, packageId)
+            if self.ignoressl:
+                requests.packages.urllib3.disable_warnings()
+            headers = self.headers
+            try:
+                r = requests.get(url, headers = headers, verify=self.checkURL)
+                if type(r.content) == bytes:
+                    rData = json.loads(r.content.decode("utf-8"))
+                else:
+                    rData = json.loads(r.content)
+            except Exception as err:
+                self.lastError = err
+                return None
+            try:
+                return rData
+            except Exception as err:
+                self.lastError = err
+                return None
+
+        def getJobResult(self, resultId):
+            url = "{0}/jobs.getJobResult/{1}".format(self.baseURL, resultId)
+            data = self.__findWithSearchCriteria__(url, None, None)
+            try:
+                return data
+            except Exception as err:
+                self.lastError = err
+                return None
+
+        def getScriptPackageManifest(self, packageId):
+            url = "{0}/packages/{1}?type=Manifest".format(self.baseURL, packageId)
+            if self.ignoressl:
+                requests.packages.urllib3.disable_warnings()
+            headers = self.headers
+            try:
+                r = requests.get(url, headers = headers, verify=self.checkURL)
+                if type(r.content) == bytes:
+                    rData = json.loads(r.content.decode("utf-8"))
+                else:
+                    rData = json.loads(r.content)
+            except Exception as err:
+                self.lastError = err
+                return None
+            try:
+                return rData
+            except Exception as err:
+                self.lastError = err
+                return None
+
+        def getAllEndpoints(self, limit):
+            url = "{0}/endpoints/0/{1}/hostname".format(self.baseURL, limit)
+            data = self.__findWithSearchCriteria__(url, None, None)
+            try:
+                return data["data"]["endpoints"]
+            except Exception as err:
+                self.lastError = err
+                return None
+
+        def getEndpointDetails(self, endpointId):
+            url = "{0}/endpoints/getEndpointDetailsExpanded/{1}".format(self.baseURL, endpointId)
+            requests.packages.urllib3.disable_warnings()
+            headers = self.headers
+            try:
+                r = requests.get(url, headers = headers, verify=False)
+                if type(r.content) == bytes:
+                    rData = json.loads(r.content.decode("utf-8"))
+                else:
+                    rData = json.loads(r.content)
+            except Exception as err:
+                self.lastError = err
+                return None
+            try:
+                if rData["success"] == False:
+                    self.lastError = rData["error"]
+                    return None
+                return rData["data"]
+            except Exception as err:
+                self.lastError = err
+                return None
+            try:
+                return data
+            except Exception as err:
+                self.lastError = err
+                return None
+
+        def getEndpointFromHostname(self, hostname):
+            endpoints = self.getAllEndpoints(1000000)
+            thisEndpoint = None
+            for endpoint in endpoints:
+                if endpoint["hostName"].lower() == hostname.lower():
+                    thisEndpoint = endpoint
+                    break
+            return thisEndpoint
+
+        def searchEndpointSoftware(self, endpointID, searchCriteria, limit):
+            url = "{0}/installedSoftware/{1}?skip=0&sort=installDate+Descending&take={2}".format(self.baseURL, endpointID, limit)
+            data = self.__findWithSearchCriteria__(url, searchCriteria, "facetSearch")
+            try:
+                return data["data"]["entities"]
+            except Exception as err:
+                self.lastError = err
+                return None
+
+        def searchAlerts(self, searchCriteria, limit, startDate, endDate, sort):
+            if sort is None:
+                sort = "insertionDate+Descending"
+            datenow = datetime.now()
+            if endDate is None:
+                endDate = datenow.strftime("%y-%m-%dT%H:%M:%S.000Z")
+            if startDate is None:
+                startDate = "1970-01-01T00:00:00.000Z"
+            url = "{0}/alerts/getalerts?endDate={1}&startDate={2}&filterType=0&skip=0&sort={3}&take={4}".format(self.baseURL, endDate, startDate, sort, limit)
+            data = self.__findWithSearchCriteria__(url, searchCriteria, "facetSearch")
+            if data is None:
+                return {"success": False, "error": self.lastError}
+            try:
+                return data
+            except Exception as err:
+                self.lastError = err
+                return {"success": False, "error": err}
+
+        def searchExecutables(self, searchCriteria, limit):
+            url = "{0}/executables?skip=0&sort=reportingDate+Descending&take={1}".format(self.baseURL, limit)
+            data = self.__findWithSearchCriteria__(url, searchCriteria, "facetSearch")
+            try:
+                return data["data"]["entities"]
+            except Exception as err:
+                self.lastError = err
+                return None
+
+        def searchSoftware(self, searchCriteria, limit):
+            url = "{0}/installedSoftware?skip=0&sort=name+Ascending&take={1}".format(self.baseURL, limit)
+            data = self.__findWithSearchCriteria__(url, searchCriteria, "facetSearch")
+            try:
+                return data["data"]["entities"]
+            except Exception as err:
+                self.lastError = err
+                return None
+
+        def recursiveGroupAdd(self, groupStructure, returnedData):
+            try:
+                returnedData.append({"name":groupStructure["name"], "id":groupStructure["id"]})
+            except:
+                return
+            for child in groupStructure["children"]:
+                self.recursiveGroupAdd(child, returnedData)
+
+        def getGroups(self):
+            url = "{0}/groups/GetGroupTree?includeAmAr=true&accessType=2".format(self.baseURL)
+            requests.packages.urllib3.disable_warnings()
+            headers = self.headers
+            try:
+                r = requests.get(url, headers = headers, verify=False)
+                if type(r.content) == bytes:
+                    rData = json.loads(r.content.decode("utf-8"))
+                else:
+                    rData = json.loads(r.content)
+            except Exception as err:
+                self.lastError = err
+                return None
+            if rData["success"] == False:
+                self.lastError = rData["error"]
+                return None
+            try:
+                return rData["data"]
+            except Exception as err:
+                self.lastError = err
+                return None
+
+        def getFileSearchResults(self, jobID, resultsID):
+            url = "{0}/jobs/{1}/jobresults/{2}".format(self.baseURL, jobID, resultsID)
+            data = self.__findWithSearchCriteria__(url, None, None)
+            try:
+                return data
+            except Exception as err:
+                self.lastError = err
+                return {"success": False, "error": err}
+
+        def getFileStream(self, fileID):
+            url = "{0}/files/{1}".format(self.baseURL, fileID)
+            if self.ignoressl:
+                requests.packages.urllib3.disable_warnings()
+            headers = self.headers
+            del headers["Content-Type"]
+            data = io.BytesIO()
+            try:
+                with requests.get(url, headers = headers, verify=self.checkURL, stream=True) as r:
+                    r.raise_for_status()
+                    for chunk in r.iter_content(chunk_size=1024):
+                        data.write(chunk)
+            except Exception as err:
+                self.lastError = err
+                return "Your custom error here - {0}".format(err)
+            try:
+                return data
+            except Exception as err:
+                self.lastError = err
+                return None
+
+        def getGroupName(self, groupID):
+            allGroups = self.getGroups()
+            allData = []
+            self.recursiveGroupAdd(allGroups, allData)
+            returnedItems = ""
+            for item in allData:
+                if item["id"].lower() == groupID.lower():
+                    returnedItems  = item["name"]
+            try:
+                return returnedItems
+            except Exception as err:
+                self.lastError = err
+                return None
+
+        def getGroupID(self, groupName, contains):
+            allGroups = self.getGroups()
+            allData = []
+            self.recursiveGroupAdd(allGroups, allData)
+            returnedItems = None
+            for item in allData:
+                if contains:
+                    if returnedItems is None:
+                        returnedItems = []
+                    if item["name"].lower().find(groupName.lower()) != -1:
+                        returnedItems.append(item["id"])
+                if not contains:
+                    if returnedItems is None:
+                        returnedItems = []
+                    if item["name"] == groupName:
+                        returnedItems.append(item["id"])
+            try:
+                return returnedItems
+            except Exception as err:
+                self.lastError = err
+                return None
+
+        def getGroupEndpoints(self, groupID):
+            allEndpoints = self.getAllEndpoints(500000)
+            groupName = self.getGroupName(groupID)
+            returnedEndpoints = []
+            for endpoint in allEndpoints:
+                if endpoint["groupList"].find(groupName) != -1:
+                    returnedEndpoints.append(endpoint)
+            try:
+                return returnedEndpoints
+            except Exception as err:
+                self.lastError = err
+                return None
+
+        def executeScript(self, scriptID, endpoints, groups):
+            url = "{0}/scriptPackages/scriptPackage/{1}".format(self.baseURL, scriptID)
+            requests.packages.urllib3.disable_warnings()
+            headers = self.headers
+            playbook = False
+            try:
+                r = requests.get(url, headers = headers, verify=False)
+                if type(r.content) == bytes:
+                    rData = json.loads(r.content.decode("utf-8"))
+                else:
+                    rData = json.loads(r.content)
+            except Exception as err:
+                self.lastError = err
+                return None
+            if rData["success"] == False:
+                if rData["error"]["statusCode"] == 500 and rData["error"]["message"] == "Sequence contains no elements":
+                    url = "{0}/playbooks/PlaybookDetail?id={1}".format(self.baseURL, scriptID)
+                    try:
+                        r = requests.get(url, headers = headers, verify=False)
+                        if type(r.content) == bytes:
+                            rData = json.loads(r.content.decode("utf-8"))
+                        else:
+                            rData = json.loads(r.content)
+
+                        if rData["success"] == True:
+                            playbook = True
+                    except Exception as err:
+                        self.lastError = err
+                        return None
+            jsonData = rData["data"]
+            endpointsList = []
+            for group in groups:
+                theseGroupIDs = self.getGroupID(group, False)
+                for groupID in theseGroupIDs:
+                    allGroupEndpoints = self.getGroupEndpoints(groupID)
+                    for endpoint in allGroupEndpoints:
+                        endpointsList.append(endpoint["id"])
+            allEndpoints = self.getAllEndpoints(500000)
+            allIDs = []
+            for endpoint in allEndpoints:
+                for endpointName in endpoints:
+                    if endpoint["hostName"] == endpointName:
+                        if endpoint["id"] not in allIDs:
+                            allIDs.append(endpoint["id"])
+
+            for thisID in allIDs:
+                if thisID not in endpointsList:
+                    endpointsList.append(thisID)
+
+            returnedData = ""
+            url = "{0}/jobs/createTask".format(self.baseURL)
+            requests.packages.urllib3.disable_warnings()
+            headers = self.headers
+            bodyRequest = {"packageId": jsonData["id"], "isPlaybook": playbook, "endpoints": endpointsList}
+            if playbook:
+                bodyRequest["taskOptions"] = jsonData["scripts"]
+                for item in bodyRequest["taskOptions"]:
+                    del item["integrationOutputFormat"]
+            if not playbook:
+                bodyRequest["taskOptions"] = [{"detailsLoaded": False, "questions": jsonData["questions"], "queueExpirationInhours": 0, "scriptId": jsonData["id"], "timeoutInSeconds": jsonData["timeoutSeconds"], "details":jsonData}]
+            try:
+                r = requests.post(url, data = json.dumps(bodyRequest), headers = headers, verify=False)
+                if type(r.content) == bytes:
+                    rData = json.loads(r.content.decode("utf-8"))
+                else:
+                    rData = json.loads(r.content)
+            except Exception as err:
+                self.lastError = err
+                return None
+            if rData["success"] == False:
+                self.lastError = rData["error"]
+                return None
+            if rData["success"] == True:
+                self.lastSuccess = "Script executed with ID {0}".format(rData["data"])
+                try:
+                    return rData["data"]
+                except Exception as err:
+                    self.lastError = err
+                    return None
+
+        def executeSingleScript(self, scriptID, scriptOptions):
+            url = "{0}/jobs/createTask".format(self.baseURL)
+            if self.ignoressl:
+                requests.packages.urllib3.disable_warnings()
+            headers = self.headers
+            try:
+                r = requests.post(url, data = json.dumps(scriptOptions), headers = headers, verify=self.checkURL)
+                if type(r.content) == bytes:
+                    rData = json.loads(r.content.decode("utf-8"))
+                else:
+                    rData = json.loads(r.content)
+            except Exception as err:
+                self.lastError = err
+                return None
+            try:
+                return rData
+            except Exception as err:
+                self.lastError = err
+                return None
+
+        def getJobStatus(self, jobID):
+            url = "{0}/jobs/getjobResult/{1}".format(self.baseURL, jobID)
+            data = self.__findWithSearchCriteria__(url, None, None)
+            try:
+                return data
+            except Exception as err:
+                self.lastError = err
+                return None
+
+        def getScriptJobResults(self, jobID):
+            url = "{0}/jobresults/scriptjob_{1}".format(self.baseURL, jobID)
+            if self.ignoressl:
+                requests.packages.urllib3.disable_warnings()
+            headers = self.headers
+            try:
+                r = requests.post(url, headers = headers, verify=self.checkURL)
+                if type(r.content) == bytes:
+                    rData = json.loads(r.content.decode("utf-8"))
+                else:
+                    rData = json.loads(r.content)
+            except Exception as err:
+                self.lastError = err
+                return None
+            try:
+                return rData
+            except Exception as err:
+                self.lastError = err
+                return None
+
+        def searchEvents(self, searchCriteria, limit):
+            url = "{0}/v2/events?pageSize={1}".format(self.baseURL, limit)
+            if self.ignoressl:
+                requests.packages.urllib3.disable_warnings()
+            headers = self.headers
+            try:
+                r = requests.post(url, headers = headers, data = json.dumps(searchCriteria), verify=self.checkURL)
+                if type(r.content) == bytes:
+                    rData = json.loads(r.content.decode("UTF-8"))
+                else:
+                    rData = json.loads(r.content)
+            except Exception as err:
+                self.lastError = err
+                return {"success": False, "error": err}
+            try:
+                return rData
+            except Exception as err:
+                self.lastError = err
+                return {"success": False, "error": err}
+
+        def deleteAlert(self, alertId):
+            url = "{0}/alerts/deletealerts".format(self.baseURL)
+            if self.ignoressl:
+                requests.packages.urllib3.disable_warnings()
+            headers = self.headers
+            alertList = []
+            alertList.append(alertId)
+            try:
+                r = requests.post(url, headers = headers, data = json.dumps(alertList), verify=self.checkURL)
+                if type(r.content) == bytes:
+                    rData = json.loads(r.content.decode("UTF-8"))
+                else:
+                    rData = json.loads(r.content)
+            except Exception as err:
+                self.lastError = err
+                return {"success": False, "error": err}
+            try:
+                return rData
+            except Exception as err:
+                self.lastError = err
+                return {"success": False, "error": err}
+
+    class functions:
+        def __init__(self, args, params):
+            self.args = args
+            self.params = params
+            self.fep = fidelisEndpoint(self.params["ip"], self.params["authentication"]["identifier"], self.params["authentication"]["password"])
+            if self.params["ignoressl"]:
+                self.fep.ignoressl = True
+                self.fep.checkURL = False
+
+        def populateTasks(self):
+            allTasks = self.fep.getAllTasks()
+            if allTasks["success"]:
+                taskList = []
+                for task in allTasks["data"]["scripts"]:
+                    if task["name"] not in taskList:
+                        taskList.append(task["name"])
+            demisto.results({"tasklist": taskList})
+
+
+        def camelToTitle(self, name):
+            s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+            s2 = re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+            s3 = s2.replace("_", " ")
+            s4 = s3.title()
+            return s4
+
+        def findProcessByHash(self):
+            #Set some default values
+            limit = 100
+            duration = 24
+            thisHash = ""
+            endpointName = ""
+            extended = ""
+            oneEndpoint = ""
+
+            #Ensure all the arguments are correct
+            try:
+                limit = int(self.args["limit"])
+                duration = int(self.args["duration"])
+                thisHash = self.args["hash"]
+                extended = self.args["extended"]
+                oneEndpoint = self.args["singleendpoint"]
+            except Exception as err:
+                demisto.results('Failed parsing inputs - {0}'.format(err))
+                exit(0)
+            try:
+                endpointName = self.args["endpoint"]
+            except:
+                endpointName = ""
+            if extended == "True":
+                extended = True
+            else:
+                extended = False
+            if oneEndpoint == "True":
+                oneEndpoint = True
+            else:
+                oneEndpoint = False
+
+            #Build the search criteria
+            dateNow = datetime.now()
+            dateThen = dateNow - timedelta(hours = duration)
+            startDate = datetime.strftime(dateThen, "%Y-%m-%dT%H:%M:%SZ")
+            endDate = datetime.strftime(dateNow, "%Y-%m-%dT%H:%M:%SZ")
+            searchCriteria = {"dateRange": {"start": startDate, "end": endDate}, "criteriaV3": {}}
+            searchCriteria["criteriaV3"]["entityType"] = "process"
+            searchCriteria["criteriaV3"]["filter"] = {"filterType": "composite", "logic": "and", "filters": [{"filterType": "criteria", "column": "eventType", "operator": "=", "value": 0}, {"filterType": "criteria", "column": "hash", "operator": "=", "value": thisHash}]}
+            if len(endpointName) > 0:
+                searchCriteria["criteriaV3"]["filter"]["filters"].append({"filterType": "criteria", "column": "endpointName", "operator": "=~", "value": endpointName})
+
+            #Perform the search
+            events = self.fep.searchEvents(searchCriteria, 10000)
+
+            #Check there are results
+            try:
+                if not events["success"]:
+                    demisto.results('Failed collecting events - {0}'.format(events["error"]))
+                    exit(0)
+                if len(events["data"]["events"]) < 1:
+                    demisto.results('No results found for hash {0}'.format(thisHash))
+                    exit(0)
+            except Exception as err:
+                demisto.results('Failed collecting events - {0}'.format(err))
+                exit(0)
+
+            #For each event, return an entry (up to the limit specified by the user)
+            if events["success"] and len(events["data"]["events"]) > 1:
+                eventCount = 0
+                endpoints = []
+                for event in events["data"]["events"]:
+
+                    #Stop if we have reached the users limit
+                    if eventCount >= limit:
+                        break
+
+                    #Skip event if we already have an event from that endpoint
+                    if oneEndpoint and event["endpointName"] in endpoints:
+                        continue
+
+                    #Build our table entry
+                    entry = {}
+
+                    #Build the basic information
+                    try:
+                        entry["Hostname"] = event["endpointName"]
+                    except:
+                        pass
+                    try:
+                        entry["User"] = event["user"]
+                    except:
+                        pass
+                    try:
+                        entry["Process Name"] = event["name"]
+                    except:
+                        pass
+                    try:
+                        entry["Process Start"] = event["processStartTime"]
+                    except:
+                        pass
+                    try:
+                        entry["Process End"] = event["processEndTime"]
+                    except:
+                        pass
+
+                    #Build additional data
+                    if extended:
+                        try:
+                            entry["Process Path"] = event["path"]
+                        except:
+                            pass
+                        try:
+                            entry["Commandline"] = event["parameters"]
+                        except:
+                            pass
+                        try:
+                            entry["MD5"] = event["hash"]
+                        except:
+                            pass
+                        try:
+                            entry["SHA1"] = event["hashSHA1"]
+                        except:
+                            pass
+                        try:
+                            entry["SHA256"] = event["hashSHA256"]
+                        except:
+                            pass
+                        try:
+                            entry["PID"] = event["pid"]
+                        except:
+                            pass
+                        try:
+                            entry["PPID"] = event["ppid"]
+                        except:
+                            pass
+                        try:
+                            entry["Parent Name"] = event["parentName"]
+                        except:
+                            pass
+                        try:
+                            entry["Parent Path"] = event["parentPath"]
+                        except:
+                            pass
+
+                    #Post the event data
+                    demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': entry})
+                    eventCount += 1
+                    endpoints.append(event["endpointName"])
+                exit(0)
+            else:
+                demisto.results("No events found")
+                exit(0)
+
+        def testModule(self):
+            if self.fep.authToken != None:
+                demisto.results('ok')
+                sys.exit(0)
+            if self.fep.authToken == None:
+                demisto.results('Failed connecting to {0} - {1}'.format(self.fep.host, self.fep.lastError))
+                sys.exit(-1)
+
+        def fetchIncidents(self):
+
+            #Get the last run time dict
+            lastRun = demisto.getLastRun()
+
+            #Initialise startDate and endDate to be None - the Fidelis API can handle None dates
+            startDate = None
+            endDate = None
+
+            #Try and assigne the date from the lastRun dict to the start date - We always want to end date to be now
+            try:
+                startDate = lastRun["date"]
+            except:
+                now = datetime.now()
+                if self.params["firstdate"] == "unlimited":
+                    startDate = None
+                if self.params["firstdate"] == "90 days":
+                    startDate = now - timedelta(days=90)
+                    startDate = datetime.strftime(startDate, "%Y-%m-%dT%H:%M:%SZ")
+                if self.params["firstdate"] == "30 days":
+                    startDate = now - timedelta(days=30)
+                    startDate = datetime.strftime(startDate, "%Y-%m-%dT%H:%M:%SZ")
+                if self.params["firstdate"] == "10 days":
+                    startDate = now - timedelta(days=10)
+                    startDate = datetime.strftime(startDate, "%Y-%m-%dT%H:%M:%SZ")
+                if self.params["firstdate"] == "5 days":
+                    startDate = now - timedelta(days=5)
+                    startDate = datetime.strftime(startDate, "%Y-%m-%dT%H:%M:%SZ")
+
+            #Create a marker for the alert ID
+            latestAlertId = 0
+
+            #Try and assign the latest alert ID from the lastRun dict
+            try:
+                latestAlertId = lastRun["id"]
+            except:
+                latestAlertId = 0
+
+            #Gather all the alerts - 500 at a time and sort by their insertion date
+            allAlerts = self.fep.searchAlerts({}, 500, startDate, endDate, "insertionDate+Ascending")
+
+            #Create our incident list
+            incidents = []
+
+            #Create a marker for the latest alert insertion date
+            latestInsertionDate = None
+            try:
+                if not allAlerts["success"] or len(allAlerts["data"]["entities"]) < 1:
+                    demisto.results({"Error": "No alerts found - {0}".format(alerts["error"])})
+                    sys.exit(0)
+            except Exception as err:
+                demisto.results({"Error": "No alerts found - {0}".format(err)})
+                sys.exit(0)
+            allAlerts = allAlerts["data"]["entities"]
+            for alert in allAlerts:
+                if alert["id"] > latestAlertId:
+                    latestAlertId = alert["id"]
+                    incident = {}
+                    if alert["assessment"] is None or len(alert["assessment"] < 1):
+                        incident["name"] = alert["artifactName"]
+                    else:
+                        incident["name"] = alert["assessment"]
+                    if alert["severity"] == 0:
+                        incident["severity"] = 0
+                    if alert["severity"] == 1:
+                        incident["severity"] = 4
+                    if alert["severity"] == 2:
+                        incident["severity"] = 3
+                    if alert["severity"] == 3:
+                        incident["severity"] = 2
+                    if alert["severity"] == 4:
+                        incident["severity"] = 1
+                    if alert["severity"] == 5:
+                        incident["severity"] = 5
+
+                    incident["details"] = alert["description"]
+                    incident["occurred"] = alert["eventTime"]
+                    combined = {}
+
+                    #Create an ignore list for alert details that the user will not find relevant
+                    alertIgnoreList = ["createDate", "reportId", "insertionDate", "viewed", "parentEventId", "eventTime", "userFlagged", "validatedDate", "alertTargetId", "status", "respondedDate", "eventIndex", "eventId"]
+                    for key in alert:
+                        if key not in alertIgnoreList:
+                            field = self.camelToTitle(key)
+                            #field = "fidelis-edr-alert-{0}".format(key)
+                            combined[field] = alert[key]
+
+                    #Whether to enrich the alert with event data
+                    try:
+                        if self.params["enrich"] and alert["eventTime"] is not None and alert["eventType"] is not None and alert["eventId"] is not None:
+                            #Detect the long date type
+                            if "." in alert["eventTime"]:
+                                eventStart = datetime.strptime(alert["eventTime"], '%Y-%m-%dT%H:%M:%S.%fZ') - timedelta(seconds=1)
+                                eventEnd = datetime.strptime(alert["eventTime"], '%Y-%m-%dT%H:%M:%S.%fZ') + timedelta(seconds=1)
+                                eventStart = datetime.strftime(eventStart, "%Y-%m-%dT%H:%M:%SZ")
+                                eventEnd = datetime.strftime(eventEnd, "%Y-%m-%dT%H:%M:%SZ")
+
+                            #Detect the short date type
+                            else:
+                                eventStart = datetime.strptime(alert["eventTime"], '%Y-%m-%dT%H:%M:%SZ') - timedelta(seconds=1)
+                                eventEnd = datetime.strptime(alert["eventTime"], '%Y-%m-%dT%H:%M:%SZ') + timedelta(seconds=1)
+                                eventStart = datetime.strftime(eventStart, "%Y-%m-%dT%H:%M:%SZ")
+                                eventEnd = datetime.strftime(eventEnd, "%Y-%m-%dT%H:%M:%SZ")
+
+
+                            #Create a marker for the event type
+                            thisEventType = ""
+                            #Create the search criteria
+                            searchCriteria = {"dateRange": {"start": eventStart, "end": eventEnd}, "criteriaV3": {}}
+
+                            #If this is process based
+                            if alert["eventType"] == 0 or alert["eventType"] == 30:
+                                searchCriteria["criteriaV3"]["entityType"] = "process"
+                                thisEventType = "process"
+
+                            #If this is file based
+                            if alert["eventType"] > 3  and alert["eventType"] < 9:
+                                searchCriteria["criteriaV3"]["entityType"] = "file"
+                                thisEventType = "file"
+
+                            #If this is network based
+                            if alert["eventType"] == 3:
+                                searchCriteria["criteriaV3"]["entityType"] = "network"
+                                thisEventType = "network"
+
+                            #If this is DNS based
+                            if alert["eventType"] == 17:
+                                searchCriteria["criteriaV3"]["entityType"] = "dns"
+                                thisEventType = "dns"
+
+                            #If this is registry based
+                            if alert["eventType"] > 9 and alert["eventType"] < 13:
+                                searchCriteria["criteriaV3"]["entityType"] = "registry"
+                                thisEventType = "registry"
+
+                            #If this is USB based
+                            if alert["eventType"] > 13 and alert["eventType"] < 17:
+                                searchCriteria["criteriaV3"]["entityType"] = "usb"
+                                thisEventType = "usb"
+
+                            #If this is WEV based
+                            if alert["eventType"] == 13:
+                                searchCriteria["criteriaV3"]["entityType"] = "windowsevent"
+                                thisEventType = "windowsevent"
+
+                            #If this is Malware based
+                            if alert["eventType"] > 17 and alert["eventType"] < 30:
+                                searchCriteria["criteriaV3"]["entityType"] = "antiMalware"
+                                thisEventType = "antiMalware"
+
+                            #If this is a thread execution
+                            if alert["eventType"] == 31 or alert["eventType"] == 32:
+                                searchCriteria["criteriaV3"]["entityType"] = "remoteThread"
+                                thisEventType = "remoteThread"
+
+                            #If this is a script execution
+                            if alert["eventType"] == 34 :
+                                searchCriteria["criteriaV3"]["entityType"] = "script"
+                                thisEventType = "script"
+
+                            searchCriteria["criteriaV3"]["filter"] = {"filterType": "composite", "logic": "and", "filters": [{"filterType": "criteria", "column": "eventType", "operator": "=", "value": alert["eventType"]}, {"filterType": "criteria", "column": "endpointName", "operator": "=~", "value": alert["target"]}]}
+                            events = self.fep.searchEvents(searchCriteria, 1000)
+
+                            #If we receive a valid alert
+                            event = None
+                            possibleEvents = []
+                            if events["success"] and len(events["data"]["events"]) > 0:
+                                events = events["data"]["events"]
+                                for item in events:
+                                    if item["targetId"] == alert["eventId"] and item["parentId"] == alert["parentEventId"] and item["eventIndex"] == alert["eventIndex"]:
+                                        possibleEvents.append(item)
+
+                            if len(possibleEvents) == 1:
+                                event = possibleEvents[0]
+
+                            if event:
+
+                                #Create a list of fields that are not relevant and ignore them if they appear
+                                eventIgnoreList = ["indexingTime", "eventTime", "firstEventTime", "insertionDate", "parentId", "targetId", "viewed", "reportId", "parentEventId", "lastEventTime", "eventIndex", "eventTime", "eventType", "sourceType", "userFlagged", "validatedDate", "esIndex"]
+
+                                #Append all the fields from the event
+                                for key in event:
+                                    if key not in eventIgnoreList:
+                                        field = self.camelToTitle(key)
+                                        #field = "fidelis-edr-event-{0}".format(key)
+                                        combined[field] = event[key]
+                                combined["Fidelis Event Found"] = True
+
+                            if event is None:
+                                combined["Fidelis Event Found"] = False
+                        if not self.params["enrich"] or alert["eventTime"] is None or alert["eventType"] is None or alert["eventId"] is None:
+                            combined["Fidelis Event Found"] = False
+                    except:
+                        incident["Fidelis Event Found"] = False
+                    incident["rawJSON"] = json.dumps(combined)
+                    incidents.append(incident)
+                    latestInsertionDate = alert["insertionDate"]
+
+            # Store the last run time...
+            demisto.setLastRun({'date': latestInsertionDate, "id": latestAlertId})
+
+            # Create our incidents
+            if len(incidents) > 0:
+                demisto.incidents(incidents)
+            sys.exit(0)
+
+        def getEventForAlert(self):
+
+            #See if we have an alert ID to work with
+            alertId = None
+            try:
+                alertId = self.args["alertId"]
+            except:
+                alertId = None
+
+            if alertId is None:
+                try:
+                    alertId = demisto.get(demisto.context(), "alertId")
+                except:
+                    alertId = None
+
+            if alertId is None:
+                demisto.results("No alert ID provided and could not find an Alert ID in this incident")
+                exit(-1)
+
+            #Retrieve all alerts
+            searchCriteria = {"searchFields": [{"fieldName": "id", "value": alertId}]}
+            alerts = self.fep.searchAlerts(searchCriteria, 1000000, None, None, None)
+
+            #If we cannot find any alerts, there's no point looking for the event anymore
+            try:
+                if not alerts["success"] and len(alerts["data"]["entities"]) < 1:
+                    demisto.results({"Error": "Could not retrieve any alerts - {0}".format(alerts["error"])})
+                    exit(-1)
+            except Exception as err:
+                demisto.results({"Error": "Error looking through alerts - {0}".format(err)})
+                exit(-1)
+
+            #Find our specific alert by the id
+            alert = None
+            for thisAlert in alerts["data"]["entities"]:
+                if thisAlert["id"] == alertId:
+                    alert = thisAlert
+                    break
+
+            #Only continue if we have found the alert information
+            if alert is None:
+                demisto.results({"Error": "Could not locate alert with ID {0}".format(alertId)})
+                exit(0)
+
+
+            #Only continue if the alert has a related event
+            try:
+                if not alert["eventId"] or not alert["eventTime"] or not alert["target"]:
+                    demisto.results({"Error": "The alert for ID {0} does not have the required fields to search for the event".format(alert["id"])})
+                    exit(0)
+            except Exception as err:
+                demisto.results({"Error": "Error getting event information from alert - {0}".format(err)})
+                exit(-1)
+
+            #Build our search date / time range
+            if "." in alert["eventTime"]:
+                eventStart = datetime.strptime(alert["eventTime"], '%Y-%m-%dT%H:%M:%S.%fZ') - timedelta(seconds=1)
+                eventEnd = datetime.strptime(alert["eventTime"], '%Y-%m-%dT%H:%M:%S.%fZ') + timedelta(seconds=1)
+                eventStart = datetime.strftime(eventStart, "%Y-%m-%dT%H:%M:%SZ")
+                eventEnd = datetime.strftime(eventEnd, "%Y-%m-%dT%H:%M:%SZ")
+
+            #Detect the short date type
+            else:
+                eventStart = datetime.strptime(alert["eventTime"], '%Y-%m-%dT%H:%M:%SZ') - timedelta(seconds=1)
+                eventEnd = datetime.strptime(alert["eventTime"], '%Y-%m-%dT%H:%M:%SZ') + timedelta(seconds=1)
+                eventStart = datetime.strftime(eventStart, "%Y-%m-%dT%H:%M:%SZ")
+                eventEnd = datetime.strftime(eventEnd, "%Y-%m-%dT%H:%M:%SZ")
+
+
+            #Build our search criteria
+            searchCriteria = {"dateRange": {"start": eventStart, "end": eventEnd}, "criteriaV3": {}}
+            #If this is process based
+            if alert["eventType"] == 0:
+                searchCriteria["criteriaV3"]["entityType"] = "process"
+            #If this is file based
+            if alert["eventType"] > 3  and alert["eventType"] < 9:
+                searchCriteria["criteriaV3"]["entityType"] = "file"
+            #If this is network based
+            if alert["eventType"] == 3:
+                searchCriteria["criteriaV3"]["entityType"] = "network"
+            #If this is DNS based
+            if alert["eventType"] == 17:
+                searchCriteria["criteriaV3"]["entityType"] = "dns"
+            #If this is registry based
+            if alert["eventType"] > 9 and alert["eventType"] < 13:
+                searchCriteria["criteriaV3"]["entityType"] = "registry"
+            #If this is USB based
+            if alert["eventType"] > 13 and alert["eventType"] < 17:
+                searchCriteria["criteriaV3"]["entityType"] = "usb"
+            #If this is WEV based
+            if alert["eventType"] == 13:
+                searchCriteria["criteriaV3"]["entityType"] = "windowsevent"
+            #If this is Malware based
+            if alert["eventType"] > 17 and alert["eventType"] < 30:
+                searchCriteria["criteriaV3"]["entityType"] = "antiMalware"
+            #If this is a script execution
+            if alert["eventType"] == 34 :
+                searchCriteria["criteriaV3"]["entityType"] = "script"
+
+            searchCriteria["criteriaV3"]["filter"] = {"filterType": "composite", "logic": "and", "filters": [{"filterType": "criteria", "column": "eventType", "operator": "=", "value": alert["eventType"]}, {"filterType": "criteria", "column": "endpointName", "operator": "=~", "value": alert["target"]}]}
+            events = self.fep.searchEvents(searchCriteria, 1000)
+
+            #Check to see if the call was successful or not
+            if not events["success"]:
+                demisto.results({"Error": events["error"]})
+                exit(0)
+
+            #Check to see if we have any events
+            if len(events["data"]["events"]) < 1:
+                demisto.results({"Error": "Could not find any events for the alert ID {0}".format(alertId)})
+                exit(0)
+
+            #Assign the events list to "events"
+            try:
+                events = events["data"]["events"]
+            except Exception as err:
+                demisto.results({"Error": err})
+                exit(0)
+
+            #Check to see if our event is there
+            possibleEvents = []
+            event = None
+            for item in events:
+                if item["targetId"] == alert["eventId"] and item["parentId"] == alert["parentEventId"] and item["eventIndex"] == alert["eventIndex"]:
+                    possibleEvents.append(item)
+
+            if len(possibleEvents) == 1:
+                event = possibleEvents[0]
+
+            if not event:
+                demisto.results({"Error": "Could not find an event for alert ID".format(alertId)})
+                exit(0)
+
+            if event:
+                newEvent = {}
+                for field in event:
+                    newField = self.camelToTitle(field)
+                    #newField = "fidelis.edr.event.{0}".format(field)
+                    newEvent[newField] = event[field]
+                demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': newEvent} )
+            sys.exit(0)
+
+        def getEndpointInfo(self):
+            #Check we have our arguments
+            thisHostName = None
+            thisIP = None
+            try:
+                thisHostName = self.args["hostname"]
+            except:
+                pass
+            try:
+                thisIP = self.args["ip"]
+            except:
+                pass
+
+            if thisIP is None and thisHostName is None:
+                demisto.results('Please provide at least an IP or hostname to lookup')
+                sys.exit(-1)
+
+            if thisIP and not is_ip_valid(thisIP):
+                demisto.results('The IP you provided does not seem to be valid \"{0}\"'.format(self.args["ip"]))
+                sys.exit(-1)
+
+            #Use hostname over IP for searching, if possible
+            searchField = ""
+            searchValue = ""
+            if thisHostName:
+                searchField = "hostName"
+                searchValue = self.args["hostname"]
+            else:
+                searchField = "ipAddress"
+                searchValue = self.args["ip"]
+
+            #Get all endpoints
+            endpoints = self.fep.getAllEndpoints(1000000)
+            thisEndpoint = None
+
+            for endpoint in endpoints:
+                if endpoint[searchField].lower() == searchValue.lower():
+                    thisEndpoint = endpoint
+                    break
+
+            if thisEndpoint is None:
+                demisto.results("Could not find endpoint with {0} containing {1}".format(searchField, searchValue))
+                exit(0)
+            if thisEndpoint is not None:
+                md = "*Endpoint Information*\nHost Name|IP Address|Operating System|MAC Address|Agent Tag\n----------|----------|----------|----------|----------\n"
+                for x in ["hostName", "ipAddress", "os", "macAddress", "agentTag"]:
+                    md = "{0}{1}|".format(md, thisEndpoint[x])
+
+                demisto.results({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': md})
+            sys.exit(0)
+
+        def deleteAlert(self):
+            alertId = None
+            try:
+                alertId = int(self.args["alertId"])
+            except Exception as err:
+                alertId = demisto.get(demisto.context(), "alertId")
+            if alertId is None:
+                demisto.results("No alert ID provided or found trying to find one")
+                exit(-1)
+            deleteResult = self.fep.deleteAlert(alertId)
+            if deleteResult["success"]:
+                demisto.results("Successfully deleted alert ID {0} from Fidelis Endpoint".format(alertId))
+            else:
+                demisto.results("Failed to delete alert ID {0} - {1}}".format(alertId, deleteResult["error"]))
+            exit(0)
+
+        def collectFile(self):
+
+            #Get the filename to be collected
+            filepath = self.args["filepath"]
+
+            #Get the hostname of the endpoint to collect from - if there is not one, try and use the one from the incident context
+            try:
+                endpoint = self.args["hostname"]
+            except:
+                endpoint = None
+
+            if endpoint == None:
+                try:
+                    endpoint = demisto.get(demisto.context(), "endpointName")
+                except:
+                    endpoint = None
+            if endpoint == None:
+                demisto.results("No endpoint name provided and no endpoint name found in the the incident context")
+                exit(-1)
+
+            #Get the timeout value
+            timeout = int(self.args["timeout"])
+
+            #Get the Agent ID of the hostname (if it exists)
+            endpoint = self.fep.getEndpointFromHostname(endpoint)
+
+            #If there is no endpoint returned, then there is no agent installed
+            if endpoint is None:
+                demisto.error("There is no agent installed on {0}".format(self.args["hostname"]))
+                exit(0)
+
+
+            #Find the script we need to run
+            scriptSearchCriteria = {"searchFields": [{"fieldName": "Name", "values": [{"value": "Single File Collection by Path", "operator": 0}]}]}
+            scripts = self.fep.searchScripts(scriptSearchCriteria, 1000)
+
+            #Find the one that matches our OS Type
+            thisScript = None
+            for script in scripts:
+                if endpoint["osType"] == 1 and endpoint["osArch"] == 2 and script["platforms"]["windows64"]:
+                    thisScript = script
+                    break
+                if endpoint["osType"] == 1 and endpoint["osArch"] == 1 and script["platforms"]["windows32"]:
+                    thisScript = script
+                    break
+                if endpoint["osType"] == 2 and script["platforms"]["linux64"]:
+                    thisScript = script
+                    break
+                if endpoint["osType"] == 3 and script["platforms"]["osx"]:
+                    thisScript = script
+                    break
+            if thisScript is None:
+                demisto.error("Could not located a file collection script suitable for {0}".format(self.args["hostname"]))
+                exit(0)
+
+            #Get the script metadata
+            metaData = self.fep.getScriptPackageMetaData(script["id"])
+            if metaData is None:
+                demisto.error("Could not retrieve the metadata details of the script package with ID {0} ({1})".format(script["id"], script["name"]))
+                exit(0)
+
+            #Get the script manifest
+            manifestData = self.fep.getScriptPackageManifest(script["id"])
+            if manifestData is None:
+                demisto.error("Could not retrieve the manifest details of the script package with ID {0} ({1})".format(script["id"], script["name"]))
+                exit(0)
+
+            #Populate the script execution details with answers to questions
+            questions = [{"answer": filepath, "inputType": "text", "isOptional": False, "paramNumber": 1, "question": " Path to file:"}]
+            taskOptions = [{"details": manifestData["data"], "detailsLoaded": False, "questions": questions, "queueExpirationInhours": None, "scriptId": script["id"], "timeoutInSeconds": timeout}]
+            scriptOptions = {"endpoints": [endpoint["id"]], "isPlaybook": False, "packageId": script["id"], "taskOptions": taskOptions}
+
+            #Execute the script
+            results = self.fep.executeSingleScript(script["id"], scriptOptions)
+
+            #Get our results ID
+            resultsID = results["data"]
+
+            #Get our job ID
+            jobID = self.fep.getJobStatus(resultsID)["data"]["jobID"]
+
+            #Monitor our job until it has complete
+            counter = 0
+            status = self.fep.getJobStatus(resultsID)["data"]["statusCode"]
+
+            while status != 3:
+                if counter > timeout:
+                    break
+                status = self.fep.getJobStatus(resultsID)["data"]["statusCode"]
+                time.sleep(1)
+                counter = counter + 1
+
+
+
+            results = self.fep.getJobStatus(resultsID)
+
+            if results["data"]["statusCode"] != 3:
+                demisto.error("The job executed with errors (or timed out) - {0}".format(results["data"]))
+                exit(0)
+
+            #Get our file from the results
+            results = self.fep.getFileSearchResults(jobID, resultsID)
+
+            #For each of our files found, return something into the console (the file)
+            if results["success"]:
+
+                #If there is no resulting information (file not located), then exit
+                try:
+                    if len(results["data"]["jobResultInfos"]) < 1:
+                        demisto.results("The task completed, but no files were found")
+                        exit(0)
+                    else:
+                        demisto.results("The task completed, but no files were found")
+                        exit(0)
+                except:
+                    demisto.results("The task executed, but no files were collected")
+                    exit(0)
+
+                for item in results["data"]["jobResultInfos"]:
+                    output = {"target" : item["hostName"]}
+
+                    #If there are no files, then exit
+                    try:
+                        if len(item["collectedFiles"]) < 1:
+                            demisto.results("The task executed, but no files were collected")
+                            exit(0)
+                    except:
+                        demisto.results("The task executed, but no files were collected")
+                        exit(0)
+
+                    #For each file that was collected, grab the file stream from the platform
+                    for file in item["collectedFiles"]:
+                        fileStream = self.fep.getFileStream(file["id"])
+                        demisto.results(fileResult(file["name"],fileStream.getvalue()))
+            else:
+                demisto.results("Error whilst executing task - {0}".format(results["error"]))
+                exit(-1)
+            exit(0)
+
+        def findByHashFileEvents(self):
+            if len(self.args["hash"]) != 32:
+                demisto.error("Unknown hash type provided (not MD5)")
+                exit(-1)
+            now = datetime.now()
+            end = now.strftime("%Y-%m-%dT%H:%M:%SZ")
+            then = now - timedelta(hours=int(self.args["hours"]))
+            start = then.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+            searchCriteria = {"dateRange": {"start": start, "end": end}, "criteriaV3": {}}
+            searchCriteria["criteriaV3"]["entityType"] = "file"
+            searchCriteria["criteriaV3"]["filter"] = {"filterType": "composite", "logic": "and", "filters": [{"filterType": "criteria", "column": "eventType", "operator": "=", "value": 6}, {"filterType": "criteria", "column": "hash", "operator": "=", "value": self.args["hash"]}]}
+
+
+            events = self.fep.searchEvents(searchCriteria, int(self.args["eventlimit"]))
+            results = []
+            if events["success"] and len(events["data"]["events"]) < 1:
+                demisto.results("Could not find any events")
+                exit(0)
+            if not events["success"]:
+                demisto.results({"error": events["error"]})
+                exit(-1)
+            if events["success"] and len(events["data"]["events"]) > 1:
+                data = []
+                entries = []
+                events = events["data"]["events"]
+                for event in events:
+                    try:
+                        found = False
+                        if self.args["removeduplicates"] == "True":
+                            for item in data:
+                                if item["hostname"] == event["endpointName"] and item["path"] == event["path"]:
+                                    found = True
+                                    break
+                        if found:
+                            continue
+                    except:
+                        pass
+                    result = {}
+                    try:
+                        result["MD5"] = event["hash"]
+                    except:
+                        pass
+                    try:
+                        result["SHA1"] = event["hashSHA1"]
+                    except:
+                        pass
+                    try:
+                        result["SHA256"] = event["hashSHA256"]
+                    except:
+                        pass
+                    try:
+                        result["File Name"] = event["name"]
+                    except:
+                        pass
+                    try:
+                        result["File Path"] = event["path"]
+                    except:
+                        pass
+                    try:
+                        result["Hostname"] = event["endpointName"]
+                    except:
+                        pass
+                    try:
+                        result["User"] = event["user"]
+                    except:
+                        pass
+                    try:
+                        data.append({"hostname": event["endpointName"], "path": event["path"]})
+                    except:
+                        pass
+                    entry = {
+                        'Type': entryTypes['note'],
+                        'Contents': result,
+                        'ContentsFormat': formats['json'],
+                        'ReadableContentsFormat': formats['json'],
+                        'HumanReadable': result,
+                        'EntryContext': {
+                            #'Fidelis.EDR(val.ID===obj.ID).Filepath': event["path"],
+                            #'Fidelis.EDR(val.ID===obj.ID).Hostname': event["endpointName"]
+                            'fidelis.edr.filedata': result
+                        }
+                    }
+                    entries.append(entry)
+                demisto.results(entries)
+                exit(0)
+
+
+
+    ##########################################################################################
+    # Create a new class of the "Function"
+    ##########################################################################################
+    thisFunction = functions(demisto.args(), demisto.params())
+
+    ##########################################################################################
+    # Check that we have an IP and authentication details to use
+    ##########################################################################################
+    if thisFunction.params["ip"] and thisFunction.params["authentication"]:
+        pass
+    else:
+        demisto.results('Failed - Not enough parameters (IP, Username, Password) provided')
+        sys.exit(-1)
+
+
+    ##########################################################################################
+    # Check the authentication is working
+    ##########################################################################################
+    if thisFunction.fep.authToken == None:
+        demisto.results('Failed connecting to {0} - {1}'.format(thisFunction.fep.host, thisFunction.fep.lastError))
+        sys.exit(-1)
+
+    ##########################################################################################
+    # FUNCTIONS
+    ##########################################################################################
+    if demisto.command() == 'test-module':
+        thisFunction.testModule()
+    if demisto.command() == 'fetch-incidents':
+        thisFunction.fetchIncidents()
+    if demisto.command() == 'fidelis-edr-get-event-for-alert':
+        thisFunction.getEventForAlert()
+    if demisto.command() == 'fidelis-edr-get-endpoint-info':
+        thisFunction.getEndpointInfo()
+    if demisto.command() == 'fidelis-edr-delete-alert':
+        thisFunction.deleteAlert()
+    if demisto.command() == 'fidelis-edr-collect-file':
+        thisFunction.collectFile()
+    if demisto.command() == 'fidelis-edr-find-file-hash-event':
+        thisFunction.findByHashFileEvents()
+    if demisto.command() == 'fidelis-edr-find-process-by-hash':
+        thisFunction.findProcessByHash()
+    if demisto.command() == 'fidelis-edr-populate-tasks':
+        thisFunction.populateTasks()
+    ##########################################################################################
+
+
+  type: python
+  commands:
+  - name: fidelis-edr-get-endpoint-info
+    arguments:
+    - name: ip
+      description: IP address of the endpoint
+    - name: hostname
+      description: Hostname of the endpoint
+    outputs:
+    - contextPath: hostName
+      description: The host name of the endpoint
+    - contextPath: hostIP
+      description: The current IP address of the endpoint
+    - contextPath: hostOS
+      description: The Operating System of the endpoint
+    - contextPath: agentTag
+      description: The Agent tag of the endpoint
+    - contextPath: macAddress
+      description: MAC Address of the endpoint
+    description: Retrieves information about an endpoint, if there is a Fidelis Endpoint
+      agent installed.
+  - name: fidelis-edr-get-event-for-alert
+    arguments:
+    - name: alertId
+      description: The alert ID to get the event for
+    description: Retrieves the event details for a particular alert generated by Fidelis
+      Endpoint (if the event still exists)
+  - name: fidelis-edr-delete-alert
+    arguments:
+    - name: alertId
+    description: Deletes and alert from the Fidelis Endpoint Platform
+    execution: true
+  - name: fidelis-edr-collect-file
+    arguments:
+    - name: filepath
+      required: true
+      description: The full file path of the file to collect
+    - name: hostname
+      description: The hostname of the endpoint to collect the file from (if not provided
+        the endpoint name from the incident will be used)
+    - name: timeout
+      description: Timeout (in seconds) for the job to execute
+      defaultValue: "300"
+    description: Attempts to collect a file from an endpoint that has the Fidelis
+      Endpoint Agent installed
+  - name: fidelis-edr-find-hash-event
+    arguments:
+    - name: hash
+      required: true
+      description: MD5 Hash
+    - name: hours
+      required: true
+      description: Number of hours to go back in time by
+      defaultValue: "24"
+    - name: eventlimit
+      required: true
+      description: Maximum number of events to bring back
+      defaultValue: "1000"
+    - name: removeduplicates
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Only find 1 event per endpoint
+      defaultValue: "True"
+    outputs:
+    - contextPath: Fidelis.EDR.Filedata
+      description: Files found
+      type: string
+    description: Searches for a file event that contains a file hash
+  - name: fidelis-edr-find-process-by-hash
+    arguments:
+    - name: hash
+      required: true
+      description: The MD5 hash of the process to find
+    - name: endpoint
+      description: Endpoint hostname to search event on
+    - name: duration
+      description: How many hours to look back for execution (default is 24 hours)
+      defaultValue: "24"
+    - name: limit
+      description: Limit how many events are returned (default is 100)
+      defaultValue: "100"
+    - name: extended
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Get extended data (otherwise only process name, user, hostname
+        and process start time are returned)
+      defaultValue: "False"
+    - name: singleendpoint
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Only return 1 event per endpoint hostname
+      defaultValue: "False"
+    description: Finds executions of a process that matches an MD5 or SHA1 hash
+  - name: fidelis-edr-populate-tasks
+    arguments: []
+    outputs:
+    - contextPath: Fidelis Tasks
+      description: A list of tasks available in the Fidelis Endpoint Platform
+    description: Populates the list named "Fidelis Tasks" with an update to date list
+      from the Fidelis Endpoint Platform
+  dockerimage: demisto/python3:3.7.3.221
+  isfetch: true
+  runonce: false
