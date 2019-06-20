@@ -1,0 +1,2688 @@
+id: e7ac9021-96ee-451c-88fa-a2a027f5f20b
+version: 132
+name: Fidelis Elevate Endpoint Enrichment
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9be60df9-5ff1-4c8a-86fe-824530ba4d8d
+    type: start
+    task:
+      id: 9be60df9-5ff1-4c8a-86fe-824530ba4d8d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 2c07f295-ac27-4a3c-8fae-8a3e6c36d433
+    type: regular
+    task:
+      id: 2c07f295-ac27-4a3c-8fae-8a3e6c36d433
+      version: -1
+      name: Get the Event data
+      script: Fidelis Elevate Endpoint|||fidelis-edr-get-event-for-alert
+      type: regular
+      iscommand: true
+      brand: Fidelis Elevate Endpoint
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      alertId:
+        simple: incident.labels.Id
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 71be72c4-7699-4e6c-8324-5acbe3114a35
+    type: condition
+    task:
+      id: 71be72c4-7699-4e6c-8324-5acbe3114a35
+      version: -1
+      name: Is there already event enrichment?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "1"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: incident.labels.Fidelis Event Found
+            iscontext: true
+      - - operator: isTrue
+          left:
+            value:
+              simple: incident.labels.Fidelis Event Found
+            iscontext: true
+    - label: "no"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: incident.labels.Fidelis Event Found
+            iscontext: true
+        - operator: isFalse
+          left:
+            value:
+              simple: incident.labels.Fidelis Event Found
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1677.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: e6fdfab0-4a83-4d3b-8c85-611fab0c240b
+    type: condition
+    task:
+      id: e6fdfab0-4a83-4d3b-8c85-611fab0c240b
+      version: -1
+      name: Is there an alert ID?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "15"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: incident.labels.Id
+            iscontext: true
+    - label: "no"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: incident.labels.Id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: eaf3369c-1229-4bb0-803a-c3f56d34af4c
+    type: condition
+    task:
+      id: eaf3369c-1229-4bb0-803a-c3f56d34af4c
+      version: -1
+      name: Is this a vulnerable software alert?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.labels.Source
+            iscontext: true
+          right:
+            value:
+              simple: Installed Software CVE
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 707a9766-b74d-4288-8ed4-e462e949cbbe
+    type: regular
+    task:
+      id: 707a9766-b74d-4288-8ed4-e462e949cbbe
+      version: -1
+      name: Classify incident as Vulnerable software
+      description: Change the properties of an incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      addLabels: {}
+      app: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      bugtraq: {}
+      closeNotes: {}
+      closeReason: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      deleteEmptyField: {}
+      dest: {}
+      destntdomain: {}
+      details: {}
+      duration: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      eventdate: {}
+      eventid: {}
+      eventtarget: {}
+      eventtype: {}
+      fidelisendpointalertid: {}
+      fidelisendpointalertsource: {}
+      fidelisendpointeventfound: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      id: {}
+      labels: {}
+      malwarefamily: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      replacePlaybook: {}
+      roles: {}
+      severity: {}
+      signature: {}
+      sla: {}
+      slaField: {}
+      src: {}
+      srcntdomain: {}
+      srcuser: {}
+      submitter: {}
+      systems: {}
+      type:
+        simple: Vulnerability
+      user: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3192.5,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 829748a5-c684-4e40-8032-5edb4aef2178
+    type: title
+    task:
+      id: 829748a5-c684-4e40-8032-5edb4aef2178
+      version: -1
+      name: Classify Alert Type
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: cef1e5d1-f424-4734-8361-510cfb8063f0
+    type: condition
+    task:
+      id: cef1e5d1-f424-4734-8361-510cfb8063f0
+      version: -1
+      name: Is this an anti-malware alert?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "26"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: incident.labels.Source Type
+            iscontext: true
+          right:
+            value:
+              simple: "18"
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              simple: incident.labels.Source Type
+            iscontext: true
+          right:
+            value:
+              simple: "29"
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: fe50a1ce-8ebb-4ccf-83e4-2085e4d55d25
+    type: regular
+    task:
+      id: fe50a1ce-8ebb-4ccf-83e4-2085e4d55d25
+      version: -1
+      name: Classify incident as Malware
+      description: Change the properties of an incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      bugtraq: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      contactaddress: {}
+      contactname: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      deleteEmptyField: {}
+      dest: {}
+      destntdomain: {}
+      details: {}
+      dpoemailaddress: {}
+      duration: {}
+      emailaddress: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      eventdate: {}
+      eventid: {}
+      eventtarget: {}
+      eventtype: {}
+      fidelisendpointalertid: {}
+      fidelisendpointalertsource: {}
+      fidelisendpointeventfound: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      id: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      likelyimpact: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      measurestomitigate: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      replacePlaybook: {}
+      roles: {}
+      sectorofaffectedparty: {}
+      severity: {}
+      signature: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      sla: {}
+      slaField: {}
+      src: {}
+      srcntdomain: {}
+      srcuser: {}
+      submitter: {}
+      systems: {}
+      telephoneno: {}
+      type:
+        simple: Malware
+      user: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1452.5,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: e4548e19-b8d8-4546-8b31-4fd56771e901
+    type: condition
+    task:
+      id: e4548e19-b8d8-4546-8b31-4fd56771e901
+      version: -1
+      name: Is this a ThreatBridge alert?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: incident.labels.Source Type
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.labels.Source Type
+            iscontext: true
+          right:
+            value:
+              simple: "16"
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 6fce6188-0509-44bd-8220-d1b651892162
+    type: title
+    task:
+      id: 6fce6188-0509-44bd-8220-d1b651892162
+      version: -1
+      name: Automation Complete
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 73e594f9-9c05-43d7-85b9-574a30565111
+    type: condition
+    task:
+      id: 73e594f9-9c05-43d7-85b9-574a30565111
+      version: -1
+      name: Is this IP related?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: incident.labels.Event Type
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.labels.Event Type
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    view: |-
+      {
+        "position": {
+          "x": 2220,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: 475801b1-fa9e-4707-8b87-f3599c4da24c
+    type: regular
+    task:
+      id: 475801b1-fa9e-4707-8b87-f3599c4da24c
+      version: -1
+      name: Classify incident as C2Communication
+      description: Change the properties of an incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      bugtraq: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      contactaddress: {}
+      contactname: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      deleteEmptyField: {}
+      dest: {}
+      destntdomain: {}
+      details: {}
+      dpoemailaddress: {}
+      duration: {}
+      emailaddress: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      eventdate: {}
+      eventid: {}
+      eventtarget: {}
+      eventtype: {}
+      fidelisendpointalertid: {}
+      fidelisendpointalertsource: {}
+      fidelisendpointeventfound: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      id: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      likelyimpact: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      measurestomitigate: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      replacePlaybook: {}
+      roles: {}
+      sectorofaffectedparty: {}
+      severity: {}
+      signature: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      sla: {}
+      slaField: {}
+      src: {}
+      srcntdomain: {}
+      srcuser: {}
+      submitter: {}
+      systems: {}
+      telephoneno: {}
+      type:
+        simple: C2Communication
+      user: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2762.5,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: 8ddf18e2-39f8-43f1-88a6-cc51da65c814
+    type: condition
+    task:
+      id: 8ddf18e2-39f8-43f1-88a6-cc51da65c814
+      version: -1
+      name: Is this file related?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: incident.labels.Event Type
+            iscontext: true
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: incident.labels.Event Type
+            iscontext: true
+          right:
+            value:
+              simple: "4"
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              simple: incident.labels.Event Type
+            iscontext: true
+          right:
+            value:
+              simple: "8"
+    view: |-
+      {
+        "position": {
+          "x": 2005,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: 2f866a07-0aea-4c95-8459-7fdffd2fce56
+    type: regular
+    task:
+      id: 2f866a07-0aea-4c95-8459-7fdffd2fce56
+      version: -1
+      name: Classify incident as Malware
+      description: Change the properties of an incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      bugtraq: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      contactaddress: {}
+      contactname: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      deleteEmptyField: {}
+      dest: {}
+      destntdomain: {}
+      details: {}
+      dpoemailaddress: {}
+      duration: {}
+      emailaddress: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      eventdate: {}
+      eventid: {}
+      eventtarget: {}
+      eventtype: {}
+      fidelisendpointalertid: {}
+      fidelisendpointalertsource: {}
+      fidelisendpointeventfound: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      id: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      likelyimpact: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      measurestomitigate: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      replacePlaybook: {}
+      roles: {}
+      sectorofaffectedparty: {}
+      severity: {}
+      signature: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      sla: {}
+      slaField: {}
+      src: {}
+      srcntdomain: {}
+      srcuser: {}
+      submitter: {}
+      systems: {}
+      telephoneno: {}
+      type:
+        simple: Malware
+      user: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2332.5,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: 3acc3654-01f7-4950-8f6c-acba252b302a
+    type: condition
+    task:
+      id: 3acc3654-01f7-4950-8f6c-acba252b302a
+      version: -1
+      name: Is this process related?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: incident.labels.Event Type
+            iscontext: true
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: incident.labels.Event Type
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              simple: incident.labels.Event Type
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 1790,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: 6c990eac-be65-48b6-89c3-7ea3c1290d8f
+    type: regular
+    task:
+      id: 6c990eac-be65-48b6-89c3-7ea3c1290d8f
+      version: -1
+      name: Classify incident as Exploit
+      description: Change the properties of an incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      bugtraq: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      contactaddress: {}
+      contactname: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      deleteEmptyField: {}
+      dest: {}
+      destntdomain: {}
+      details: {}
+      dpoemailaddress: {}
+      duration: {}
+      emailaddress: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      eventdate: {}
+      eventid: {}
+      eventtarget: {}
+      eventtype: {}
+      fidelisendpointalertid: {}
+      fidelisendpointalertsource: {}
+      fidelisendpointeventfound: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      id: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      likelyimpact: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      measurestomitigate: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      replacePlaybook: {}
+      roles: {}
+      sectorofaffectedparty: {}
+      severity: {}
+      signature: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      sla: {}
+      slaField: {}
+      src: {}
+      srcntdomain: {}
+      srcuser: {}
+      submitter: {}
+      systems: {}
+      telephoneno: {}
+      type:
+        simple: Exploit
+      user: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1902.5,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: 7cf52b17-7a2c-4384-8809-2d3526350d7c
+    type: condition
+    task:
+      id: 7cf52b17-7a2c-4384-8809-2d3526350d7c
+      version: -1
+      name: Is this process related?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: incident.labels.Event Type
+            iscontext: true
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: incident.labels.Event Type
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              simple: incident.labels.Event Type
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: a0306898-21dd-41c7-8d46-df5ab73a4bb3
+    type: regular
+    task:
+      id: a0306898-21dd-41c7-8d46-df5ab73a4bb3
+      version: -1
+      name: Classify incident as Suspicious Process
+      description: Change the properties of an incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      bugtraq: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      contactaddress: {}
+      contactname: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      deleteEmptyField: {}
+      dest: {}
+      destntdomain: {}
+      details: {}
+      dpoemailaddress: {}
+      duration: {}
+      emailaddress: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      eventdate: {}
+      eventid: {}
+      eventtarget: {}
+      eventtype: {}
+      fidelisendpointalertid: {}
+      fidelisendpointalertsource: {}
+      fidelisendpointeventfound: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      id: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      likelyimpact: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      measurestomitigate: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      replacePlaybook: {}
+      roles: {}
+      sectorofaffectedparty: {}
+      severity: {}
+      signature: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      sla: {}
+      slaField: {}
+      src: {}
+      srcntdomain: {}
+      srcuser: {}
+      submitter: {}
+      systems: {}
+      telephoneno: {}
+      type:
+        simple: Suspicious Process
+      user: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: 095a5d05-aaaf-4550-8bf3-2dbd173e4cd0
+    type: condition
+    task:
+      id: 095a5d05-aaaf-4550-8bf3-2dbd173e4cd0
+      version: -1
+      name: Is this registry related?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "30"
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: incident.labels.Event Type
+            iscontext: true
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: incident.labels.Event Type
+            iscontext: true
+          right:
+            value:
+              simple: "9"
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              simple: incident.labels.Event Type
+            iscontext: true
+          right:
+            value:
+              simple: "12"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: b2b31576-182e-47eb-8adb-1c0c1f9571d7
+    type: regular
+    task:
+      id: b2b31576-182e-47eb-8adb-1c0c1f9571d7
+      version: -1
+      name: Classify incident as Suspicious Registry
+      description: Change the properties of an incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      bugtraq: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      contactaddress: {}
+      contactname: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      deleteEmptyField: {}
+      dest: {}
+      destntdomain: {}
+      details: {}
+      dpoemailaddress: {}
+      duration: {}
+      emailaddress: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      eventdate: {}
+      eventid: {}
+      eventtarget: {}
+      eventtype: {}
+      fidelisendpointalertid: {}
+      fidelisendpointalertsource: {}
+      fidelisendpointeventfound: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      id: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      likelyimpact: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      measurestomitigate: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      replacePlaybook: {}
+      roles: {}
+      sectorofaffectedparty: {}
+      severity: {}
+      signature: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      sla: {}
+      slaField: {}
+      src: {}
+      srcntdomain: {}
+      srcuser: {}
+      submitter: {}
+      systems: {}
+      telephoneno: {}
+      type:
+        simple: Suspicious Registry
+      user: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "30":
+    id: "30"
+    taskid: 8116bf5e-636e-4d7f-8911-01f6adcac0bd
+    type: condition
+    task:
+      id: 8116bf5e-636e-4d7f-8911-01f6adcac0bd
+      version: -1
+      name: Is this file related?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: incident.labels.Event Type
+            iscontext: true
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: incident.labels.Event Type
+            iscontext: true
+          right:
+            value:
+              simple: "4"
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              simple: incident.labels.Event Type
+            iscontext: true
+          right:
+            value:
+              simple: "8"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "31":
+    id: "31"
+    taskid: be2e4860-b8b8-429c-8457-3714c6738d2e
+    type: regular
+    task:
+      id: be2e4860-b8b8-429c-8457-3714c6738d2e
+      version: -1
+      name: Classify incident as Suspicious File
+      description: Change the properties of an incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      bugtraq: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      contactaddress: {}
+      contactname: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      deleteEmptyField: {}
+      dest: {}
+      destntdomain: {}
+      details: {}
+      dpoemailaddress: {}
+      duration: {}
+      emailaddress: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      eventdate: {}
+      eventid: {}
+      eventtarget: {}
+      eventtype: {}
+      fidelisendpointalertid: {}
+      fidelisendpointalertsource: {}
+      fidelisendpointeventfound: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      id: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      likelyimpact: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      measurestomitigate: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      replacePlaybook: {}
+      roles: {}
+      sectorofaffectedparty: {}
+      severity: {}
+      signature: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      sla: {}
+      slaField: {}
+      src: {}
+      srcntdomain: {}
+      srcuser: {}
+      submitter: {}
+      systems: {}
+      telephoneno: {}
+      type:
+        simple: Suspicious File
+      user: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "32":
+    id: "32"
+    taskid: 88fc5911-8181-4d7e-89c9-b7aef026f455
+    type: regular
+    task:
+      id: 88fc5911-8181-4d7e-89c9-b7aef026f455
+      version: -1
+      name: Investigation Complete
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    separatecontext: false
+    defaultassigneecomplex:
+      simple: ${incident.owner}
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 4160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "33":
+    id: "33"
+    taskid: e25d8a18-081f-4f41-8fde-86d2e4fab306
+    type: regular
+    task:
+      id: e25d8a18-081f-4f41-8fde-86d2e4fab306
+      version: -1
+      name: AssignAnalystToIncident
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      assignBy:
+        simple: random
+      email: {}
+      roles: {}
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2425,
+          "y": 3110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "34":
+    id: "34"
+    taskid: 4bb40394-5dd0-46b5-8f52-9ce5f14d4583
+    type: collection
+    task:
+      id: 4bb40394-5dd0-46b5-8f52-9ce5f14d4583
+      version: -1
+      name: Ask to Close incident and alert
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 4510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: ${incident.owner}
+      subject:
+        simple: Incident Closure
+      body: null
+      methods:
+      - slack
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Would you like to close the incident ${incident.id}
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - "Yes"
+        - "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Please select whether you would like to close the incident
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Would you like to delete the alert ${incident.labels.id}
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - "Yes"
+        - "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Please select if you would like to delete the incident
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: Closure reason
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+      title: Close Incident
+      description: Would you like to close the incident
+      sender: ""
+      expired: false
+      totalanswers: 0
+  "35":
+    id: "35"
+    taskid: eb91900a-9c64-4b65-8612-3e9119961da8
+    type: condition
+    task:
+      id: eb91900a-9c64-4b65-8612-3e9119961da8
+      version: -1
+      name: Close the incident?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "39"
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Close Incident.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 5035
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "36":
+    id: "36"
+    taskid: 0c1ffaef-c430-4704-885d-463ef9d6b230
+    type: regular
+    task:
+      id: 0c1ffaef-c430-4704-885d-463ef9d6b230
+      version: -1
+      name: Close Incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason:
+        simple: ${Close Incident.Answers.2}
+      id:
+        complex:
+          root: incident
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1677.5,
+          "y": 5210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "38":
+    id: "38"
+    taskid: 6faffd57-7416-4983-8f10-b6975302e5ed
+    type: regular
+    task:
+      id: 6faffd57-7416-4983-8f10-b6975302e5ed
+      version: -1
+      name: Delete Alert
+      script: '|||fidelis-edr-delete-alert'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      alertId:
+        complex:
+          root: incident
+          accessor: labels.Id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1677.5,
+          "y": 4860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "39":
+    id: "39"
+    taskid: 1311d8ba-9bf0-4113-8195-d05480471d1c
+    type: title
+    task:
+      id: 1311d8ba-9bf0-4113-8195-d05480471d1c
+      version: -1
+      name: Complete
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 5385
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: remediationsla
+      action: stop
+    ignoreworker: false
+  "40":
+    id: "40"
+    taskid: 446f73c9-71f4-4cc9-8f60-aa9ff812d83d
+    type: condition
+    task:
+      id: 446f73c9-71f4-4cc9-8f60-aa9ff812d83d
+      version: -1
+      name: Delete the alert?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "35"
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Close Incident.Answers.1
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 4685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "41":
+    id: "41"
+    taskid: 65c4e121-ab18-4908-88e2-c6ecb75f5a39
+    type: collection
+    task:
+      id: 65c4e121-ab18-4908-88e2-c6ecb75f5a39
+      version: -1
+      name: Check classification
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 3635
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: ${incident.owner}
+      subject:
+        simple: Check incident classification for incident ID ${incident.Id}
+      body: {}
+      methods:
+      - slack
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Is the incident classification of "${incident.type}" suitable for
+            incident ${incident.id}?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - "Yes"
+        - "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Please select whether the incident classification is correct. If
+          it is not, you will be asked to re-classify the incident.
+      title: Incident classification
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+  "42":
+    id: "42"
+    taskid: edea4df1-ac5c-4c26-817a-658f2f4516c3
+    type: condition
+    task:
+      id: edea4df1-ac5c-4c26-817a-658f2f4516c3
+      version: -1
+      name: Classification correct?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "45"
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Incident classification.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 3810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "45":
+    id: "45"
+    taskid: f1c0cdd6-b531-4d4b-8173-b960335946b1
+    type: regular
+    task:
+      id: f1c0cdd6-b531-4d4b-8173-b960335946b1
+      version: -1
+      name: Select correct incident type
+      description: Alter the incident type to suit
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    defaultassigneecomplex:
+      simple: ${incident.owner}
+    view: |-
+      {
+        "position": {
+          "x": 1452.5,
+          "y": 3985
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "47":
+    id: "47"
+    taskid: c4e06fec-2f6e-4da0-8213-084593491f6c
+    type: regular
+    task:
+      id: c4e06fec-2f6e-4da0-8213-084593491f6c
+      version: -1
+      name: Ask Slack users about closing the incident
+      description: Send a message to a slack user, group or channel
+      script: slack|||slack-send
+      type: regular
+      iscommand: true
+      brand: slack
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      IgnoreAddURL: {}
+      channel:
+        simple: demisto
+      entry: {}
+      group: {}
+      message:
+        simple: Please confirm whether it is OK to close incident ID ${incident.id}
+      threadID: {}
+      to: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 4335
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "51":
+    id: "51"
+    taskid: c8c0892e-576e-40ca-85ab-5ae2beef59c6
+    type: regular
+    task:
+      id: c8c0892e-576e-40ca-85ab-5ae2beef59c6
+      version: -1
+      name: Create new Slack channel for comms
+      script: '|||slack-mirror-investigation'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      autoclose:
+        simple: "true"
+      direction:
+        simple: Both
+      mirrorTo:
+        simple: channel
+      type:
+        simple: all
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1452.5,
+          "y": 3460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "52":
+    id: "52"
+    taskid: 0755329f-e011-442d-8fde-09b46c42de68
+    type: regular
+    task:
+      id: 0755329f-e011-442d-8fde-09b46c42de68
+      version: -1
+      name: Set alertId context
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      append: {}
+      key:
+        simple: alertId
+      value:
+        simple: ${incident.labels.Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "53":
+    id: "53"
+    taskid: 5b522941-6c55-43ef-8301-4b255ec6c1d4
+    type: regular
+    task:
+      id: 5b522941-6c55-43ef-8301-4b255ec6c1d4
+      version: -1
+      name: Set endpointName context with Endpoint Name
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      append: {}
+      key:
+        simple: endpointName
+      value:
+        simple: ${incident.labels.Endpoint Name}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "54":
+    id: "54"
+    taskid: 58879deb-566d-4c21-81b3-145830a381cf
+    type: condition
+    task:
+      id: 58879deb-566d-4c21-81b3-145830a381cf
+      version: -1
+      name: Ask assignment by type
+      description: "Gets a value and return it. This is to be used in playbook conditional
+        tasks - get a value from incident field, label or context, and act accordingly.
+        \nIf an array is returned. the first value will be the decision making value."
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "60"
+      current:
+      - "59"
+      less-busy-user:
+      - "57"
+      machine-learning:
+      - "55"
+      online:
+      - "58"
+      random:
+      - "33"
+      top-user:
+      - "56"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 2935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Analyst
+      subject:
+        simple: Assignment of new incident ID ${incident.id}
+      body:
+        complex:
+          root: incident
+          accessor: labels.Artifact Name
+      methods:
+      - slack
+      - email
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - random
+      - machine-learning
+      - top-user
+      - less-busy-user
+      - online
+      - current
+      - manual
+  "55":
+    id: "55"
+    taskid: 0a077817-5e22-44b5-809e-d2d058183f32
+    type: regular
+    task:
+      id: 0a077817-5e22-44b5-809e-d2d058183f32
+      version: -1
+      name: AssignAnalystToIncident
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      assignBy:
+        simple: machine-learning
+      email: {}
+      roles: {}
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 3110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "56":
+    id: "56"
+    taskid: 10bf1d75-5aad-4963-89af-1b24994aca2d
+    type: regular
+    task:
+      id: 10bf1d75-5aad-4963-89af-1b24994aca2d
+      version: -1
+      name: AssignAnalystToIncident
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      assignBy:
+        simple: top-user
+      email: {}
+      roles: {}
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2855,
+          "y": 3110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "57":
+    id: "57"
+    taskid: 27265283-80d1-4d88-89b4-b2a00cbe1963
+    type: regular
+    task:
+      id: 27265283-80d1-4d88-89b4-b2a00cbe1963
+      version: -1
+      name: AssignAnalystToIncident
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      assignBy:
+        simple: less-busy-user
+      email: {}
+      roles: {}
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1135,
+          "y": 3110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "58":
+    id: "58"
+    taskid: 66160d51-3fc6-45b3-8d15-9bc9b83163e5
+    type: regular
+    task:
+      id: 66160d51-3fc6-45b3-8d15-9bc9b83163e5
+      version: -1
+      name: AssignAnalystToIncident
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      assignBy:
+        simple: online
+      email: {}
+      roles: {}
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1995,
+          "y": 3110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "59":
+    id: "59"
+    taskid: 08c8dd0a-9593-4b70-8342-c7216294f7a4
+    type: regular
+    task:
+      id: 08c8dd0a-9593-4b70-8342-c7216294f7a4
+      version: -1
+      name: AssignAnalystToIncident
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      assignBy:
+        simple: current
+      email: {}
+      roles: {}
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 3110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "60":
+    id: "60"
+    taskid: d88dea57-aa4d-4ccb-81f2-606690deb694
+    type: regular
+    task:
+      id: d88dea57-aa4d-4ccb-81f2-606690deb694
+      version: -1
+      name: Manually assign a user to the incident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "64"
+    separatecontext: false
+    sla:
+      hours: 5
+      days: 0
+      weeks: 0
+    defaultassigneecomplex: {}
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 3110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "61":
+    id: "61"
+    taskid: 024fef51-cc37-4642-857a-24457d894404
+    type: condition
+    task:
+      id: 024fef51-cc37-4642-857a-24457d894404
+      version: -1
+      name: isError
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "6"
+      "yes":
+      - "63"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "63":
+    id: "63"
+    taskid: 07e7782a-f96c-48e6-86da-42450187ff40
+    type: regular
+    task:
+      id: 07e7782a-f96c-48e6-86da-42450187ff40
+      version: -1
+      name: Set endpointName context with Target
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      append: {}
+      key:
+        simple: endpointName
+      value:
+        simple: ${incident.labels.Target}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1677.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "64":
+    id: "64"
+    taskid: 4c05e68c-2bfe-4255-8a31-37bc5798dc99
+    type: condition
+    task:
+      id: 4c05e68c-2bfe-4255-8a31-37bc5798dc99
+      version: -1
+      name: Create a private Slack channel?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "41"
+      "yes":
+      - "51"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 3285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: ${incident.owner}
+      subject: null
+      body:
+        simple: Does incident ID ${incident.id} require a private channel?
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - "Yes"
+      - "No"
+view: |-
+  {
+    "linkLabelsPosition": {
+      "20_22_#default#": 0.8
+    },
+    "paper": {
+      "dimensions": {
+        "height": 5400,
+        "width": 3522.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
