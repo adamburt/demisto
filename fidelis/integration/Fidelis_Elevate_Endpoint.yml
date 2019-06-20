@@ -66,23 +66,25 @@ script:
 
     class fidelisEndpoint:
 
-        def __init__(self, host, username, password):
+        def __init__(self, host, username, password, ignoreSSL, checkURL):
             self.host = host
             self.baseURL = "https://{0}/endpoint/api".format(host)
             self.username = username
             self.password = password
             self.lastError = ""
             self.lastSuccess = ""
+            self.ignoressl = ignoreSSL
+            self.checkURL = checkURL
             self.authToken = self.getAuthToken(self.username, self.password)
             self.headers = {"Content-Type": "application/json;charset=UTF-8", "Authorization": "bearer {0}".format(self.authToken)}
-            self.ignoressl = False
-            self.checkURL = True
+
 
         def getAuthToken(self, username, password):
             url = "{0}/authenticate?username={1}&password={2}".format(self.baseURL, quote(username), quote(password))
-            requests.packages.urllib3.disable_warnings()
+            if self.ignoressl:
+                requests.packages.urllib3.disable_warnings()
             try:
-                r = requests.get(url, verify=False)
+                r = requests.get(url, verify=self.checkURL)
             except Exception as err:
                 self.lastError = "Error performing get request to URL- {0}".format(err)
                 return None
@@ -621,10 +623,13 @@ script:
         def __init__(self, args, params):
             self.args = args
             self.params = params
-            self.fep = fidelisEndpoint(self.params["ip"], self.params["authentication"]["identifier"], self.params["authentication"]["password"])
+            self.ignoressl = False
+            self.checkURL = True
             if self.params["ignoressl"]:
-                self.fep.ignoressl = True
-                self.fep.checkURL = False
+                self.ignoressl = True
+                self.checkURL = False
+            self.fep = fidelisEndpoint(self.params["ip"], self.params["authentication"]["identifier"], self.params["authentication"]["password"], self.ignoressl, self.checkURL)
+
 
         def getTasks(self):
             allTasks = self.fep.getAllTasks()
@@ -678,7 +683,7 @@ script:
                 extended = self.args["extended"]
                 oneEndpoint = self.args["singleendpoint"]
             except Exception as err:
-                demisto.results('Failed parsing inputs - {0}'.format(err))
+                demisto.error('Failed parsing inputs - {0}'.format(err))
                 exit(0)
             try:
                 endpointName = self.args["endpoint"]
@@ -716,7 +721,7 @@ script:
                     demisto.results('No results found for hash {0}'.format(thisHash))
                     exit(0)
             except Exception as err:
-                demisto.results('Failed collecting events - {0}'.format(err))
+                demisto.error('Failed collecting events - {0}'.format(err))
                 exit(0)
 
             #For each event, return an entry (up to the limit specified by the user)
@@ -803,7 +808,7 @@ script:
                     endpoints.append(event["endpointName"])
                 exit(0)
             else:
-                demisto.results("No events found")
+                demisto.info("No events found")
                 exit(0)
 
         def testModule(self):
@@ -858,18 +863,18 @@ script:
             #Gather all the alerts - 500 at a time and sort by their insertion date
             allAlerts = self.fep.searchAlerts({}, 500, startDate, endDate, "insertionDate+Ascending")
 
-
-
             #Create a marker for the latest alert insertion date
             latestInsertionDate = None
             try:
                 if not allAlerts["success"] or len(allAlerts["data"]["entities"]) < 1:
-                    demisto.error({"Error": "No alerts found - {0}".format(alerts["error"])})
+                    demisto.info("No alerts found - {0}".format(alerts["error"]))
                     sys.exit(0)
             except Exception as err:
                 demisto.error({"Error": "No alerts found - {0}".format(err)})
                 sys.exit(0)
             allAlerts = allAlerts["data"]["entities"]
+            if allAlerts is None:
+                sys.exit(0)
             for alert in allAlerts:
                 if alert["id"] > latestAlertId:
                     latestAlertId = alert["id"]
@@ -1047,10 +1052,10 @@ script:
             #If we cannot find any alerts, there's no point looking for the event anymore
             try:
                 if not alerts["success"] and len(alerts["data"]["entities"]) < 1:
-                    demisto.results({"Error": "Could not retrieve any alerts - {0}".format(alerts["error"])})
+                    demisto.results("Could not retrieve any alerts - {0}".format(alerts["error"]))
                     exit(-1)
             except Exception as err:
-                demisto.results({"Error": "Error looking through alerts - {0}".format(err)})
+                demisto.error({"Error": "Error looking through alerts - {0}".format(err)})
                 exit(-1)
 
             #Find our specific alert by the id
@@ -1062,17 +1067,17 @@ script:
 
             #Only continue if we have found the alert information
             if alert is None:
-                demisto.results({"Error": "Could not locate alert with ID {0}".format(alertId)})
+                demisto.results("Could not locate alert with ID {0}".format(alertId))
                 exit(0)
 
 
             #Only continue if the alert has a related event
             try:
                 if not alert["eventId"] or not alert["eventTime"] or not alert["target"]:
-                    demisto.results({"Error": "The alert for ID {0} does not have the required fields to search for the event".format(alert["id"])})
+                    demisto.info({"Error": "The alert for ID {0} does not have the required fields to search for the event".format(alert["id"])})
                     exit(0)
             except Exception as err:
-                demisto.results({"Error": "Error getting event information from alert - {0}".format(err)})
+                demisto.error({"Error": "Error getting event information from alert - {0}".format(err)})
                 exit(-1)
 
             #Build our search date / time range
@@ -1125,20 +1130,20 @@ script:
 
             #Check to see if the call was successful or not
             if not events["success"]:
-                demisto.results({"Error": events["error"]})
+                demisto.error({"Error": events["error"]})
                 exit(0)
 
             #Check to see if we have any events
             if len(events["data"]["events"]) < 1:
-                demisto.results({"Error": "Could not find any events for the alert ID {0}".format(alertId)})
+                demisto.error({"Error": "Could not find any events for the alert ID {0}".format(alertId)})
                 exit(0)
 
             #Assign the events list to "events"
             try:
                 events = events["data"]["events"]
             except Exception as err:
-                demisto.results({"Error": err})
-                exit(0)
+                demisto.error({"Error": err})
+                exit(-1)
 
             #Check to see if our event is there
             possibleEvents = []
@@ -1151,8 +1156,8 @@ script:
                 event = possibleEvents[0]
 
             if not event:
-                demisto.results({"Error": "Could not find an event for alert ID".format(alertId)})
-                exit(0)
+                demisto.error({"Error": "Could not find an event for alert ID".format(alertId)})
+                exit(-1)
 
             if event:
                 newEvent = {}
@@ -1177,11 +1182,11 @@ script:
                 pass
 
             if thisIP is None and thisHostName is None:
-                demisto.results('Please provide at least an IP or hostname to lookup')
+                demisto.error('Please provide at least an IP or hostname to lookup')
                 sys.exit(-1)
 
             if thisIP and not is_ip_valid(thisIP):
-                demisto.results('The IP you provided does not seem to be valid \"{0}\"'.format(self.args["ip"]))
+                demisto.error('The IP you provided does not seem to be valid \"{0}\"'.format(self.args["ip"]))
                 sys.exit(-1)
 
             #Use hostname over IP for searching, if possible
@@ -1204,7 +1209,7 @@ script:
                     break
 
             if thisEndpoint is None:
-                demisto.results("Could not find endpoint with {0} containing {1}".format(searchField, searchValue))
+                demisto.info("Could not find endpoint with {0} containing {1}".format(searchField, searchValue))
                 exit(0)
             if thisEndpoint is not None:
                 md = "*Endpoint Information*\nHost Name|IP Address|Operating System|MAC Address|Agent Tag\n----------|----------|----------|----------|----------\n"
@@ -1222,7 +1227,7 @@ script:
                 alertId = demisto.get(demisto.context(), "alertId")
             if alertId is None:
                 demisto.results("No alert ID provided or found trying to find one")
-                exit(-1)
+                exit(0)
             deleteResult = self.fep.deleteAlert(alertId)
             if deleteResult["success"]:
                 demisto.results("Successfully deleted alert ID {0} from Fidelis Endpoint".format(alertId))
@@ -1282,19 +1287,19 @@ script:
                     thisScript = script
                     break
             if thisScript is None:
-                demisto.error("Could not located a file collection script suitable for {0}".format(self.args["hostname"]))
+                demisto.results("Could not located a file collection script suitable for {0}".format(self.args["hostname"]))
                 exit(0)
 
             #Get the script metadata
             metaData = self.fep.getScriptPackageMetaData(script["id"])
             if metaData is None:
-                demisto.error("Could not retrieve the metadata details of the script package with ID {0} ({1})".format(script["id"], script["name"]))
+                demisto.results("Could not retrieve the metadata details of the script package with ID {0} ({1})".format(script["id"], script["name"]))
                 exit(0)
 
             #Get the script manifest
             manifestData = self.fep.getScriptPackageManifest(script["id"])
             if manifestData is None:
-                demisto.error("Could not retrieve the manifest details of the script package with ID {0} ({1})".format(script["id"], script["name"]))
+                demisto.results("Could not retrieve the manifest details of the script package with ID {0} ({1})".format(script["id"], script["name"]))
                 exit(0)
 
             #Populate the script execution details with answers to questions
@@ -1327,7 +1332,7 @@ script:
             results = self.fep.getJobStatus(resultsID)
 
             if results["data"]["statusCode"] != 3:
-                demisto.error("The job executed with errors (or timed out) - {0}".format(results["data"]))
+                demisto.results("The job executed with errors (or timed out) - {0}".format(results["data"]))
                 exit(0)
 
             #Get our file from the results
@@ -1371,7 +1376,7 @@ script:
 
         def findByHashFileEvents(self):
             if len(self.args["hash"]) != 32:
-                demisto.error("Unknown hash type provided (not MD5)")
+                demisto.results("Unknown hash type provided (not MD5)")
                 exit(-1)
             now = datetime.now()
             end = now.strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -1389,7 +1394,7 @@ script:
                 demisto.results("Could not find any events")
                 exit(0)
             if not events["success"]:
-                demisto.results({"error": events["error"]})
+                demisto.error({"error": events["error"]})
                 exit(-1)
             if events["success"] and len(events["data"]["events"]) > 1:
                 data = []
@@ -1455,7 +1460,6 @@ script:
                     entries.append(entry)
                 demisto.results(entries)
                 exit(0)
-
 
 
     ##########################################################################################
