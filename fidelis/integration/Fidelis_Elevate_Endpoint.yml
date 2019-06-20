@@ -828,10 +828,12 @@ script:
             startDate = None
             endDate = None
 
-            #Try and assigne the date from the lastRun dict to the start date - We always want to end date to be now
+            #Try and assign the date from the lastRun dict to the start date - We always want to end date to be now
             try:
                 startDate = lastRun["date"]
+                demisto.debug("Last run date was {0}".format(lastRun["date"]))
             except:
+                demisto.debug("No last run date found")
                 now = datetime.now()
                 if self.params["firstdate"] == "unlimited":
                     startDate = None
@@ -847,6 +849,7 @@ script:
                 if self.params["firstdate"] == "5 days":
                     startDate = now - timedelta(days=5)
                     startDate = datetime.strftime(startDate, "%Y-%m-%dT%H:%M:%SZ")
+                demisto.debug("Using start date of {0}".format(startDate))
 
             #Create a marker for the alert ID
             latestAlertId = 0
@@ -854,7 +857,9 @@ script:
             #Try and assign the latest alert ID from the lastRun dict
             try:
                 latestAlertId = lastRun["id"]
+                demisto.debug("Last alert ID found was {0}".format(latestAlertId))
             except:
+                demisto.debug("There is no latest alert ID")
                 latestAlertId = 0
 
             #Create our incident list
@@ -867,13 +872,14 @@ script:
             latestInsertionDate = None
             try:
                 if not allAlerts["success"] or len(allAlerts["data"]["entities"]) < 1:
-                    demisto.info("No alerts found - {0}".format(alerts["error"]))
+                    demisto.debug("No new alerts found")
                     sys.exit(0)
             except Exception as err:
-                demisto.error({"Error": "No alerts found - {0}".format(err)})
-                sys.exit(0)
+                demisto.error("Error -{0}".format(err))
+                sys.exit(-1)
             allAlerts = allAlerts["data"]["entities"]
             if allAlerts is None:
+                demisto.debug("No new alerts found")
                 sys.exit(0)
             for alert in allAlerts:
                 if alert["id"] > latestAlertId:
@@ -1023,6 +1029,7 @@ script:
             demisto.setLastRun({'date': latestInsertionDate, "id": latestAlertId})
 
             # Create our incidents
+            demisto.debug("Found {0} new alerts".format(len(incidents)))
             demisto.incidents(incidents)
             sys.exit(0)
 
