@@ -654,8 +654,6 @@ script:
 
             #demisto.results({"tasklist": taskList})
 
-
-
         def camelToTitle(self, name):
             s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
             s2 = re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
@@ -854,20 +852,22 @@ script:
             except:
                 latestAlertId = 0
 
+            #Create our incident list
+            incidents = []
+
             #Gather all the alerts - 500 at a time and sort by their insertion date
             allAlerts = self.fep.searchAlerts({}, 500, startDate, endDate, "insertionDate+Ascending")
 
-            #Create our incident list
-            incidents = []
+
 
             #Create a marker for the latest alert insertion date
             latestInsertionDate = None
             try:
                 if not allAlerts["success"] or len(allAlerts["data"]["entities"]) < 1:
-                    demisto.results({"Error": "No alerts found - {0}".format(alerts["error"])})
+                    demisto.error({"Error": "No alerts found - {0}".format(alerts["error"])})
                     sys.exit(0)
             except Exception as err:
-                demisto.results({"Error": "No alerts found - {0}".format(err)})
+                demisto.error({"Error": "No alerts found - {0}".format(err)})
                 sys.exit(0)
             allAlerts = allAlerts["data"]["entities"]
             for alert in allAlerts:
@@ -1018,8 +1018,7 @@ script:
             demisto.setLastRun({'date': latestInsertionDate, "id": latestAlertId})
 
             # Create our incidents
-            if len(incidents) > 0:
-                demisto.incidents(incidents)
+            demisto.incidents(incidents)
             sys.exit(0)
 
         def getEventForAlert(self):
