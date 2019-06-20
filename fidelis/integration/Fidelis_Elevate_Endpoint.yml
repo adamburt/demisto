@@ -626,14 +626,34 @@ script:
                 self.fep.ignoressl = True
                 self.fep.checkURL = False
 
-        def populateTasks(self):
+        def getTasks(self):
             allTasks = self.fep.getAllTasks()
+            md = ""
             if allTasks["success"]:
+                md = "Name | Platforms(s) | Task Description\n--------- | ----------------- | ---------------"
                 taskList = []
                 for task in allTasks["data"]["scripts"]:
-                    if task["name"] not in taskList:
-                        taskList.append(task["name"])
-            demisto.results({"tasklist": taskList})
+                    meta = self.fep.getScriptPackageManifest(task["id"])
+                    if meta["success"]:
+                        meta = meta["data"]
+                        platforms = [x for x in meta["platforms"] if meta["platforms"][x] is True]
+                        platforms = ",".join(platforms)
+                    else:
+                        platforms = None
+                    md = "{0}\n{1} | {2} | {3}".format(md, task["name"], platforms, task["description"])
+
+
+                entry = {'Type' : entryTypes['note'],
+                'Contents': None,
+                'ContentsFormat' : None,
+                'HumanReadable': md,
+                'ReadableContentsFormat' : formats['markdown'],
+                'EntryContext' : None}
+                demisto.results(entry)
+
+
+            #demisto.results({"tasklist": taskList})
+
 
 
         def camelToTitle(self, name):
@@ -1480,8 +1500,8 @@ script:
         thisFunction.findByHashFileEvents()
     if demisto.command() == 'fidelis-edr-find-process-by-hash':
         thisFunction.findProcessByHash()
-    if demisto.command() == 'fidelis-edr-populate-tasks':
-        thisFunction.populateTasks()
+    if demisto.command() == 'fidelis-edr-get-tasks':
+        thisFunction.getTasks()
     ##########################################################################################
 
 
@@ -1585,13 +1605,12 @@ script:
       description: Only return 1 event per endpoint hostname
       defaultValue: "False"
     description: Finds executions of a process that matches an MD5 or SHA1 hash
-  - name: fidelis-edr-populate-tasks
+  - name: fidelis-edr-get-tasks
     arguments: []
     outputs:
     - contextPath: Fidelis Tasks
       description: A list of tasks available in the Fidelis Endpoint Platform
-    description: Populates the list named "Fidelis Tasks" with an update to date list
-      from the Fidelis Endpoint Platform
+    description: Obtains a list of available tasks
   dockerimage: demisto/python3:3.7.3.221
   isfetch: true
   runonce: false
