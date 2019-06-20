@@ -5,7 +5,8 @@ name: Fidelis Elevate Endpoint
 display: Fidelis Elevate Endpoint
 category: Endpoint
 image: data:image/png;base64,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
-description: Fidelis Elevate Endpoint integration
+description: Fidelis Elevate Endpoint integration. Can pull alerts from Fidelis Elevate
+  Endpoint Platform and also perform (optional) event enrichment for them.
 detaileddescription: "***Fidelis Endpoint EDR Platform***\n\n**Overview**\nThis integration
   allows for the retrieval of alerts from the Fidelis Endpoint Platform (with optional
   event enrichment). It allows the execution of several commands for event and evidence
@@ -1526,14 +1527,19 @@ script:
     outputs:
     - contextPath: hostName
       description: The host name of the endpoint
+      type: string
     - contextPath: hostIP
       description: The current IP address of the endpoint
+      type: string
     - contextPath: hostOS
       description: The Operating System of the endpoint
+      type: string
     - contextPath: agentTag
       description: The Agent tag of the endpoint
+      type: string
     - contextPath: macAddress
       description: MAC Address of the endpoint
+      type: string
     description: Retrieves information about an endpoint, if there is a Fidelis Endpoint
       agent installed.
   - name: fidelis-edr-get-event-for-alert
@@ -1545,7 +1551,7 @@ script:
   - name: fidelis-edr-delete-alert
     arguments:
     - name: alertId
-    description: Deletes and alert from the Fidelis Endpoint Platform
+    description: Deletes the alert from the Fidelis Elevate Endpoint Platform
     execution: true
   - name: fidelis-edr-collect-file
     arguments:
@@ -1558,8 +1564,8 @@ script:
     - name: timeout
       description: Timeout (in seconds) for the job to execute
       defaultValue: "300"
-    description: Attempts to collect a file from an endpoint that has the Fidelis
-      Endpoint Agent installed
+    description: Attempts to collect a file from an endpoint using the Fidelis Endpoint
+      Agent.
   - name: fidelis-edr-find-hash-event
     arguments:
     - name: hash
@@ -1585,7 +1591,8 @@ script:
     - contextPath: Fidelis.EDR.Filedata
       description: Files found
       type: string
-    description: Searches for a file event that contains a file hash
+    description: Searches file events on the FIdelis Elevate Endpoint Plaform that
+      matches the hash provided.
   - name: fidelis-edr-find-process-by-hash
     arguments:
     - name: hash
@@ -1614,13 +1621,14 @@ script:
       - "False"
       description: Only return 1 event per endpoint hostname
       defaultValue: "False"
-    description: Finds executions of a process that matches an MD5 or SHA1 hash
+    description: Finds executions of a process that matches an MD5 hash
   - name: fidelis-edr-get-tasks
     arguments: []
     outputs:
     - contextPath: Fidelis Tasks
       description: A list of tasks available in the Fidelis Endpoint Platform
-    description: Obtains a list of available tasks
+    description: Obtains a list of available tasks from the Fidelis Elevate Endpoint
+      Platform
   dockerimage: demisto/python3:3.7.3.221
   isfetch: true
   runonce: false
