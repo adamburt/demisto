@@ -1,6 +1,6 @@
 commonfields:
   id: e7d4bf91-e3b2-4a06-8d0d-b89995c8abea
-  version: 60
+  version: 72
 name: FidelisPopulateTasks
 script: |
   # No constant and mandatory arguments
@@ -58,7 +58,6 @@ dependson:
   must: []
   should:
   - '|||fidelis-edr-populate-tasks'
-  - Fidelis Elevate Endpoint|||fidelis-edr-populate-tasks
 timeout: 60ns
 runonce: false
 dockerimage: demisto/python3:3.7.3.221
