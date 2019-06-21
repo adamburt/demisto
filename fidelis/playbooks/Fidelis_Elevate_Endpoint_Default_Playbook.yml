@@ -1,5 +1,5 @@
 id: f2426207-2357-4636-8e78-a7d0c861c0a6
-version: 2
+version: 3
 name: Fidelis Elevate Endpoint Default Playbook
 starttaskid: "0"
 tasks:
@@ -1737,10 +1737,10 @@ tasks:
     ignoreworker: false
   "34":
     id: "34"
-    taskid: 4bb40394-5dd0-46b5-8f52-9ce5f14d4583
+    taskid: 2c6ca8b4-1caf-41e7-8303-757e07a65de1
     type: collection
     task:
-      id: 4bb40394-5dd0-46b5-8f52-9ce5f14d4583
+      id: 2c6ca8b4-1caf-41e7-8303-757e07a65de1
       version: -1
       name: Ask to Close incident and alert
       type: collection
@@ -1768,6 +1768,7 @@ tasks:
       body: null
       methods:
       - slack
+      - email
       format: ""
       bcc: null
       cc: null
@@ -2023,10 +2024,10 @@ tasks:
     ignoreworker: false
   "47":
     id: "47"
-    taskid: 57924214-8c32-4ea7-84ac-2e683af5385c
+    taskid: e91f1682-77bf-4d4c-80a4-7e0cf9c2e109
     type: regular
     task:
-      id: 57924214-8c32-4ea7-84ac-2e683af5385c
+      id: e91f1682-77bf-4d4c-80a4-7e0cf9c2e109
       version: -1
       name: Ask Slack users about closing the incident
       description: Send a message to a slack user, group or channel
@@ -2132,10 +2133,10 @@ tasks:
     ignoreworker: false
   "54":
     id: "54"
-    taskid: 20ea9872-55db-4a15-8920-269e4d9bd698
+    taskid: 3dcfe8b9-38a7-4311-87c1-f41b0b0db733
     type: condition
     task:
-      id: 20ea9872-55db-4a15-8920-269e4d9bd698
+      id: 3dcfe8b9-38a7-4311-87c1-f41b0b0db733
       version: -1
       name: Ask assignment by type
       description: "Gets a value and return it. This is to be used in playbook conditional
@@ -2184,6 +2185,7 @@ tasks:
           Please select the assignment type for the incident:
       methods:
       - email
+      - slack
       format: ""
       bcc: null
       cc: null
@@ -2551,10 +2553,10 @@ tasks:
     ignoreworker: false
   "66":
     id: "66"
-    taskid: c6aa3597-a4b6-4872-819c-946ef9038ec3
+    taskid: 4431b60a-e82d-4b18-822c-8c0aac8fc124
     type: condition
     task:
-      id: c6aa3597-a4b6-4872-819c-946ef9038ec3
+      id: 4431b60a-e82d-4b18-822c-8c0aac8fc124
       version: -1
       name: Create a private Slack channel?
       description: Extract user's response from EmailAskUser reply. Returns the first
@@ -2592,6 +2594,7 @@ tasks:
           channel?"
       methods:
       - email
+      - slack
       format: ""
       bcc: null
       cc: null

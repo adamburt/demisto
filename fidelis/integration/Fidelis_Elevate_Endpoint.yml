@@ -1015,7 +1015,6 @@ script:
                                 for key in event:
                                     if key not in eventIgnoreList:
                                         field = self.camelToTitle(key)
-                                        #field = "fidelis-edr-event-{0}".format(key)
                                         combined[field] = event[key]
                                 combined["Fidelis Event Found"] = True
 
@@ -1050,7 +1049,13 @@ script:
 
             if alertId is None:
                 try:
-                    alertId = demisto.get(demisto.context(), "alertId")
+                    alertId = demisto.get(demisto.context(), "Alert ID")
+                except:
+                    alertId = None
+
+            if alertId is None:
+                try:
+                    alertId = demisto.get(demisto.context(), "incident.labels.Id")
                 except:
                     alertId = None
 
