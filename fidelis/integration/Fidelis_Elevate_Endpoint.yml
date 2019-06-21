@@ -63,7 +63,7 @@ script:
     from datetime import timedelta
     import time
     import io
-    import re
+    #import re
 
     class fidelisEndpoint:
 
@@ -631,7 +631,6 @@ script:
                 self.checkURL = False
             self.fep = fidelisEndpoint(self.params["ip"], self.params["authentication"]["identifier"], self.params["authentication"]["password"], self.ignoressl, self.checkURL)
 
-
         def getTasks(self):
             allTasks = self.fep.getAllTasks()
             md = ""
@@ -661,11 +660,15 @@ script:
             #demisto.results({"tasklist": taskList})
 
         def camelToTitle(self, name):
-            s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
-            s2 = re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
-            s3 = s2.replace("_", " ")
-            s4 = s3.title()
-            return s4
+            underscore = camel_case_to_underscore(name)
+            spaces = underscore.replace("_", " ")
+            title = spaces.title()
+            return title
+            #s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+            #s2 = re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+            #s3 = s2.replace("_", " ")
+            #s4 = s3.title()
+            #return s4
 
         def findProcessByHash(self):
             #Set some default values
@@ -1031,6 +1034,8 @@ script:
 
             # Create our incidents
             demisto.debug("Found {0} new alerts".format(len(incidents)))
+            if len(incidents) < 1:
+                sys.exit(0)
             demisto.incidents(incidents)
             sys.exit(0)
 
