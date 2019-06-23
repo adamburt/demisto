@@ -1,0 +1,1416 @@
+id: 94bd585b-ad64-4a47-80d1-1a4f7f9dff5e
+version: 46
+name: File Submission
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6fd05c3f-a7ac-41b0-80cd-875443c20d7d
+    type: start
+    task:
+      id: 6fd05c3f-a7ac-41b0-80cd-875443c20d7d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: eaff670e-b204-4259-8582-a62c0cfca592
+    type: condition
+    task:
+      id: eaff670e-b204-4259-8582-a62c0cfca592
+      version: -1
+      name: Is the e-mail from a validate sender?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: labels.Email/from
+            iscontext: true
+          right:
+            value:
+              simple: lists.Allowed_spam_submision_email_addresses
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 8a998aed-35ef-4b21-8561-04966295b6d2
+    type: regular
+    task:
+      id: 8a998aed-35ef-4b21-8561-04966295b6d2
+      version: -1
+      name: Close the incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason:
+        simple: The sender was not in the allowed senders list
+      id:
+        simple: ${incident.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: ad79866a-243d-4150-8999-429d2aa55270
+    type: condition
+    task:
+      id: ad79866a-243d-4150-8999-429d2aa55270
+      version: -1
+      name: Are there any compressed attachments?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "38"
+      7zip:
+      - "12"
+      zip:
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: zip
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: File.Extension
+            iscontext: true
+          right:
+            value:
+              simple: zip
+    - label: 7zip
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: File.Extension
+            iscontext: true
+          right:
+            value:
+              simple: 7z
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 231662cb-b93f-45ba-856b-4fa506a270be
+    type: regular
+    task:
+      id: 231662cb-b93f-45ba-856b-4fa506a270be
+      version: -1
+      name: Uncompress zip attachments
+      description: Unzip a file using fileName or entryID to specify a file. Files
+        unzipped will be pushed to the war room and names will be pushed to the context.
+      scriptName: UnzipFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      entryID:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: zip
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: 7z
+          accessor: EntryID
+      fileName: {}
+      lastZipFileInWarroom: {}
+      password:
+        simple: '{ENCRYPTED}IJRLsgvpCsAz2a5X8lQljR82r3M+fAlntqipDtQGQjOljzImXAq0gpBWHZCr0HoLsE+N288n2MxykfldS7fQCw=='
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: f8b90964-6ea2-4634-8696-705fe7e515f2
+    type: regular
+    task:
+      id: f8b90964-6ea2-4634-8696-705fe7e515f2
+      version: -1
+      name: Uncompress 7zip attachments
+      description: Unzip a file using fileName or entryID to specify a file. Files
+        unzipped will be pushed to the war room and names will be pushed to the context.
+      scriptName: UnzipFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      entryID:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: zip
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: 7z
+          accessor: EntryID
+      fileName: {}
+      lastZipFileInWarroom: {}
+      password:
+        simple: '{ENCRYPTED}dgaGCnESnkc2akJFJGsbU7g6WOBrXNOiKaAci9ot5I9B0w0acnCUyQ1utyk/Ab6t6aUxwa72+EKO5hxvoIi6Ng=='
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 1a812009-f3f2-4707-8e36-c299eb7e872d
+    type: regular
+    task:
+      id: 1a812009-f3f2-4707-8e36-c299eb7e872d
+      version: -1
+      name: Submit the file to VT
+      script: VirusTotal|||file-scan
+      type: regular
+      iscommand: true
+      brand: VirusTotal
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      entryID:
+        simple: ${File.EntryID}
+      uploadURL: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 694f3e43-86a0-4291-8c2e-7dff8af4f4a8
+    type: regular
+    task:
+      id: 694f3e43-86a0-4291-8c2e-7dff8af4f4a8
+      version: -1
+      name: Sleep for 2 minuntes
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      seconds:
+        simple: "120"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 42a8ba91-34db-4a87-8853-db5d0dd770b8
+    type: regular
+    task:
+      id: 42a8ba91-34db-4a87-8853-db5d0dd770b8
+      version: -1
+      name: Inform sender there were good
+      description: |-
+        Send an email with the specified parameters.
+        Attachments are provided as a comma-separated list of entry IDs.
+        Example usage: !SendEmail subject="File from war room" body="Please see the attached file. --DBot" to=jane@acme.com cc=john@acme.com attachIDs=89@3,46@3
+      scriptName: SendEmail
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+      - "29"
+    scriptarguments:
+      attachIDs:
+        simple: ${Report.FileID}
+      bcc: {}
+      body:
+        simple: |-
+          Your recent e-mail entitled "${incident.emailsubject}" did not contain any malicious attachments. We scanned the following files:
+
+          ${File.Name}
+
+
+          Thank you for your submission. Remain vigilant.
+
+
+          Regards
+
+          dfir.co.uk
+      cc: {}
+      htmlBody: {}
+      noteEntryID: {}
+      replyTo: {}
+      subject:
+        simple: Your e-mail did not contain any malicious attachments
+      to:
+        complex:
+          root: incident
+          accessor: labels.Email/from
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 3315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: c11607fc-9ecc-43f1-808b-cc2e1f400323
+    type: regular
+    task:
+      id: c11607fc-9ecc-43f1-808b-cc2e1f400323
+      version: -1
+      name: Inform sender there were bad files
+      description: |-
+        Send an email with the specified parameters.
+        Attachments are provided as a comma-separated list of entry IDs.
+        Example usage: !SendEmail subject="File from war room" body="Please see the attached file. --DBot" to=jane@acme.com cc=john@acme.com attachIDs=89@3,46@3
+      scriptName: SendEmail
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+      - "29"
+    scriptarguments:
+      attachIDs:
+        simple: ${Report.FileID}
+      bcc: {}
+      body:
+        complex:
+          root: File
+          filters:
+          - - operator: greaterThan
+              left:
+                value:
+                  simple: File.Malicious.Detections
+                iscontext: true
+              right:
+                value:
+                  simple: "10"
+          accessor: Name
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: |-
+                    Your recent e-mail entitled "${incident.emailsubject}" contained malicious attachments. We scanned the following files and found them malicious:
+
+                    "
+              suffix:
+                value:
+                  simple: |+
+                    "
+
+
+
+                    Thank you for your submission. Remain vigilant.
+
+
+                    Regards
+
+                    dfir.co.uk
+
+      cc: {}
+      htmlBody: {}
+      noteEntryID: {}
+      replyTo: {}
+      subject:
+        simple: Your e-mail contained malicious attachments
+      to:
+        complex:
+          root: incident
+          accessor: labels.Email/from
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 3315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: 2f293a93-b6e4-4823-8e5d-ffaabbcf9f92
+    type: title
+    task:
+      id: 2f293a93-b6e4-4823-8e5d-ffaabbcf9f92
+      version: -1
+      name: Start User response SLA
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: userresponse
+      action: start
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: 205bd8db-c0d1-42b1-84d4-3f388232b5b8
+    type: title
+    task:
+      id: 205bd8db-c0d1-42b1-84d4-3f388232b5b8
+      version: -1
+      name: Stop user response SLA
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3505
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: userresponse
+      action: stop
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: f14e14b9-52c2-456b-87bd-8ab910a80ec4
+    type: regular
+    task:
+      id: f14e14b9-52c2-456b-87bd-8ab910a80ec4
+      version: -1
+      name: Investigate further
+      description: Investigate the results of the execution
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: false
+    sla:
+      hours: 0
+      days: 5
+      weeks: 0
+    slareminder:
+      hours: 0
+      days: 3
+      weeks: 0
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 3665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: 6f337fba-6fc1-4c78-8883-82c9592c3508
+    type: condition
+    task:
+      id: 6f337fba-6fc1-4c78-8883-82c9592c3508
+      version: -1
+      name: Are there any .eml or .msg attachments?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: File.Extension
+            iscontext: true
+          right:
+            value:
+              simple: eml
+        - operator: isEqualString
+          left:
+            value:
+              simple: File.Extension
+            iscontext: true
+          right:
+            value:
+              simple: msg
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: f2b881d1-3c31-476a-83ee-7ec72dac5a1a
+    type: condition
+    task:
+      id: f2b881d1-3c31-476a-83ee-7ec72dac5a1a
+      version: -1
+      name: Identify EML or MSG attachments
+      description: Identify whether the incident includes an email message attached
+        as an eml or msg file and return the answer to playbook. Also saves the identified
+        entry ID to context for use by later scripts such as  ParseEmailFile. Commonly
+        used in automated playbooks that handle phishing reports sent to a special
+        phishing mailbox set up by the security team.
+      scriptName: IdentifyAttachedEmail
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "4"
+      "yes":
+      - "28"
+    results:
+    - reportedemailentryid
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: c7cfb7d8-0131-431e-8c4c-90d568388e09
+    type: regular
+    task:
+      id: c7cfb7d8-0131-431e-8c4c-90d568388e09
+      version: -1
+      name: Parse Email File Attachments
+      description: Parse an email from an eml or msg file and populate all relevant
+        context data to investigate the email. Also extracts inner attachments and
+        returns them to the war room. The incident labels themselves are preserved
+        and not modified - only the "Label/x" context items that originated from the
+        labels, and the best practice is to rely on these for the remainder of the
+        playbook.
+      scriptName: ParseEmailFiles
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      entryid:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: eml
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: msg
+          accessor: EntryID
+      max_depth: {}
+      parse_only_headers:
+        simple: "false"
+    results:
+    - AttachmentName
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 865
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: This evidence contians any attachments that are .eml or .msg
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: 3abe9956-1337-47d7-872c-f49950109d8f
+    type: regular
+    task:
+      id: 3abe9956-1337-47d7-872c-f49950109d8f
+      version: -1
+      name: Assign an owner
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      assignBy:
+        simple: top-user
+      email: {}
+      roles: {}
+      username: {}
+    separatecontext: false
+    defaultassigneecomplex:
+      simple: adam.burt
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 3490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "30":
+    id: "30"
+    taskid: b721e782-f7e8-4c74-8a61-82857016349c
+    type: collection
+    task:
+      id: b721e782-f7e8-4c74-8a61-82857016349c
+      version: -1
+      name: Close Incident
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 3840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Analyst
+      subject: null
+      body: null
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: OK to close the incident with ID ${incident.id}?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - "Yes"
+        - "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Reason for closure
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+      title: Close Incident
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+  "31":
+    id: "31"
+    taskid: 40ee70c8-5da6-42ab-8adc-64c7b142bf7c
+    type: regular
+    task:
+      id: 40ee70c8-5da6-42ab-8adc-64c7b142bf7c
+      version: -1
+      name: Close Incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason:
+        simple: ${Close Incident.Answers.1}
+      id:
+        simple: ${incident.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 4015
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "32":
+    id: "32"
+    taskid: d6510fa6-fbc1-4b68-8eab-cad8b3c547b8
+    type: collection
+    task:
+      id: d6510fa6-fbc1-4b68-8eab-cad8b3c547b8
+      version: -1
+      name: Ask to submit the files to VT
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Analyst,Administrator
+      subject:
+        simple: File submission to VirusTotal
+      body: {}
+      methods:
+      - email
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Would you like to submit files (${File.Name}) to VirtusTotal?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - "Yes"
+        - "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Please ensure the file does not contain ant sensitive information
+          as it will be made public in the VirusTotal database. This will go for approval
+          before a file is submitted.
+      title: Submission of files to VirusTotal
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+  "33":
+    id: "33"
+    taskid: d5029cb6-2dbd-44bb-8766-8528c1499a8e
+    type: condition
+    task:
+      id: d5029cb6-2dbd-44bb-8766-8528c1499a8e
+      version: -1
+      name: Did the user want to submit?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "45"
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Submission of files to VirusTotal.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+    - label: "no"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Submission of files to VirusTotal.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "No"
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "34":
+    id: "34"
+    taskid: cd9ef803-996b-4017-8955-5ad68728e201
+    type: regular
+    task:
+      id: cd9ef803-996b-4017-8955-5ad68728e201
+      version: -1
+      name: Inform sender we were unsure about the files
+      description: |-
+        Send an email with the specified parameters.
+        Attachments are provided as a comma-separated list of entry IDs.
+        Example usage: !SendEmail subject="File from war room" body="Please see the attached file. --DBot" to=jane@acme.com cc=john@acme.com attachIDs=89@3,46@3
+      scriptName: SendEmail
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+      - "29"
+    scriptarguments:
+      attachIDs:
+        simple: ${Report.FileID}
+      bcc: {}
+      body:
+        complex:
+          root: File
+          filters:
+          - - operator: greaterThan
+              left:
+                value:
+                  simple: File.Malicious.Detections
+                iscontext: true
+              right:
+                value:
+                  simple: "10"
+          accessor: Name
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: |-
+                    Your recent e-mail entitled "${incident.emailsubject}" was found to be inconclusive. We are still investigating the following files:
+
+                    "
+              suffix:
+                value:
+                  simple: |-
+                    "
+
+
+                    Thank you for your submission. Remain vigilant.
+
+
+                    Regards
+
+                    dfir.co.uk
+      cc: {}
+      htmlBody: {}
+      noteEntryID: {}
+      replyTo: {}
+      subject:
+        simple: Your e-mail is under investigation
+      to:
+        complex:
+          root: incident
+          accessor: labels.Email/from
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 3315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "37":
+    id: "37"
+    taskid: 4cea222e-d76a-496d-89eb-4dba483ae220
+    type: condition
+    task:
+      id: 4cea222e-d76a-496d-89eb-4dba483ae220
+      version: -1
+      name: Are there any malicious files?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "32"
+      "no":
+      - "43"
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: File(val.Malicious).MD5
+            iscontext: true
+    - label: "no"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: File(val.Malicious).MD5
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "38":
+    id: "38"
+    taskid: 65c50b9b-dcb2-44b3-8dbc-0c8a0f89f549
+    type: regular
+    task:
+      id: 65c50b9b-dcb2-44b3-8dbc-0c8a0f89f549
+      version: -1
+      name: Check MD5 in VT
+      description: Check file reputation of the given hash
+      script: VirusTotal|||file
+      type: regular
+      iscommand: true
+      brand: VirusTotal
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      file:
+        simple: ${File.MD5}
+      long: {}
+      retries: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1390
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: This eividence item shows any attachments that were found on VirusTotal
+          and its indicator state.
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+  "39":
+    id: "39"
+    taskid: 3e84d350-185b-4b41-8e97-cd84e3ad1e25
+    type: regular
+    task:
+      id: 3e84d350-185b-4b41-8e97-cd84e3ad1e25
+      version: -1
+      name: Check MD5 in VT
+      description: Check file reputation of the given hash
+      script: VirusTotal|||file
+      type: regular
+      iscommand: true
+      brand: VirusTotal
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      file:
+        simple: ${File.MD5}
+      long: {}
+      retries: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 2790
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: This eividence item shows any attachments that were found on VirusTotal
+          and its indicator state.
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+  "40":
+    id: "40"
+    taskid: 1a8d8d59-e1e5-4de2-80b4-ec64a0688630
+    type: condition
+    task:
+      id: 1a8d8d59-e1e5-4de2-80b4-ec64a0688630
+      version: -1
+      name: Are there any malicious files?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "45"
+      "no":
+      - "43"
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: File(val.Malicious).MD5
+            iscontext: true
+    - label: "no"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: File(val.Malicious).MD5
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 2965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "41":
+    id: "41"
+    taskid: d06f1d41-da53-4a42-8b84-9dd15f67f9a6
+    type: collection
+    task:
+      id: d06f1d41-da53-4a42-8b84-9dd15f67f9a6
+      version: -1
+      name: Seek approval
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: VirusTotal Upload Admin
+      subject:
+        simple: Approval for file "${incident.filename}" to be uploaded to VirusTotal
+      body:
+        simple: A user (${Submission of files to VirusTotal.Answers.name}) would like
+          to submit a file to VirusTotal
+      methods:
+      - email
+      - slack
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Submit ${incident.filename} to VirusTotal?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - Deny
+        - Approve
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+      title: Confirm submission
+      description: Please confirm or deny the submission
+      sender: ""
+      expired: false
+      totalanswers: 0
+  "42":
+    id: "42"
+    taskid: 85f9755d-dce8-4def-8a37-8a1738c53b9b
+    type: condition
+    task:
+      id: 85f9755d-dce8-4def-8a37-8a1738c53b9b
+      version: -1
+      name: Submit?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "45"
+      approve:
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: approve
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Confirm submission.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Approve
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "43":
+    id: "43"
+    taskid: 3c9cfce7-32bb-4d67-8c8c-ef88c330df2a
+    type: regular
+    task:
+      id: 3c9cfce7-32bb-4d67-8c8c-ef88c330df2a
+      version: -1
+      name: Generate Investigation Report
+      description: |-
+        A script to generate investigation summary report in an automated way
+        Can be used in post-processing flow as well.
+      scriptName: GenerateInvestigationSummaryReport
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      incidentId:
+        simple: ${incident.id}
+      name:
+        simple: Investigation Summary
+      type:
+        simple: pdf
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 3140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "44":
+    id: "44"
+    taskid: b605bb74-5048-4cab-8f32-6685791d6d6f
+    type: regular
+    task:
+      id: b605bb74-5048-4cab-8f32-6685791d6d6f
+      version: -1
+      name: Generate Investigation Report
+      description: |-
+        A script to generate investigation summary report in an automated way
+        Can be used in post-processing flow as well.
+      scriptName: GenerateInvestigationSummaryReport
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      incidentId:
+        simple: ${incident.id}
+      name:
+        simple: Investigation Summary
+      type:
+        simple: pdf
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 3140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "45":
+    id: "45"
+    taskid: 1f125649-1fa2-4b54-874f-d1cf020eb11a
+    type: regular
+    task:
+      id: 1f125649-1fa2-4b54-874f-d1cf020eb11a
+      version: -1
+      name: Generate Investigation Report
+      description: |-
+        A script to generate investigation summary report in an automated way
+        Can be used in post-processing flow as well.
+      scriptName: GenerateInvestigationSummaryReport
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      incidentId:
+        simple: ${incident.id}
+      name:
+        simple: Investigation Summary
+      type:
+        simple: pdf
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 3140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "37_43_no": 0.83
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4060,
+        "width": 1270,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
