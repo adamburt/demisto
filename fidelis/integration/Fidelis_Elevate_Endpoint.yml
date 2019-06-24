@@ -79,7 +79,6 @@ script:
             self.authToken = self.getAuthToken(self.username, self.password)
             self.headers = {"Content-Type": "application/json;charset=UTF-8", "Authorization": "bearer {0}".format(self.authToken)}
 
-
         def getAuthToken(self, username, password):
             url = "{0}/authenticate?username={1}&password={2}".format(self.baseURL, quote(username), quote(password))
             if self.ignoressl:
@@ -230,6 +229,30 @@ script:
                 self.lastError = err
                 return None
 
+        def getScriptJobResult(self, jobResultId):
+            url = "{0}/jobresults/scriptjob_{1}".format(self.baseURL, jobResultId)
+            if self.ignoressl:
+                requests.packages.urllib3.disable_warnings()
+            newHeaders = self.headers
+            try:
+                r = requests.post(url, headers = newHeaders, verify=self.checkURL)
+                if type(r.content) == bytes:
+                    rData = json.loads(r.content.decode("utf-8"))
+                else:
+                    rData = json.loads(r.content)
+                return rData
+            except Exception as err:
+                return {"success": False, "error": err}
+
+        def getScriptJobTargets(self, jobResultId):
+            url = "{0}/jobs/getjobtargets/{1}".format(self.baseURL, jobResultId)
+            data = self.__findWithSearchCriteria__(url, None, None)
+            try:
+                return data
+            except Exception as err:
+                return {"success": False, "error": err}
+
+
         def getScriptPackageManifest(self, packageId):
             url = "{0}/packages/{1}?type=Manifest".format(self.baseURL, packageId)
             if self.ignoressl:
@@ -249,6 +272,15 @@ script:
             except Exception as err:
                 self.lastError = err
                 return None
+
+        def getScriptPackageTemplate(self, packageId):
+            url = "{0}/packages/{1}?type=Template".format(self.baseURL, packageId)
+            data = self.__findWithSearchCriteria__(url, None, None)
+            try:
+                return data
+            except Exception as err:
+                self.lastError = err
+                return {"success": False, "error": err}
 
         def getAllEndpoints(self, limit):
             url = "{0}/endpoints/0/{1}/hostname".format(self.baseURL, limit)
@@ -528,6 +560,21 @@ script:
                 except Exception as err:
                     self.lastError = err
                     return None
+
+        def executeScriptPackage(self, scriptPackageId, endpoints, questions, timeout):
+            url = "{0}/packages/{1}/execute".format(self.baseURL, scriptPackageId)
+            newHeaders = self.headers
+            newHeaders["Content-Type"] = "application/json"
+            bodyRequest = {"timeoutInSeconds": timeout, "scriptPackageId": scriptPackageId, "hosts": endpoints, "integrationOutputs": [], "questions": questions}
+            try:
+                r = requests.post(url, data = json.dumps(bodyRequest), headers = newHeaders, verify=self.checkURL)
+                if type(r.content) == bytes:
+                    rData = json.loads(r.content.decode("utf-8"))
+                else:
+                    rData = json.loads(r.content)
+                return rData
+            except Exception as err:
+                return {"success": False, "error": err}
 
         def executeSingleScript(self, scriptID, scriptOptions):
             url = "{0}/jobs/createTask".format(self.baseURL)
@@ -1392,6 +1439,174 @@ script:
                 exit(-1)
             exit(0)
 
+        def executeTask(self, hostname, taskName, inputQuestions, timeoutInSeconds):
+
+            #Set the timeout to integer, just in case
+            timeoutInSeconds = int(timeoutInSeconds)
+
+            #Get the host data
+            endpoint = self.fep.getEndpointFromHostname(hostname)
+            if endpoint is None:
+                demisto.results("Could not find a Fidelis Endpoint agent installed for hostname '{0}'".format(hostname))
+                exit(0)
+
+            #Get the list of available tasks
+            tasks = self.fep.getAllTasks()
+            try:
+                if tasks["success"] is not True:
+                    demisto.results("Could not obtain a list of tasks - {0}".format(tasks["error"]))
+                    exit(0)
+            except Exception as err:
+                demisto.results("Could not obtain a list of tasks - {0}".format(err))
+                exit(-1)
+
+            #Find the processes task
+            potentialTasks = []
+            processTask = None
+            manifest = None
+            for task in tasks["data"]["scripts"]:
+                if task["name"] == taskName:
+                    potentialTasks.append(task)
+            if len(potentialTasks) < 1:
+                demisto.results("Could not find a task to list processes")
+                exit(0)
+
+            #For each of our potential tasks, get the metadata to match against the endpoint type
+            for task in potentialTasks:
+                thisManifest = self.fep.getScriptPackageManifest(task["id"])
+                try:
+                    if not thisManifest["success"]:
+                        continue
+                    platforms = thisManifest["data"]["platforms"]
+
+                    #If the endpoint is windows 64-bit
+                    if endpoint["osType"] == 1 and endpoint["osArch"] == 2 and platforms["windows64"]:
+                        processTask = task
+                        manifest = thisManifest
+                        break
+                    #If the endpoint is windows 32-bit
+                    if endpoint["osType"] == 1 and endpoint["osArch"] == 1 and platforms["windows32"]:
+                        processTask = task
+                        manifest = thisManifest
+                        break
+                    #If the endpoint is Linux 64-bit
+                    if endpoint["osType"] == 2 and endpoint["osArch"] == 2 and platforms["linux64"]:
+                        processTask = task
+                        manifest = thisManifest
+                        break
+                    #If the endpoint is Linux 32-bit
+                    if endpoint["osType"] == 2 and endpoint["osArch"] == 1 and platforms["linux32"]:
+                        processTask = task
+                        manifest = thisManifest
+                        break
+                    #If the endpoint is Mac 64-bit
+                    #There is no Mac Version yet
+                except:
+                    pass
+            if processTask is None:
+                demisto.results("Could not find a task to list processes")
+                exit(0)
+
+            #Get the package template for the task
+            template = self.fep.getScriptPackageTemplate(task["id"])
+
+            try:
+                if not template["success"]:
+                    demisto.results("Error getting script template - {0}".format(tempalte["error"]))
+                    error(0)
+            except Exceptin as err:
+                demisto.results("Error getting script template - {0}".format(err))
+                exit(-1)
+
+            for key in inputQuestions:
+                if key == "last":
+                    lastOption = len(manifest["data"]["questions"])
+                    template["data"]["questions"][str(lastOption)] = inputQuestions[key]
+
+            for key in inputQuestions:
+                if key != "last" and key != "first":
+                    try:
+                        template["data"]["questions"][key] = inputQuestions[key]
+                    except:
+                        pass
+
+            #Execute the task
+            questions = template["data"]["questions"]
+            scriptId = task["id"]
+            endpoints = [endpoint["ipAddress"]]
+            result = self.fep.executeScriptPackage(scriptId, endpoints, questions, timeoutInSeconds)
+
+            #Check it executed successfully
+            try:
+                if not result["success"]:
+                    demisto.results("Could not execute task - {0}".format(result["error"]))
+                    exit(0)
+            except Exception as err:
+                demisto.results("Could not execute task - {0}".format(err))
+                exit(-1)
+
+            #Get the jobId and resultsId
+            jobId = result["data"]["jobId"]
+            jobResultId = result["data"]["jobResultId"]
+
+
+            #Wait until the endpoint has complete
+            counter = 0
+            okToContinue = False
+            while not okToContinue and counter < timeoutInSeconds:
+
+                #Get job targets
+                jobTargets = self.fep.getScriptJobTargets(jobResultId)
+                try:
+                    if not jobTargets["success"]:
+                        demisto.results("Cannot obtain a list of targets for the executed job - {0}".format(jobTargets["error"]))
+                        exit(0)
+                except Exception as err:
+                    demisto.results("Cannot obtain a list of targets for the executed job - {0}".format(err))
+                    exit(-1)
+
+                #Ensure each target has completed
+                if len(jobTargets["data"]["targets"]) > 1:
+                    for target in jobTargets["data"]["targets"]:
+                        if target["status"].lower() != "completed":
+                            okToContinue = False
+                        else:
+                            okToContinue = True
+                else:
+                    okToContinue = False
+                time.sleep(1)
+                counter += 1
+
+            #Wait untilt he results populate in the job too
+            okToContinue = False
+            while not okToContinue:
+                jobResult = self.fep.getScriptJobResult(jobResultId)
+                try:
+                    if not jobResult["success"] and len(jobResult["data"]["columns"]) < 1:
+                        okToContinue = False
+                    else:
+                        okToContinue = True
+                except:
+                    okToContinue = False
+
+            columns = jobResult["data"]["columns"]
+            columns [:] = (x for x in columns if "_" not in x)
+
+            entries = []
+            for item in jobResult["data"]["hits"]["hits"]:
+                entry = {}
+                for k in columns:
+                    try:
+                        entry[k] = item["_source"][k]
+                    except:
+                        entry[k] = ""
+                entries.append(entry)
+            for e in entries:
+                demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': e})
+            if len(entries) < 1:
+                demisto.results("No results received")
+            exit(0)
+
         def findByHashFileEvents(self):
             if len(self.args["hash"]) != 32:
                 demisto.results("Unknown hash type provided (not MD5)")
@@ -1479,6 +1694,71 @@ script:
                 demisto.results(entries)
                 exit(0)
 
+        def getRunningProcesses(self):
+
+            hostname = None
+            timeoutInSeconds = 30
+            try:
+                timeoutInSeconds = self.args["timeout"]
+            except:
+                pass
+
+            #Try getting hostname from incident if none provided as input
+            try:
+                hostname = self.args["hostname"]
+            except:
+                hostname = None
+            if hostname is None:
+                try:
+                    hostname = demisto.get(demisto.context(), "Endpoint.Hostname")
+                except:
+                    hostname = None
+            if hostname is None:
+                demisto.results("Error with hostname, none provided and / or could not find one in the incident")
+                exit(-1)
+            demisto.debug("Using hostname '{0}' for lookup".format(hostname))
+            thisFilter = None
+            try:
+                thisFilter = self.args["filter"]
+            except:
+                pass
+            if not thisFilter:
+                questons = {}
+            else:
+                questions = {"last": thisFilter}
+            self.executeTask(hostname, "Process List", questions, timeoutInSeconds)
+            exit(0)
+
+        def killProcessBySearch(self):
+
+            hostname = None
+            pid = None
+
+            #Try getting hostname from incident if none provided as input
+            try:
+                hostname = self.args["hostname"]
+            except:
+                hostname = None
+            if hostname is None:
+                try:
+                    hostname = demisto.get(demisto.context(), "Endpoint.Hostname")
+                except:
+                    hostname = None
+            if hostname is None:
+                demisto.results("Error with hostname, none provided and / or could not find one in the incident")
+                exit(-1)
+            demisto.debug("Using hostname '{0}' for lookup".format(hostname))
+
+            #Try getting the process pid criteria
+            try:
+                pid = self.args["pid"]
+            except:
+                pid = None
+
+            self.executeTask(hostname, "Process Kill By PID", {"1": pid}, 30)
+            exit(0)
+
+
 
     ##########################################################################################
     # Create a new class of the "Function"
@@ -1523,6 +1803,10 @@ script:
         thisFunction.findProcessByHash()
     if demisto.command() == 'fidelis-edr-get-tasks':
         thisFunction.getTasks()
+    if demisto.command() == 'fidelis-edr-get-running-processes':
+        thisFunction.getRunningProcesses()
+    if demisto.command() == 'fidelis-edr-kill-process':
+        thisFunction.killProcessBySearch()
     ##########################################################################################
 
 
@@ -1639,6 +1923,22 @@ script:
       description: A list of tasks available in the Fidelis Endpoint Platform
     description: Obtains a list of available tasks from the Fidelis Elevate Endpoint
       Platform
+  - name: fidelis-edr-get-running-processes
+    arguments:
+    - name: hostname
+    - name: filter
+      description: Filter the process names for a match
+    - name: timeout
+      description: Timeout to wait for the job to complete (default is 30 seconds)
+  - name: fidelis-edr-kill-process
+    arguments:
+    - name: hostname
+      description: Hostname to execute against
+    - name: pid
+      required: true
+      description: PID to kill
+    description: Kills a process on the endpoint
+    execution: true
   dockerimage: demisto/python3:3.7.3.221
   isfetch: true
   runonce: false
