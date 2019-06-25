@@ -596,14 +596,13 @@ script:
                 self.lastError = err
                 return None
 
-        def getJobStatus(self, jobID):
-            url = "{0}/jobs/getjobResult/{1}".format(self.baseURL, jobID)
+        def getJobStatus(self, jobID, jobResultId):
+            url = "{0}/jobs/getjobStatus/{1}/{2}".format(self.baseURL, jobID, jobResultId)
             data = self.__findWithSearchCriteria__(url, None, None)
             try:
                 return data
             except Exception as err:
-                self.lastError = err
-                return None
+                return {"success": False, "error": err}
 
         def getScriptJobResults(self, jobID):
             url = "{0}/jobresults/scriptjob_{1}".format(self.baseURL, jobID)
@@ -716,151 +715,6 @@ script:
             #s3 = s2.replace("_", " ")
             #s4 = s3.title()
             #return s4
-
-        def findProcessByHash(self):
-            #Set some default values
-            limit = 100
-            duration = 24
-            thisHash = ""
-            endpointName = ""
-            extended = ""
-            oneEndpoint = ""
-
-            #Ensure all the arguments are correct
-            try:
-                limit = int(self.args["limit"])
-                duration = int(self.args["duration"])
-                thisHash = self.args["hash"]
-                extended = self.args["extended"]
-                oneEndpoint = self.args["singleendpoint"]
-            except Exception as err:
-                demisto.error('Failed parsing inputs - {0}'.format(err))
-                exit(0)
-            try:
-                endpointName = self.args["endpoint"]
-            except:
-                endpointName = ""
-            if extended == "True":
-                extended = True
-            else:
-                extended = False
-            if oneEndpoint == "True":
-                oneEndpoint = True
-            else:
-                oneEndpoint = False
-
-            #Build the search criteria
-            dateNow = datetime.now()
-            dateThen = dateNow - timedelta(hours = duration)
-            startDate = datetime.strftime(dateThen, "%Y-%m-%dT%H:%M:%SZ")
-            endDate = datetime.strftime(dateNow, "%Y-%m-%dT%H:%M:%SZ")
-            searchCriteria = {"dateRange": {"start": startDate, "end": endDate}, "criteriaV3": {}}
-            searchCriteria["criteriaV3"]["entityType"] = "process"
-            searchCriteria["criteriaV3"]["filter"] = {"filterType": "composite", "logic": "and", "filters": [{"filterType": "criteria", "column": "eventType", "operator": "=", "value": 0}, {"filterType": "criteria", "column": "hash", "operator": "=", "value": thisHash}]}
-            if len(endpointName) > 0:
-                searchCriteria["criteriaV3"]["filter"]["filters"].append({"filterType": "criteria", "column": "endpointName", "operator": "=~", "value": endpointName})
-
-            #Perform the search
-            events = self.fep.searchEvents(searchCriteria, 10000)
-
-            #Check there are results
-            try:
-                if not events["success"]:
-                    demisto.results('Failed collecting events - {0}'.format(events["error"]))
-                    exit(0)
-                if len(events["data"]["events"]) < 1:
-                    demisto.results('No results found for hash {0}'.format(thisHash))
-                    exit(0)
-            except Exception as err:
-                demisto.error('Failed collecting events - {0}'.format(err))
-                exit(0)
-
-            #For each event, return an entry (up to the limit specified by the user)
-            if events["success"] and len(events["data"]["events"]) > 1:
-                eventCount = 0
-                endpoints = []
-                for event in events["data"]["events"]:
-
-                    #Stop if we have reached the users limit
-                    if eventCount >= limit:
-                        break
-
-                    #Skip event if we already have an event from that endpoint
-                    if oneEndpoint and event["endpointName"] in endpoints:
-                        continue
-
-                    #Build our table entry
-                    entry = {}
-
-                    #Build the basic information
-                    try:
-                        entry["Hostname"] = event["endpointName"]
-                    except:
-                        pass
-                    try:
-                        entry["User"] = event["user"]
-                    except:
-                        pass
-                    try:
-                        entry["Process Name"] = event["name"]
-                    except:
-                        pass
-                    try:
-                        entry["Process Start"] = event["processStartTime"]
-                    except:
-                        pass
-                    try:
-                        entry["Process End"] = event["processEndTime"]
-                    except:
-                        pass
-
-                    #Build additional data
-                    if extended:
-                        try:
-                            entry["Process Path"] = event["path"]
-                        except:
-                            pass
-                        try:
-                            entry["Commandline"] = event["parameters"]
-                        except:
-                            pass
-                        try:
-                            entry["MD5"] = event["hash"]
-                        except:
-                            pass
-                        try:
-                            entry["SHA1"] = event["hashSHA1"]
-                        except:
-                            pass
-                        try:
-                            entry["SHA256"] = event["hashSHA256"]
-                        except:
-                            pass
-                        try:
-                            entry["PID"] = event["pid"]
-                        except:
-                            pass
-                        try:
-                            entry["PPID"] = event["ppid"]
-                        except:
-                            pass
-                        try:
-                            entry["Parent Name"] = event["parentName"]
-                        except:
-                            pass
-                        try:
-                            entry["Parent Path"] = event["parentPath"]
-                        except:
-                            pass
-
-                    #Post the event data
-                    demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': entry})
-                    eventCount += 1
-                    endpoints.append(event["endpointName"])
-                exit(0)
-            else:
-                demisto.info("No events found")
-                exit(0)
 
         def testModule(self):
             if self.fep.authToken != None:
@@ -1235,34 +1089,34 @@ script:
 
         def getEndpointInfo(self):
             #Check we have our arguments
-            thisHostName = None
-            thisIP = None
+            hostname = None
             try:
-                thisHostName = self.args["hostname"]
+                hostname = self.args["hostname"]
             except:
                 pass
-            try:
-                thisIP = self.args["ip"]
-            except:
-                pass
+            if hostname is None:
+                try:
+                    hostname = demisto.get(demisto.context(), "Endpoint.Hostname")
+                except:
+                    pass
 
-            if thisIP is None and thisHostName is None:
-                demisto.error('Please provide at least an IP or hostname to lookup')
+            if hostname is None:
+                demisto.error('Could not lookup hostname from the incident, please provide one to use')
                 sys.exit(-1)
 
-            if thisIP and not is_ip_valid(thisIP):
-                demisto.error('The IP you provided does not seem to be valid \"{0}\"'.format(self.args["ip"]))
-                sys.exit(-1)
+            if is_ip_valid(hostname):
+                ip = hostname
+                hostname = None
 
             #Use hostname over IP for searching, if possible
             searchField = ""
             searchValue = ""
-            if thisHostName:
+            if hostname:
                 searchField = "hostName"
-                searchValue = self.args["hostname"]
+                searchValue = hostname
             else:
                 searchField = "ipAddress"
-                searchValue = self.args["ip"]
+                searchValue = ip
 
             #Get all endpoints
             endpoints = self.fep.getAllEndpoints(1000000)
@@ -1274,14 +1128,13 @@ script:
                     break
 
             if thisEndpoint is None:
-                demisto.info("Could not find endpoint with {0} containing {1}".format(searchField, searchValue))
+                demisto.results("Could not find endpoint with {0} containing {1}".format(searchField, searchValue))
                 exit(0)
             if thisEndpoint is not None:
-                md = "*Endpoint Information*\nHost Name|IP Address|Operating System|MAC Address|Agent Tag\n----------|----------|----------|----------|----------\n"
-                for x in ["hostName", "ipAddress", "os", "macAddress", "agentTag"]:
-                    md = "{0}{1}|".format(md, thisEndpoint[x])
-
-                demisto.results({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': md})
+                entry = {}
+                for x in thisEndpoint:
+                    entry[x] = thisEndpoint[x]
+                demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': entry})
             sys.exit(0)
 
         def deleteAlert(self):
@@ -1306,102 +1159,83 @@ script:
             filepath = self.args["filepath"]
 
             #Get the hostname of the endpoint to collect from - if there is not one, try and use the one from the incident context
+            hostname = None
             try:
-                endpoint = self.args["hostname"]
+                hostname = self.args["hostname"]
             except:
-                endpoint = None
+                hostname = None
 
-            if endpoint == None:
+            if hostname == None:
                 try:
-                    endpoint = demisto.get(demisto.context(), "endpointName")
+                    hostname = demisto.get(demisto.context(), "Endpoint.Hostname")
                 except:
-                    endpoint = None
-            if endpoint == None:
-                demisto.results("No endpoint name provided and no endpoint name found in the the incident context")
+                    hostname = None
+            if hostname == None:
+                demisto.results("No hostname name provided and no hostname name found in the the incident context")
                 exit(-1)
 
             #Get the timeout value
-            timeout = int(self.args["timeout"])
+            try:
+                timeoutInSeconds = int(self.args["timeout"])
+            except:
+                timeoutInSeconds = None
+            if not timeoutInSeconds:
+                demisto.results("No timeout provided")
+                exit(-1)
 
             #Get the Agent ID of the hostname (if it exists)
-            endpoint = self.fep.getEndpointFromHostname(endpoint)
+            endpoint = self.fep.getEndpointFromHostname(hostname)
 
             #If there is no endpoint returned, then there is no agent installed
             if endpoint is None:
                 demisto.error("There is no agent installed on {0}".format(self.args["hostname"]))
                 exit(0)
 
-
             #Find the script we need to run
-            scriptSearchCriteria = {"searchFields": [{"fieldName": "Name", "values": [{"value": "Single File Collection by Path", "operator": 0}]}]}
-            scripts = self.fep.searchScripts(scriptSearchCriteria, 1000)
+            thisScript = self._findTaskandManifestForEndpoint(hostname, "Single File Collection by Path")
 
-            #Find the one that matches our OS Type
-            thisScript = None
-            for script in scripts:
-                if endpoint["osType"] == 1 and endpoint["osArch"] == 2 and script["platforms"]["windows64"]:
-                    thisScript = script
-                    break
-                if endpoint["osType"] == 1 and endpoint["osArch"] == 1 and script["platforms"]["windows32"]:
-                    thisScript = script
-                    break
-                if endpoint["osType"] == 2 and script["platforms"]["linux64"]:
-                    thisScript = script
-                    break
-                if endpoint["osType"] == 3 and script["platforms"]["osx"]:
-                    thisScript = script
-                    break
             if thisScript is None:
                 demisto.results("Could not located a file collection script suitable for {0}".format(self.args["hostname"]))
                 exit(0)
 
-            #Get the script metadata
-            metaData = self.fep.getScriptPackageMetaData(script["id"])
-            if metaData is None:
-                demisto.results("Could not retrieve the metadata details of the script package with ID {0} ({1})".format(script["id"], script["name"]))
-                exit(0)
+            #Get the script data
+            script = thisScript["task"]
 
             #Get the script manifest
-            manifestData = self.fep.getScriptPackageManifest(script["id"])
-            if manifestData is None:
-                demisto.results("Could not retrieve the manifest details of the script package with ID {0} ({1})".format(script["id"], script["name"]))
-                exit(0)
+            manifestData = thisScript["manifest"]
+
+            #Get the template to use
+            template = self.fep.getScriptPackageTemplate(script["id"])
 
             #Populate the script execution details with answers to questions
-            questions = [{"answer": filepath, "inputType": "text", "isOptional": False, "paramNumber": 1, "question": " Path to file:"}]
-            taskOptions = [{"details": manifestData["data"], "detailsLoaded": False, "questions": questions, "queueExpirationInhours": None, "scriptId": script["id"], "timeoutInSeconds": timeout}]
-            scriptOptions = {"endpoints": [endpoint["id"]], "isPlaybook": False, "packageId": script["id"], "taskOptions": taskOptions}
 
-            #Execute the script
-            results = self.fep.executeSingleScript(script["id"], scriptOptions)
+            results = self.executeTask(hostname, "Single File Collection by Path", {"1": filepath}, timeoutInSeconds, False)
 
             #Get our results ID
-            resultsID = results["data"]
+            jobResultsId = results["data"]["jobResultId"]
 
             #Get our job ID
-            jobID = self.fep.getJobStatus(resultsID)["data"]["jobID"]
+            jobID = results["data"]["jobId"]
 
             #Monitor our job until it has complete
             counter = 0
-            status = self.fep.getJobStatus(resultsID)["data"]["statusCode"]
+            status = self.fep.getJobStatus(jobID, jobResultsId)["data"]["statusCode"]
 
             while status != 3:
-                if counter > timeout:
+                if counter > timeoutInSeconds:
                     break
-                status = self.fep.getJobStatus(resultsID)["data"]["statusCode"]
+                status = self.fep.getJobStatus(jobID, jobResultsId)["data"]["statusCode"]
                 time.sleep(1)
                 counter = counter + 1
 
-
-
-            results = self.fep.getJobStatus(resultsID)
+            results = self.fep.getJobStatus(jobID, jobResultsId)
 
             if results["data"]["statusCode"] != 3:
                 demisto.results("The job executed with errors (or timed out) - {0}".format(results["data"]))
                 exit(0)
 
             #Get our file from the results
-            results = self.fep.getFileSearchResults(jobID, resultsID)
+            results = self.fep.getFileSearchResults(jobID, jobResultsId)
 
             #For each of our files found, return something into the console (the file)
             if results["success"]:
@@ -1411,11 +1245,8 @@ script:
                     if len(results["data"]["jobResultInfos"]) < 1:
                         demisto.results("The task completed, but no files were found")
                         exit(0)
-                    else:
-                        demisto.results("The task completed, but no files were found")
-                        exit(0)
                 except:
-                    demisto.results("The task executed, but no files were collected")
+                    demisto.results("The task executed, but no files were found")
                     exit(0)
 
                 for item in results["data"]["jobResultInfos"]:
@@ -1439,10 +1270,7 @@ script:
                 exit(-1)
             exit(0)
 
-        def executeTask(self, hostname, taskName, inputQuestions, timeoutInSeconds):
-
-            #Set the timeout to integer, just in case
-            timeoutInSeconds = int(timeoutInSeconds)
+        def _findTaskandManifestForEndpoint(self, hostname, taskName):
 
             #Get the host data
             endpoint = self.fep.getEndpointFromHostname(hostname)
@@ -1506,9 +1334,26 @@ script:
             if processTask is None:
                 demisto.results("Could not find a task to list processes")
                 exit(0)
+            return {"task": processTask, "manifest": manifest}
+
+        def executeTask(self, hostname, taskName, inputQuestions, timeoutInSeconds, waitAndHandle):
+
+            #Set the timeout to integer, just in case
+            timeoutInSeconds = int(timeoutInSeconds)
+
+            #Get the host data
+            endpoint = self.fep.getEndpointFromHostname(hostname)
+            if endpoint is None:
+                demisto.results("Could not find a Fidelis Endpoint agent installed for hostname '{0}'".format(hostname))
+                exit(0)
+
+            #Get the task details
+            data = self._findTaskandManifestForEndpoint(hostname, taskName)
+            processTask = data["task"]
+            manifest = data["manifest"]
 
             #Get the package template for the task
-            template = self.fep.getScriptPackageTemplate(task["id"])
+            template = self.fep.getScriptPackageTemplate(processTask["id"])
 
             try:
                 if not template["success"]:
@@ -1518,23 +1363,27 @@ script:
                 demisto.results("Error getting script template - {0}".format(err))
                 exit(-1)
 
-            for key in inputQuestions:
-                if key == "last":
-                    lastOption = len(manifest["data"]["questions"])
-                    template["data"]["questions"][str(lastOption)] = inputQuestions[key]
+            if inputQuestions is not None:
+                for key in inputQuestions:
+                    if key == "last":
+                        lastOption = len(manifest["data"]["questions"])
+                        template["data"]["questions"][str(lastOption)] = inputQuestions[key]
 
-            for key in inputQuestions:
-                if key != "last" and key != "first":
-                    try:
-                        template["data"]["questions"][key] = inputQuestions[key]
-                    except:
-                        pass
+                for key in inputQuestions:
+                    if key != "last" and key != "first":
+                        try:
+                            template["data"]["questions"][key] = inputQuestions[key]
+                        except:
+                            pass
 
             #Execute the task
             questions = template["data"]["questions"]
-            scriptId = task["id"]
+            scriptId = processTask["id"]
             endpoints = [endpoint["ipAddress"]]
             result = self.fep.executeScriptPackage(scriptId, endpoints, questions, timeoutInSeconds)
+
+            if not waitAndHandle:
+                return result
 
             #Check it executed successfully
             try:
@@ -1550,48 +1399,41 @@ script:
             jobResultId = result["data"]["jobResultId"]
 
 
-            #Wait until the endpoint has complete
+            #Wait until the job has complete
             counter = 0
-            okToContinue = False
-            while not okToContinue and counter < timeoutInSeconds:
-
-                #Get job targets
-                jobTargets = self.fep.getScriptJobTargets(jobResultId)
-                try:
-                    if not jobTargets["success"]:
-                        demisto.results("Cannot obtain a list of targets for the executed job - {0}".format(jobTargets["error"]))
-                        exit(0)
-                except Exception as err:
-                    demisto.results("Cannot obtain a list of targets for the executed job - {0}".format(err))
-                    exit(-1)
-
-                #Ensure each target has completed
-                if len(jobTargets["data"]["targets"]) > 1:
-                    for target in jobTargets["data"]["targets"]:
-                        if target["status"].lower() != "completed":
-                            okToContinue = False
-                        else:
-                            okToContinue = True
-                else:
-                    okToContinue = False
+            status = self.fep.getJobStatus(jobId, jobResultId)
+            while status["success"] and status["data"]["statusCode"] == 21:
+                if counter >= timeoutInSeconds:
+                    break
                 time.sleep(1)
                 counter += 1
 
-            #Wait untilt he results populate in the job too
-            okToContinue = False
-            while not okToContinue:
+                status = self.fep.getJobStatus(jobId, jobResultId)
+
+            #Loop getting the job results up to the timeout to give the system time to populate them
+            jobResult = self.fep.getScriptJobResult(jobResultId)
+
+            if not jobResult["success"]:
+                demisto.results("Error getting task results - {0}".format(jobTargets["error"]))
+                exit(0)
+
+            counter = 0;
+            while len(jobResult["data"]["hits"]["hits"]) < 1:
+                if counter >= timeoutInSeconds:
+                    break
+                time.sleep(1)
                 jobResult = self.fep.getScriptJobResult(jobResultId)
-                try:
-                    if not jobResult["success"] and len(jobResult["data"]["columns"]) < 1:
-                        okToContinue = False
-                    else:
-                        okToContinue = True
-                except:
-                    okToContinue = False
+
+            jobResult = self.fep.getScriptJobResult(jobResultId)
+
+            if len(jobResult["data"]["hits"]["hits"]) < 1:
+                demisto.results("Task executed but no results received")
+                exit(0)
 
             columns = jobResult["data"]["columns"]
             columns [:] = (x for x in columns if "_" not in x)
 
+            #Parse through the items creating an entry for each
             entries = []
             for item in jobResult["data"]["hits"]["hits"]:
                 entry = {}
@@ -1601,138 +1443,447 @@ script:
                     except:
                         entry[k] = ""
                 entries.append(entry)
-            for e in entries:
-                demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': e})
-            if len(entries) < 1:
-                demisto.results("No results received")
+                #demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': entry})
+            demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': entries})
             exit(0)
-
-        def findByHashFileEvents(self):
-            if len(self.args["hash"]) != 32:
-                demisto.results("Unknown hash type provided (not MD5)")
-                exit(-1)
-            now = datetime.now()
-            end = now.strftime("%Y-%m-%dT%H:%M:%SZ")
-            then = now - timedelta(hours=int(self.args["hours"]))
-            start = then.strftime("%Y-%m-%dT%H:%M:%SZ")
-
-            searchCriteria = {"dateRange": {"start": start, "end": end}, "criteriaV3": {}}
-            searchCriteria["criteriaV3"]["entityType"] = "file"
-            searchCriteria["criteriaV3"]["filter"] = {"filterType": "composite", "logic": "and", "filters": [{"filterType": "criteria", "column": "eventType", "operator": "=", "value": 6}, {"filterType": "criteria", "column": "hash", "operator": "=", "value": self.args["hash"]}]}
-
-
-            events = self.fep.searchEvents(searchCriteria, int(self.args["eventlimit"]))
-            results = []
-            if events["success"] and len(events["data"]["events"]) < 1:
-                demisto.results("Could not find any events")
-                exit(0)
-            if not events["success"]:
-                demisto.error({"error": events["error"]})
-                exit(-1)
-            if events["success"] and len(events["data"]["events"]) > 1:
-                data = []
-                entries = []
-                events = events["data"]["events"]
-                for event in events:
-                    try:
-                        found = False
-                        if self.args["removeduplicates"] == "True":
-                            for item in data:
-                                if item["hostname"] == event["endpointName"] and item["path"] == event["path"]:
-                                    found = True
-                                    break
-                        if found:
-                            continue
-                    except:
-                        pass
-                    result = {}
-                    try:
-                        result["MD5"] = event["hash"]
-                    except:
-                        pass
-                    try:
-                        result["SHA1"] = event["hashSHA1"]
-                    except:
-                        pass
-                    try:
-                        result["SHA256"] = event["hashSHA256"]
-                    except:
-                        pass
-                    try:
-                        result["File Name"] = event["name"]
-                    except:
-                        pass
-                    try:
-                        result["File Path"] = event["path"]
-                    except:
-                        pass
-                    try:
-                        result["Hostname"] = event["endpointName"]
-                    except:
-                        pass
-                    try:
-                        result["User"] = event["user"]
-                    except:
-                        pass
-                    try:
-                        data.append({"hostname": event["endpointName"], "path": event["path"]})
-                    except:
-                        pass
-                    entry = {
-                        'Type': entryTypes['note'],
-                        'Contents': result,
-                        'ContentsFormat': formats['json'],
-                        'ReadableContentsFormat': formats['json'],
-                        'HumanReadable': result,
-                        'EntryContext': {
-                            #'Fidelis.EDR(val.ID===obj.ID).Filepath': event["path"],
-                            #'Fidelis.EDR(val.ID===obj.ID).Hostname': event["endpointName"]
-                            'fidelis.edr.filedata': result
-                        }
-                    }
-                    entries.append(entry)
-                demisto.results(entries)
-                exit(0)
 
         def getRunningProcesses(self):
 
-            hostname = None
-            timeoutInSeconds = 30
-            try:
-                timeoutInSeconds = self.args["timeout"]
-            except:
-                pass
+            #Get the timeout
+            timeoutInSeconds = self.args["timeout"]
 
-            #Try getting hostname from incident if none provided as input
-            try:
-                hostname = self.args["hostname"]
-            except:
-                hostname = None
-            if hostname is None:
-                try:
-                    hostname = demisto.get(demisto.context(), "Endpoint.Hostname")
-                except:
-                    hostname = None
-            if hostname is None:
-                demisto.results("Error with hostname, none provided and / or could not find one in the incident")
-                exit(-1)
-            demisto.debug("Using hostname '{0}' for lookup".format(hostname))
+            #Get the filter (if it exists)
             thisFilter = None
             try:
                 thisFilter = self.args["filter"]
             except:
                 pass
-            if not thisFilter:
-                questons = {}
-            else:
-                questions = {"last": thisFilter}
-            self.executeTask(hostname, "Process List", questions, timeoutInSeconds)
+
+            #Ensure we have at least the hostname to work with
+            hostname = None
+            try:
+                hostname = self.args["hostname"]
+            except:
+                hostname = None
+            if hostname is None:
+                try:
+                    demisto.get(demisto.context(), "Endpoint.Hostname")
+                except:
+                    hostname = None
+            if hostname is None:
+                demisto.results("Error with hostname, none provided and / or could not find one in the incident")
+                exit(-1)
+            demisto.debug("Using hostname '{0}'".format(hostname))
+
+            #Execute the task
+            options = None
+            if thisFilter is not None:
+                options = {"last": thisFilter}
+            data = self.executeTask(hostname, "Process List", options, timeoutInSeconds, True)
+
+        def getServices(self):
+
+            #Get the timeout
+            timeoutInSeconds = self.args["timeout"]
+
+            #Get the filter (if it exists)
+            thisFilter = None
+            try:
+                thisFilter = self.args["filter"]
+            except:
+                pass
+
+            #Ensure we have at least the hostname to work with
+            hostname = None
+            try:
+                hostname = self.args["hostname"]
+            except:
+                hostname = None
+            if hostname is None:
+                try:
+                    demisto.get(demisto.context(), "Endpoint.Hostname")
+                except:
+                    hostname = None
+            if hostname is None:
+                demisto.results("Error with hostname, none provided and / or could not find one in the incident")
+                exit(-1)
+            demisto.debug("Using hostname '{0}'".format(hostname))
+
+            #Execute the task
+            options = None
+            if thisFilter is not None:
+                options = {"last": thisFilter}
+            data = self.executeTask(hostname, "Services", options, timeoutInSeconds, True)
+
+        def isolateEndpoint(self):
+
+            #Ensure we have at least the hostname to work with
+            hostname = None
+            try:
+                hostname = self.args["hostname"]
+            except:
+                hostname = None
+            if hostname is None:
+                try:
+                    demisto.get(demisto.context(), "Endpoint.Hostname")
+                except:
+                    hostname = None
+            if hostname is None:
+                demisto.results("Error with hostname, none provided and / or could not find one in the incident")
+                exit(-1)
+            demisto.debug("Using hostname '{0}'".format(hostname))
+
+            #Parse any additional IPs to use
+            additionalIPs = None
+            try:
+                additionalIPs = self.args["additionalIPs"].split(",")
+            except:
+                additionalIPs = None
+
+            #Get the context path
+
+            #Get the endpoint details
+            endpoint = self.fep.getEndpointFromHostname(hostname)
+
+            #Get the timeout
+            timeoutInSeconds = 30
+            try:
+                timeoutInSeconds = self.args["timeout"]
+            except:
+                timeoutInSeconds = 30
+
+            #Get the task details
+            data = self._findTaskandManifestForEndpoint(hostname, "Network Isolation")
+            processTask = data["task"]
+            manifest = data["manifest"]
+
+            #Get the template
+            template = self.fep.getScriptPackageTemplate(processTask["id"])
+
+            #Populate the template
+            completeIPs = manifest["data"]["questions"][0]["answer"].split(",")
+            if additionalIPs is not None:
+                completeIPs = list(set(completeIPs + additionalIPs))
+
+            #Populate the template
+            template["data"]["questions"]["1"] = ",".join(completeIPs)
+
+            #Execute the task
+            data = self.executeTask(hostname, "Network Isolation", {"1": ",".join(completeIPs)}, timeoutInSeconds, True)
+
+
+            demisto.results(template)
+            exit(0)
+
+        def removeIsolation(self):
+
+            #Ensure we have at least the hostname to work with
+            hostname = None
+            try:
+                hostname = self.args["hostname"]
+            except:
+                hostname = None
+            if hostname is None:
+                try:
+                    demisto.get(demisto.context(), "Endpoint.Hostname")
+                except:
+                    hostname = None
+            if hostname is None:
+                demisto.results("Error with hostname, none provided and / or could not find one in the incident")
+                exit(-1)
+            demisto.debug("Using hostname '{0}'".format(hostname))
+
+            #Get the timeout
+            timeoutInSeconds = 30
+            try:
+                timeoutInSeconds = self.args["timeout"]
+            except:
+                timeoutInSeconds = 30
+
+            #Execute the task
+            data = self.executeTask(hostname, "Network Isolation Remove", None, timeoutInSeconds, True)
+
+
+            demisto.results(template)
+            exit(0)
+
+        def _findEvents(self, searchCriteria, duration, limit):
+
+            #Build the time start and end dates
+            now = datetime.now()
+            end = now.strftime("%Y-%m-%dT%H:%M:%SZ")
+            then = now - timedelta(hours=duration)
+            start = then.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+            thisSearchCriteria = {"dateRange": {"start": start, "end": end}, "criteriaV3": searchCriteria}
+
+            #Perform the search
+            events = self.fep.searchEvents(thisSearchCriteria, limit)
+
+            return events
+
+        def findFileEventsByHash(self):
+
+            try:
+                #Get the duration
+                duration = int(self.args["duration"])
+
+                #Get the limit
+                limit = int(self.args["limit"])
+
+                #Get the remove duplicates value
+                removeduplicates = self.args["removeduplicates"]
+            except Exception as err:
+                demisto.results("Error with inputs - {0}".format(err))
+                exit(-1)
+
+            #Get the hostname
+            hostname = None
+            try:
+                hostname = self.args["hostname"]
+            except:
+                hostname = None
+            if hostname is None:
+                try:
+                    demisto.get(demisto.context(), "Endpoint.Hostname")
+                except:
+                    hostname = None
+
+            #Check the hash length to ensure it is MD5
+            if len(self.args["hash"]) != 32:
+                demisto.results("Unknown hash type provided (not MD5)")
+                exit(-1)
+            md5 = self.args["hash"]
+
+            #Build the search criteria
+            searchCriteria = {}
+            searchCriteria["entityType"] = "file"
+            searchCriteria["filter"] = {"filterType": "composite", "logic": "and", "filters": [{"filterType": "criteria", "column": "eventType", "operator": "=", "value": 6}, {"filterType": "criteria", "column": "hash", "operator": "=", "value": md5}]}
+
+            #If we have a hostname, then use it
+            if hostname is not None:
+                searchCriteria["filter"]["filters"].append({"filterType": "criteria", "column": "endpointName", "operator": "=", "value": hostname})
+
+            #Get the events
+            events = self._findEvents(searchCriteria, duration, 10000)
+
+            #Ensure ther are no errors
+            if not events["success"]:
+                demisto.results("There was an error - {0}".format(events["error"]))
+                exit(-1)
+
+            if events["success"] and len(events["data"]["events"]) < 1:
+                demisto.results("Could not find any events")
+                exit(0)
+
+            #Parse the events
+            endpoints = []
+            counter = 0
+            for event in events["data"]["events"]:
+                if counter >= limit:
+                    break
+                if removeduplicates and event["endpointName"] in endpoints:
+                    continue
+
+                if event["endpointName"] not in endpoints:
+                    endpoints.append(event["endpointName"])
+
+                ignoreList = ["entityType", "esDocumentType", "esIndex", "eventIndex", "fileCategory", "fileType", "indexingTime", "parentId", "reportId", "targetId"]
+
+                entry = {}
+                for x in event:
+                    if x in ignoreList:
+                        continue
+                    field = self.camelToTitle(x)
+
+                    entry[field] = event[x]
+
+                demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': entry})
+                counter += 1
+            exit(0)
+
+        def findProcessEventsByHash(self):
+
+            try:
+                #Get the duration
+                duration = int(self.args["duration"])
+
+                #Get the limit
+                limit = int(self.args["limit"])
+
+                #Get the remove duplicates value
+                removeduplicates = self.args["removeduplicates"]
+
+                #Get the hash
+                md5 = self.args["hash"]
+
+            except Exception as err:
+                demisto.results("Error with inputs - {0}".format(err))
+                exit(-1)
+
+            #Get the hostname
+            hostname = None
+            try:
+                hostname = self.args["hostname"]
+            except:
+                hostname = None
+            if hostname is None:
+                try:
+                    demisto.get(demisto.context(), "Endpoint.Hostname")
+                except:
+                    hostname = None
+
+            #Check the hash length to ensure it is MD5
+            if len(md5) != 32:
+                demisto.results("Unknown hash type provided (not MD5)")
+                exit(-1)
+
+
+            #Build the search criteria
+            searchCriteria = {}
+            searchCriteria["entityType"] = "process"
+            searchCriteria["filter"] = {"filterType": "composite", "logic": "and", "filters": [{"filterType": "criteria", "column": "eventType", "operator": "=", "value": 0}, {"filterType": "criteria", "column": "hash", "operator": "=", "value": md5}]}
+
+            #If we have a hostname, then use it
+            if hostname is not None:
+                searchCriteria["filter"]["filters"].append({"filterType": "criteria", "column": "endpointName", "operator": "=", "value": hostname})
+
+            #Get the events
+            events = self._findEvents(searchCriteria, duration, 10000)
+
+            #Ensure ther are no errors
+            if not events["success"]:
+                demisto.results("There was an error - {0}".format(events["error"]))
+                exit(-1)
+
+            if events["success"] and len(events["data"]["events"]) < 1:
+                demisto.results("Could not find any events")
+                exit(0)
+
+            #Parse the events
+            endpoints = []
+            counter = 0
+            for event in events["data"]["events"]:
+                if counter >= limit:
+                    break
+                if removeduplicates and event["endpointName"] in endpoints:
+                    continue
+
+                if event["endpointName"] not in endpoints:
+                    endpoints.append(event["endpointName"])
+
+                ignoreList = ["entityType", "esDocumentType", "esIndex", "eventIndex", "fileCategory", "fileType", "indexingTime", "parentId", "reportId", "targetId"]
+
+                entry = {}
+                for x in event:
+                    if x in ignoreList:
+                        continue
+                    field = self.camelToTitle(x)
+
+                    entry[field] = event[x]
+
+                demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': entry})
+                counter += 1
+            exit(0)
+
+        def findUSBEvents(self):
+
+            #Set some default values
+            try:
+                #Get the duration
+                duration = int(self.args["duration"])
+
+                #Get the limit
+                limit = int(self.args["limit"])
+
+                #Get the remove duplicates
+                removeduplicates = self.args["removeduplicates"]
+
+            except Exception as err:
+                demisto.results("Error with inputs - {0}".format(err))
+                exit(-1)
+
+            #Try and get our hostname
+            hostname = None
+            try:
+                hostname = self.args["hostname"]
+            except:
+                hostname = None
+            if hostname is None:
+                try:
+                    demisto.get(demisto.context(), "Endpoint.Hostname")
+                except:
+                    hostname = None
+
+            #Try and get a serial number
+            serial = None
+            try:
+                serial = self.args["serial"]
+            except:
+                serial = None
+
+            #Build the search criteria
+            searchCriteria = {}
+            searchCriteria["entityType"] = "usb"
+            searchCriteria["filter"] = {"filterType": "composite", "logic": "and", "filters": []}
+
+            #If we have a hostname, then use it
+            if hostname is not None:
+                searchCriteria["filter"]["filters"].append({"filterType": "criteria", "column": "endpointName", "operator": "=", "value": hostname})
+
+            #If we have a USB serial number to use then use it
+            if serial is not None:
+                searchCriteria["filter"]["filters"].append({"filterType": "criteria", "column": "serial", "operator": "=", "value": serial})
+
+            #Get the events
+            events = self._findEvents(searchCriteria, duration, 10000)
+
+            #Ensure ther are no errors
+            if not events["success"]:
+                demisto.results("There was an error - {0}".format(events["error"]))
+                exit(-1)
+
+            if events["success"] and len(events["data"]["events"]) < 1:
+                demisto.results("Could not find any events")
+                exit(0)
+
+            #Parse the events
+            endpoints = []
+            counter = 0
+            for event in events["data"]["events"]:
+                if counter >= limit:
+                    break
+                if removeduplicates and event["endpointName"] in endpoints:
+                    continue
+
+                if event["endpointName"] not in endpoints:
+                    endpoints.append(event["endpointName"])
+
+                ignoreList = ["entityType", "esDocumentType", "esIndex", "eventIndex", "fileCategory", "fileType", "indexingTime", "parentId", "reportId", "targetId"]
+
+                entry = {}
+                for x in event:
+                    if x in ignoreList:
+                        continue
+                    field = self.camelToTitle(x)
+
+                    entry[field] = event[x]
+
+                demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': entry})
+                counter += 1
             exit(0)
 
         def killProcessBySearch(self):
 
-            hostname = None
-            pid = None
+            #Get inputs
+            try:
+                timeoutInSeconds = self.args["timeout"]
+                hostname = None
+                pid = self.args["pid"]
+
+            except Exception as err:
+                demisto.results("Error with inputs - {0}".format(err))
+                exit(-1)
 
             #Try getting hostname from incident if none provided as input
             try:
@@ -1747,15 +1898,11 @@ script:
             if hostname is None:
                 demisto.results("Error with hostname, none provided and / or could not find one in the incident")
                 exit(-1)
+
             demisto.debug("Using hostname '{0}' for lookup".format(hostname))
 
-            #Try getting the process pid criteria
-            try:
-                pid = self.args["pid"]
-            except:
-                pid = None
-
-            self.executeTask(hostname, "Process Kill By PID", {"1": pid}, 30)
+            #Execute the task
+            self.executeTask(hostname, "Process Kill By PID", {"1": pid}, timeoutInSeconds, True)
             exit(0)
 
 
@@ -1798,15 +1945,23 @@ script:
     if demisto.command() == 'fidelis-edr-collect-file':
         thisFunction.collectFile()
     if demisto.command() == 'fidelis-edr-find-file-hash-event':
-        thisFunction.findByHashFileEvents()
-    if demisto.command() == 'fidelis-edr-find-process-by-hash':
-        thisFunction.findProcessByHash()
+        thisFunction.findFileEventsByHash()
+    if demisto.command() == 'fidelis-edr-find-process-hash-event':
+        thisFunction.findProcessEventsByHash()
     if demisto.command() == 'fidelis-edr-get-tasks':
         thisFunction.getTasks()
     if demisto.command() == 'fidelis-edr-get-running-processes':
         thisFunction.getRunningProcesses()
+    if demisto.command() == 'fidelis-edr-get-services':
+        thisFunction.getServices()
     if demisto.command() == 'fidelis-edr-kill-process':
         thisFunction.killProcessBySearch()
+    if demisto.command() == 'fidelis-edr-isolate-endpoint':
+        thisFunction.isolateEndpoint()
+    if demisto.command() == 'fidelis-edr-remove-isolation':
+        thisFunction.removeIsolation()
+    if demisto.command() == 'fidelis-edr-USB-activity':
+        thisFunction.findUSBEvents()
     ##########################################################################################
 
 
@@ -1814,26 +1969,8 @@ script:
   commands:
   - name: fidelis-edr-get-endpoint-info
     arguments:
-    - name: ip
-      description: IP address of the endpoint
     - name: hostname
-      description: Hostname of the endpoint
-    outputs:
-    - contextPath: hostName
-      description: The host name of the endpoint
-      type: string
-    - contextPath: hostIP
-      description: The current IP address of the endpoint
-      type: string
-    - contextPath: hostOS
-      description: The Operating System of the endpoint
-      type: string
-    - contextPath: agentTag
-      description: The Agent tag of the endpoint
-      type: string
-    - contextPath: macAddress
-      description: MAC Address of the endpoint
-      type: string
+      description: Host Name (or IP) to target
     description: Retrieves information about an endpoint, if there is a Fidelis Endpoint
       agent installed.
   - name: fidelis-edr-get-event-for-alert
@@ -1853,53 +1990,54 @@ script:
       required: true
       description: The full file path of the file to collect
     - name: hostname
-      description: The hostname of the endpoint to collect the file from (if not provided
-        the endpoint name from the incident will be used)
+      description: Host Name to target
     - name: timeout
-      description: Timeout (in seconds) for the job to execute
+      description: Timeout to wait for the job to complete (default is 300 seconds)
       defaultValue: "300"
     description: Attempts to collect a file from an endpoint using the Fidelis Endpoint
       Agent.
-  - name: fidelis-edr-find-hash-event
+  - name: fidelis-edr-find-file-hash-event
     arguments:
+    - name: hostname
+      description: Host Name to target
     - name: hash
       required: true
       description: MD5 Hash
-    - name: hours
-      required: true
-      description: Number of hours to go back in time by
+    - name: duration
+      description: How many hours to look back (default is 24 hours)
       defaultValue: "24"
-    - name: eventlimit
-      required: true
+    - name: limit
       description: Maximum number of events to bring back
       defaultValue: "1000"
     - name: removeduplicates
-      required: true
       auto: PREDEFINED
       predefined:
       - "True"
       - "False"
-      description: Only find 1 event per endpoint
-      defaultValue: "True"
-    outputs:
-    - contextPath: Fidelis.EDR.Filedata
-      description: Files found
-      type: string
+      description: Only return 1 event per endpoint
+      defaultValue: "False"
     description: Searches file events on the FIdelis Elevate Endpoint Plaform that
       matches the hash provided.
-  - name: fidelis-edr-find-process-by-hash
+  - name: fidelis-edr-find-process-hash-event
     arguments:
     - name: hash
       required: true
       description: The MD5 hash of the process to find
-    - name: endpoint
-      description: Endpoint hostname to search event on
+    - name: hostname
+      description: Host Name to target
     - name: duration
-      description: How many hours to look back for execution (default is 24 hours)
+      description: How many hours to look back (default is 24 hours)
       defaultValue: "24"
     - name: limit
       description: Limit how many events are returned (default is 100)
       defaultValue: "100"
+    - name: removeduplicates
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Only return 1 event per endpoint
+      defaultValue: "False"
     - name: extended
       auto: PREDEFINED
       predefined:
@@ -1908,37 +2046,86 @@ script:
       description: Get extended data (otherwise only process name, user, hostname
         and process start time are returned)
       defaultValue: "False"
-    - name: singleendpoint
-      auto: PREDEFINED
-      predefined:
-      - "True"
-      - "False"
-      description: Only return 1 event per endpoint hostname
-      defaultValue: "False"
     description: Finds executions of a process that matches an MD5 hash
   - name: fidelis-edr-get-tasks
     arguments: []
-    outputs:
-    - contextPath: Fidelis Tasks
-      description: A list of tasks available in the Fidelis Endpoint Platform
     description: Obtains a list of available tasks from the Fidelis Elevate Endpoint
       Platform
   - name: fidelis-edr-get-running-processes
     arguments:
     - name: hostname
+      description: Host Name to target
     - name: filter
       description: Filter the process names for a match
     - name: timeout
-      description: Timeout to wait for the job to complete (default is 30 seconds)
+      description: Timeout to wait for the job to complete (default is 120 seconds)
+      defaultValue: "120"
+    description: Attempts to obtain a list of currently running processes from the
+      endpoint.
   - name: fidelis-edr-kill-process
     arguments:
     - name: hostname
-      description: Hostname to execute against
+      description: Host Name to target
     - name: pid
       required: true
       description: PID to kill
+    - name: timeout
+      description: Timeout to wait for the job to complete (default is 30 seconds)
+      defaultValue: "30"
     description: Kills a process on the endpoint
     execution: true
+  - name: fidelis-edr-isolate-endpoint
+    arguments:
+    - name: hostname
+      description: Host Name to target
+    - name: additionalIPs
+      description: List of additional IP addresses to allow the endpoint access to
+        (comma separate)
+      isArray: true
+    - name: timeout
+      description: Time to wait for the task to complete in seconds (default is 120)
+      defaultValue: "120"
+    description: Isolates an endpoint from the network whilst maintaining access to
+      the Fidelis Elevate Endpoint Platform
+    execution: true
+  - name: fidelis-edr-remove-isolation
+    arguments:
+    - name: hostname
+      description: Host Name to target
+    - name: timeout
+      description: Time to wait for the task to complete in seconds (default is 120)
+      defaultValue: "120"
+    description: Removes the endpoint isolation applied using the "Isolate" task.
+  - name: fidelis-edr-USB-activity
+    arguments:
+    - name: duration
+      description: How many hours to look back (default is 24 hours)
+      defaultValue: "24"
+    - name: limit
+      description: Limit how many events are returned (default is 100)
+      defaultValue: "100"
+    - name: hostname
+      description: Host Name to target
+    - name: serial
+      description: USB serial number to search for
+    - name: removeduplicates
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Only return 1 event per endpoint
+      defaultValue: "False"
+    description: Obtains browsing history of the endpoint for all users
+  - name: fidelis-edr-get-services
+    arguments:
+    - name: hostname
+      description: Host Name to target
+    - name: filter
+      description: Filter the service names for a match
+    - name: timeout
+      description: Timeout to wait for the job to complete (default is 60 seconds)
+      defaultValue: "60"
+    description: Attempts to obtain a list of services from the endpoint.
   dockerimage: demisto/python3:3.7.3.221
   isfetch: true
   runonce: false
