@@ -1,5 +1,5 @@
 id: e7ac9021-96ee-451c-88fa-a2a027f5f20b
-version: 177
+version: 201
 name: Fidelis Elevate Endpoint Enrichment
 starttaskid: "0"
 tasks:
@@ -1699,10 +1699,10 @@ tasks:
     ignoreworker: false
   "63":
     id: "63"
-    taskid: 07e7782a-f96c-48e6-86da-42450187ff40
+    taskid: 59e7bbec-ad0d-4cf8-8583-123ceb2dab37
     type: regular
     task:
-      id: 07e7782a-f96c-48e6-86da-42450187ff40
+      id: 59e7bbec-ad0d-4cf8-8583-123ceb2dab37
       version: -1
       name: Set endpointName context with Target
       description: Sets a value into the context with the given context key
@@ -1716,7 +1716,7 @@ tasks:
     scriptarguments:
       append: {}
       key:
-        simple: endpointName
+        simple: Endpoint.Hostname
       value:
         simple: ${incident.labels.Target}
     continueonerror: true
