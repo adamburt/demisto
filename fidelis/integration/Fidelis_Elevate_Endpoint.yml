@@ -13,7 +13,7 @@ detaileddescription: "***Fidelis Endpoint EDR Platform***\n\n**Overview**\nThis 
   look-ups. "
 configuration:
 - display: Host / IP Address
-  name: ip
+  name: host
   defaultvalue: 127.0.0.1
   type: 0
   required: true
@@ -22,6 +22,14 @@ configuration:
   defaultvalue: ""
   type: 9
   required: true
+- display: Authentication Method
+  name: method
+  defaultvalue: post
+  type: 15
+  required: true
+  options:
+  - post
+  - get
 - display: Do not validate server certificate (insecure)
   name: ignoressl
   defaultvalue: "false"
@@ -42,17 +50,11 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: true
-- display: Initial number of daysto go back to for first import
-  name: firstdate
-  defaultvalue: 5 days
-  type: 15
+- display: Initial number of days to go back to for first import
+  name: lastDays
+  defaultvalue: "5"
+  type: 0
   required: false
-  options:
-  - 5 days
-  - 10 days
-  - 30 days
-  - 90 days
-  - unlimited
 script:
   script: |+
     import requests
@@ -63,31 +65,50 @@ script:
     from datetime import timedelta
     import time
     import io
-    #import re
+
 
     class fidelisEndpoint:
 
-        def __init__(self, host, username, password, ignoreSSL, checkURL):
+        def __init__(self, host, username, password, authMethod, ignoressl):
             self.host = host
             self.baseURL = "https://{0}/endpoint/api".format(host)
             self.username = username
             self.password = password
-            self.lastError = ""
-            self.lastSuccess = ""
-            self.ignoressl = ignoreSSL
-            self.checkURL = checkURL
-            self.authToken = self.getAuthToken(self.username, self.password)
+            self.ignoressl = ignoressl
+            if self.ignoressl:
+                self.checkURL = False
+            else:
+                self.checkURL = True
+            self.lastError = None
+            self.authToken = self.getAuthToken(self.username, self.password, authMethod)
             self.headers = {"Content-Type": "application/json;charset=UTF-8", "Authorization": "bearer {0}".format(self.authToken)}
 
-        def getAuthToken(self, username, password):
-            url = "{0}/authenticate?username={1}&password={2}".format(self.baseURL, quote(username), quote(password))
+        def getAuthToken(self, username, password, method):
+
+            #Find out whether get is used rather than post
+            useGet = False
+            url = "{0}/authenticate".format(self.baseURL)
+            if method.lower() == "get":
+                url += "?username={0}&password={1}".format(quote(username), quote(password))
+                useGet = True
+
+            #Ignore SSL errors if specified
             if self.ignoressl:
                 requests.packages.urllib3.disable_warnings()
-            try:
-                r = requests.get(url, verify=self.checkURL)
-            except Exception as err:
-                self.lastError = "Error performing get request to URL- {0}".format(err)
-                return None
+            if useGet:
+                try:
+                    r = requests.get(url, verify=self.checkURL)
+                except Exception as err:
+                    self.lastError = "Error performing get request to URL- {0}".format(err)
+                    return None
+            if not useGet:
+                try:
+                    headers = {"Content-Type": "application/json"}
+                    bodyRequest = {"username": username, "password": password}
+                    r = requests.post(url, data = json.dumps(bodyRequest), headers = headers, verify=self.checkURL)
+                except Exception as err:
+                    self.lastError = "Error performing get request to URL- {0}".format(err)
+                    return None
             try:
                 if type(r.content) == bytes:
                     rData = json.loads(r.content.decode("utf-8"))
@@ -96,7 +117,7 @@ script:
             except Exception as err:
                 self.lastError = "Error parsing JSON data returned from authentication URL - {0}".format(err)
                 return None
-            if (rData["success"] == False):
+            if not rData["success"]:
                 self.lastError = "Error returned from authentication request - {0}".format(rData["error"]["message"])
                 return None
             try:
@@ -105,318 +126,188 @@ script:
                 self.lastError = err
                 return None
 
-        def printConfig(self):
-            print("Host: {0}".format(self.host))
-            print("Username: {0}".format(self.username))
-            print("Auth Token: {0}".format(self.authToken))
-
-        def __findWithSearchCriteria__(self, url, searchCriteria, searchName):
+        def __genericGetRequest__(self, url):
             if self.ignoressl:
                 requests.packages.urllib3.disable_warnings()
             headers = self.headers
-            if searchCriteria:
-                url = "{0}&{1}={2}".format(url, searchName, searchCriteria)
             try:
                 r = requests.get(url, headers = headers, verify=self.checkURL)
                 if type(r.content) == bytes:
                     rData = json.loads(r.content.decode("utf-8"))
                 else:
                     rData = json.loads(r.content)
-            except Exception as err:
-                self.lastError = err
-                return None
-            try:
-                if rData["success"] == False:
-                    self.lastError = rData["error"]
-                    return None
                 return rData
             except Exception as err:
-                self.lastError = err
-                return None
+                return {"success": False, "error": err}
 
-        def getHostInfo(self):
-            url = "{0}/product-info".format(self.baseURL)
+        def __genericPostRequest__(self, url, data):
             if self.ignoressl:
                 requests.packages.urllib3.disable_warnings()
             headers = self.headers
             try:
-                r = requests.get(url, headers = headers, verify=self.checkURL)
+                r = requests.post(url, headers = headers, data = json.dumps(data), verify=self.checkURL)
                 if type(r.content) == bytes:
                     rData = json.loads(r.content.decode("utf-8"))
                 else:
                     rData = json.loads(r.content)
+                return rData
             except Exception as err:
-                self.lastError = err
-                return None
-            if rData["success"] == False:
-                self.lastError = rData["error"]
-                return None
+                return {"success": False, "error": err}
+
+        def __genericDeleteRequest__(self, url, data):
+            if self.ignoressl:
+                requests.packages.urllib3.disable_warnings()
+            headers = self.headers
             try:
-                return rData["data"]
+                if data:
+                    r = requests.delete(url, headers = headers, data = json.dumps(data), verify=self.checkURL)
+                else:
+                    r = requests.delete(url, headers = headers, verify=self.checkURL)
+                if type(r.content) == bytes:
+                    rData = json.loads(r.content.decode("utf-8"))
+                else:
+                    rData = json.loads(r.content)
+                return rData
             except Exception as err:
-                self.lastError = err
-                return None
+                return {"success": False, "error": err}
+
+        def getAlertRules(self, limit, offset, sort, search):
+            url = "{0}/alertrules".format(self.baseURL)
+
+            if limit:
+                if "?" not in url:
+                    url += "?limit={0}".format(limit)
+                else:
+                    url += "&limit={0}".format(limit)
+            if offset:
+                if "?" not in url:
+                    url += "?offset={0}".format(offset)
+                else:
+                    url += "&offset={0}".format(offset)
+            if sort:
+                if "?" not in url:
+                    url += "?sort={0}".format(sort)
+                else:
+                    url += "&sort={0}".format(sort)
+            if search:
+                if "?" not in url:
+                    url += "?search={0}".format(json.dumps(search))
+                else:
+                    url += "&search={0}".format(json.dumps(search))
+
+            data = self.__genericGetRequest__(url, None, None)
+            return data
+
+        def createAlertRule(self, data):
+            url = "{0}/alertrules".format(self.baseURL)
+            rData = self.__genericPostRequest__(url, data)
+            return rData
+
+        def deleteAlertRules(self, data):
+            url = "{0}/alertrules/delete".format(self.baseURL)
+            rData = self.__genericPostRequest__(url, data)
+            return rData
+
+        def getAlerts(self, skip, take, sort, facetSearch, startDate, endDate):
+
+            url = "{0}/alerts/getalerts".format(self.baseURL)
+            if skip:
+                if "?" not in url:
+                    url += "?skip={0}".format(skip)
+                else:
+                    url += "&skip={0}".format(skip)
+            if take:
+                if "?" not in url:
+                    url += "?take={0}".format(take)
+                else:
+                    url += "&take={0}".format(take)
+            if sort:
+                if "?" not in url:
+                    url += "?sort={0}".format(sort)
+                else:
+                    url += "&sort={0}".format(sort)
+            if facetSearch:
+                if "?" not in url:
+                    url += "?facetSearch={0}".format(quote(facetSearch))
+                else:
+                    url += "&facetSearch={0}".format(quote(facetSearch))
+            if startDate:
+                if "?" not in url:
+                    url += "?startDate={0}".format(quote(startDate.strftime("%Y-%m-%dT%H:%M:%S.000Z")))
+                else:
+                    url += "&startDate={0}".format(quote(startDate.strftime("%Y-%m-%dT%H:%M:%S.000Z")))
+            if endDate:
+                if "?" not in url:
+                    url += "?endDate={0}".format(quote(endDate.strftime("%Y-%m-%dT%H:%M:%S.000Z")))
+                else:
+                    url += "&endDate={0}".format(quote(endDate.strftime("%Y-%m-%dT%H:%M:%S.000Z")))
+            rData = self.__genericGetRequest__(url)
+            return rData
+
+        def getEndpoints(self, startIndex, count, sort):
+            url = "{0}/endpoints".format(self.baseURL)
+            if startIndex:
+                url += "/{0}".format(startIndex)
+            else:
+                url += "/0"
+            if count:
+                url += "/{0}".format(count)
+            else:
+                url += "/10"
+            if sort:
+                url += "/{0}".format(sort)
+            else:
+                url += "/hostName"
+            rData = self.__genericGetRequest__(url)
+            return rData
+
+        def getEndpointIdsbyEndpointNames(self, names):
+            url = "{0}/endpoints/endpointidsbyname".format(self.baseURL)
+            rData = self.__genericPostRequest__(url, names)
+            return rData
+
+        def deleteEndpoint(self, inputId):
+            url = "{0}/endpoints/delete/{1}".format(self.baseURL, inputId)
+            rData = self.__genericDeleteRequest__(url, None)
+            return rData
+
+        def getEvents(self, searchCriteria, pageSize):
+            url = "{0}/v2/events".format(self.baseURL)
+            if pageSize:
+                url += "?pageSize={0}".format(pageSize)
+            rData = self.__genericPostRequest__(url, searchCriteria)
+            return rData
+
+        def getEventCount(self, searchCriteria):
+            url = "{0}/events/count".format(self.baseURL)
+            rData = self.__genericPostRequest__(url, searchCriteria)
+            return rData
 
         def fileSearch(self, searchCriteria):
             url = "{0}/files/search".format(self.baseURL)
-            if self.ignoressl:
-                requests.packages.urllib3.disable_warnings()
-            headers = self.headers
-            try:
-                r = requests.post(url, headers = headers, data = json.dumps(searchCriteria), verify=self.checkURL)
-                if type(r.content) == bytes:
-                    rData = json.loads(r.content.decode("UTF-8"))
-                else:
-                    rData = json.loads(r.content)
-            except Exception as err:
-                self.lastError = err
-                return None
-            try:
-                return rData
-            except Exception as err:
-                self.lastError = err
-                return None
+            rData = self.__genericPostRequest__(url, searchCriteria)
+            return rData
 
-        def searchScripts(self, searchCriteria, limit):
-            url = "{0}/playbooks/PlaybooksAndScripts?filterType=0&isManagementRequest=false&platformFilter=0&skip=0&sort=&take={1}".format(self.baseURL, limit)
-            data = self.__findWithSearchCriteria__(url, searchCriteria, "search")
-            try:
-                return data["data"]["entities"]
-            except Exception as err:
-                self.lastError = err
-                return None
+        def fileSearchJobStatus(self, jobId, jobResultId):
+            url = "{0}/jobs/getjobstatus/{1}/{2}".format(self.baseURL, jobId, jobResultId)
+            rData = self.__genericGetRequest__(url)
+            return rData
 
-        def getAllTasks(self):
-            allTasksURL = "https://{0}/endpoint/api/packages".format(self.host)
-            if self.ignoressl:
-                requests.packages.urllib3.disable_warnings()
-            try:
-                r = requests.get(allTasksURL, headers=self.headers, verify=self.checkURL)
-                if type(r.content) == bytes:
-                    rData = json.loads(r.content.decode("utf-8"))
-                else:
-                    rData = json.loads(r.content)
-                return rData
-            except Exception as err:
-                return {"success": False, "error": err}
+        def fileSearchJobResults(self, jobId, jobResultId):
+            url = "{0}/jobs/{1}/jobresults/{2}".format(self.baseURL, jobId, jobResultId)
+            rData = self.__genericGetRequest__(url)
+            return rData
 
-        def getScriptPackageMetaData(self, packageId):
-            url = "{0}/packages/{1}?type=Metadata".format(self.baseURL, packageId)
-            if self.ignoressl:
-                requests.packages.urllib3.disable_warnings()
-            headers = self.headers
-            try:
-                r = requests.get(url, headers = headers, verify=self.checkURL)
-                if type(r.content) == bytes:
-                    rData = json.loads(r.content.decode("utf-8"))
-                else:
-                    rData = json.loads(r.content)
-            except Exception as err:
-                self.lastError = err
-                return None
-            try:
-                return rData
-            except Exception as err:
-                self.lastError = err
-                return None
+        def fileSearchGetStream(self, fileId):
+            url = "{0}/files/{1}".format(self.baseURL, fileId)
 
-        def getJobResult(self, resultId):
-            url = "{0}/jobs.getJobResult/{1}".format(self.baseURL, resultId)
-            data = self.__findWithSearchCriteria__(url, None, None)
-            try:
-                return data
-            except Exception as err:
-                self.lastError = err
-                return None
-
-        def getScriptJobResult(self, jobResultId):
-            url = "{0}/jobresults/scriptjob_{1}".format(self.baseURL, jobResultId)
-            if self.ignoressl:
-                requests.packages.urllib3.disable_warnings()
-            newHeaders = self.headers
-            try:
-                r = requests.post(url, headers = newHeaders, verify=self.checkURL)
-                if type(r.content) == bytes:
-                    rData = json.loads(r.content.decode("utf-8"))
-                else:
-                    rData = json.loads(r.content)
-                return rData
-            except Exception as err:
-                return {"success": False, "error": err}
-
-        def getScriptJobTargets(self, jobResultId):
-            url = "{0}/jobs/getjobtargets/{1}".format(self.baseURL, jobResultId)
-            data = self.__findWithSearchCriteria__(url, None, None)
-            try:
-                return data
-            except Exception as err:
-                return {"success": False, "error": err}
-
-
-        def getScriptPackageManifest(self, packageId):
-            url = "{0}/packages/{1}?type=Manifest".format(self.baseURL, packageId)
-            if self.ignoressl:
-                requests.packages.urllib3.disable_warnings()
-            headers = self.headers
-            try:
-                r = requests.get(url, headers = headers, verify=self.checkURL)
-                if type(r.content) == bytes:
-                    rData = json.loads(r.content.decode("utf-8"))
-                else:
-                    rData = json.loads(r.content)
-            except Exception as err:
-                self.lastError = err
-                return None
-            try:
-                return rData
-            except Exception as err:
-                self.lastError = err
-                return None
-
-        def getScriptPackageTemplate(self, packageId):
-            url = "{0}/packages/{1}?type=Template".format(self.baseURL, packageId)
-            data = self.__findWithSearchCriteria__(url, None, None)
-            try:
-                return data
-            except Exception as err:
-                self.lastError = err
-                return {"success": False, "error": err}
-
-        def getAllEndpoints(self, limit):
-            url = "{0}/endpoints/0/{1}/hostname".format(self.baseURL, limit)
-            data = self.__findWithSearchCriteria__(url, None, None)
-            try:
-                return data["data"]["endpoints"]
-            except Exception as err:
-                self.lastError = err
-                return None
-
-        def getEndpointDetails(self, endpointId):
-            url = "{0}/endpoints/getEndpointDetailsExpanded/{1}".format(self.baseURL, endpointId)
-            requests.packages.urllib3.disable_warnings()
-            headers = self.headers
-            try:
-                r = requests.get(url, headers = headers, verify=False)
-                if type(r.content) == bytes:
-                    rData = json.loads(r.content.decode("utf-8"))
-                else:
-                    rData = json.loads(r.content)
-            except Exception as err:
-                self.lastError = err
-                return None
-            try:
-                if rData["success"] == False:
-                    self.lastError = rData["error"]
-                    return None
-                return rData["data"]
-            except Exception as err:
-                self.lastError = err
-                return None
-            try:
-                return data
-            except Exception as err:
-                self.lastError = err
-                return None
-
-        def getEndpointFromHostname(self, hostname):
-            endpoints = self.getAllEndpoints(1000000)
-            thisEndpoint = None
-            for endpoint in endpoints:
-                if endpoint["hostName"].lower() == hostname.lower():
-                    thisEndpoint = endpoint
-                    break
-            return thisEndpoint
-
-        def searchEndpointSoftware(self, endpointID, searchCriteria, limit):
-            url = "{0}/installedSoftware/{1}?skip=0&sort=installDate+Descending&take={2}".format(self.baseURL, endpointID, limit)
-            data = self.__findWithSearchCriteria__(url, searchCriteria, "facetSearch")
-            try:
-                return data["data"]["entities"]
-            except Exception as err:
-                self.lastError = err
-                return None
-
-        def searchAlerts(self, searchCriteria, limit, startDate, endDate, sort):
-            if sort is None:
-                sort = "insertionDate+Descending"
-            datenow = datetime.now()
-            if endDate is None:
-                endDate = datenow.strftime("%y-%m-%dT%H:%M:%S.000Z")
-            if startDate is None:
-                startDate = "1970-01-01T00:00:00.000Z"
-            url = "{0}/alerts/getalerts?endDate={1}&startDate={2}&filterType=0&skip=0&sort={3}&take={4}".format(self.baseURL, endDate, startDate, sort, limit)
-            data = self.__findWithSearchCriteria__(url, searchCriteria, "facetSearch")
-            if data is None:
-                return {"success": False, "error": self.lastError}
-            try:
-                return data
-            except Exception as err:
-                self.lastError = err
-                return {"success": False, "error": err}
-
-        def searchExecutables(self, searchCriteria, limit):
-            url = "{0}/executables?skip=0&sort=reportingDate+Descending&take={1}".format(self.baseURL, limit)
-            data = self.__findWithSearchCriteria__(url, searchCriteria, "facetSearch")
-            try:
-                return data["data"]["entities"]
-            except Exception as err:
-                self.lastError = err
-                return None
-
-        def searchSoftware(self, searchCriteria, limit):
-            url = "{0}/installedSoftware?skip=0&sort=name+Ascending&take={1}".format(self.baseURL, limit)
-            data = self.__findWithSearchCriteria__(url, searchCriteria, "facetSearch")
-            try:
-                return data["data"]["entities"]
-            except Exception as err:
-                self.lastError = err
-                return None
-
-        def recursiveGroupAdd(self, groupStructure, returnedData):
-            try:
-                returnedData.append({"name":groupStructure["name"], "id":groupStructure["id"]})
-            except:
-                return
-            for child in groupStructure["children"]:
-                self.recursiveGroupAdd(child, returnedData)
-
-        def getGroups(self):
-            url = "{0}/groups/GetGroupTree?includeAmAr=true&accessType=2".format(self.baseURL)
-            requests.packages.urllib3.disable_warnings()
-            headers = self.headers
-            try:
-                r = requests.get(url, headers = headers, verify=False)
-                if type(r.content) == bytes:
-                    rData = json.loads(r.content.decode("utf-8"))
-                else:
-                    rData = json.loads(r.content)
-            except Exception as err:
-                self.lastError = err
-                return None
-            if rData["success"] == False:
-                self.lastError = rData["error"]
-                return None
-            try:
-                return rData["data"]
-            except Exception as err:
-                self.lastError = err
-                return None
-
-        def getFileSearchResults(self, jobID, resultsID):
-            url = "{0}/jobs/{1}/jobresults/{2}".format(self.baseURL, jobID, resultsID)
-            data = self.__findWithSearchCriteria__(url, None, None)
-            try:
-                return data
-            except Exception as err:
-                self.lastError = err
-                return {"success": False, "error": err}
-
-        def getFileStream(self, fileID):
-            url = "{0}/files/{1}".format(self.baseURL, fileID)
-            if self.ignoressl:
-                requests.packages.urllib3.disable_warnings()
-            headers = self.headers
+            #Copy our headers and remove the Content-Type
+            headers = {}
+            for k in self.headers:
+                headers[k] = self.headers[k]
             del headers["Content-Type"]
+
+            #Create a byte stream to copy the data into
             data = io.BytesIO()
             try:
                 with requests.get(url, headers = headers, verify=self.checkURL, stream=True) as r:
@@ -424,247 +315,117 @@ script:
                     for chunk in r.iter_content(chunk_size=1024):
                         data.write(chunk)
             except Exception as err:
-                self.lastError = err
-                return "Your custom error here - {0}".format(err)
-            try:
-                return data
-            except Exception as err:
-                self.lastError = err
-                return None
-
-        def getGroupName(self, groupID):
-            allGroups = self.getGroups()
-            allData = []
-            self.recursiveGroupAdd(allGroups, allData)
-            returnedItems = ""
-            for item in allData:
-                if item["id"].lower() == groupID.lower():
-                    returnedItems  = item["name"]
-            try:
-                return returnedItems
-            except Exception as err:
-                self.lastError = err
-                return None
-
-        def getGroupID(self, groupName, contains):
-            allGroups = self.getGroups()
-            allData = []
-            self.recursiveGroupAdd(allGroups, allData)
-            returnedItems = None
-            for item in allData:
-                if contains:
-                    if returnedItems is None:
-                        returnedItems = []
-                    if item["name"].lower().find(groupName.lower()) != -1:
-                        returnedItems.append(item["id"])
-                if not contains:
-                    if returnedItems is None:
-                        returnedItems = []
-                    if item["name"] == groupName:
-                        returnedItems.append(item["id"])
-            try:
-                return returnedItems
-            except Exception as err:
-                self.lastError = err
-                return None
-
-        def getGroupEndpoints(self, groupID):
-            allEndpoints = self.getAllEndpoints(500000)
-            groupName = self.getGroupName(groupID)
-            returnedEndpoints = []
-            for endpoint in allEndpoints:
-                if endpoint["groupList"].find(groupName) != -1:
-                    returnedEndpoints.append(endpoint)
-            try:
-                return returnedEndpoints
-            except Exception as err:
-                self.lastError = err
-                return None
-
-        def executeScript(self, scriptID, endpoints, groups):
-            url = "{0}/scriptPackages/scriptPackage/{1}".format(self.baseURL, scriptID)
-            requests.packages.urllib3.disable_warnings()
-            headers = self.headers
-            playbook = False
-            try:
-                r = requests.get(url, headers = headers, verify=False)
-                if type(r.content) == bytes:
-                    rData = json.loads(r.content.decode("utf-8"))
-                else:
-                    rData = json.loads(r.content)
-            except Exception as err:
-                self.lastError = err
-                return None
-            if rData["success"] == False:
-                if rData["error"]["statusCode"] == 500 and rData["error"]["message"] == "Sequence contains no elements":
-                    url = "{0}/playbooks/PlaybookDetail?id={1}".format(self.baseURL, scriptID)
-                    try:
-                        r = requests.get(url, headers = headers, verify=False)
-                        if type(r.content) == bytes:
-                            rData = json.loads(r.content.decode("utf-8"))
-                        else:
-                            rData = json.loads(r.content)
-
-                        if rData["success"] == True:
-                            playbook = True
-                    except Exception as err:
-                        self.lastError = err
-                        return None
-            jsonData = rData["data"]
-            endpointsList = []
-            for group in groups:
-                theseGroupIDs = self.getGroupID(group, False)
-                for groupID in theseGroupIDs:
-                    allGroupEndpoints = self.getGroupEndpoints(groupID)
-                    for endpoint in allGroupEndpoints:
-                        endpointsList.append(endpoint["id"])
-            allEndpoints = self.getAllEndpoints(500000)
-            allIDs = []
-            for endpoint in allEndpoints:
-                for endpointName in endpoints:
-                    if endpoint["hostName"] == endpointName:
-                        if endpoint["id"] not in allIDs:
-                            allIDs.append(endpoint["id"])
-
-            for thisID in allIDs:
-                if thisID not in endpointsList:
-                    endpointsList.append(thisID)
-
-            returnedData = ""
-            url = "{0}/jobs/createTask".format(self.baseURL)
-            requests.packages.urllib3.disable_warnings()
-            headers = self.headers
-            bodyRequest = {"packageId": jsonData["id"], "isPlaybook": playbook, "endpoints": endpointsList}
-            if playbook:
-                bodyRequest["taskOptions"] = jsonData["scripts"]
-                for item in bodyRequest["taskOptions"]:
-                    del item["integrationOutputFormat"]
-            if not playbook:
-                bodyRequest["taskOptions"] = [{"detailsLoaded": False, "questions": jsonData["questions"], "queueExpirationInhours": 0, "scriptId": jsonData["id"], "timeoutInSeconds": jsonData["timeoutSeconds"], "details":jsonData}]
-            try:
-                r = requests.post(url, data = json.dumps(bodyRequest), headers = headers, verify=False)
-                if type(r.content) == bytes:
-                    rData = json.loads(r.content.decode("utf-8"))
-                else:
-                    rData = json.loads(r.content)
-            except Exception as err:
-                self.lastError = err
-                return None
-            if rData["success"] == False:
-                self.lastError = rData["error"]
-                return None
-            if rData["success"] == True:
-                self.lastSuccess = "Script executed with ID {0}".format(rData["data"])
-                try:
-                    return rData["data"]
-                except Exception as err:
-                    self.lastError = err
-                    return None
-
-        def executeScriptPackage(self, scriptPackageId, endpoints, questions, timeout):
-            url = "{0}/packages/{1}/execute".format(self.baseURL, scriptPackageId)
-            newHeaders = self.headers
-            newHeaders["Content-Type"] = "application/json"
-            bodyRequest = {"timeoutInSeconds": timeout, "scriptPackageId": scriptPackageId, "hosts": endpoints, "integrationOutputs": [], "questions": questions}
-            try:
-                r = requests.post(url, data = json.dumps(bodyRequest), headers = newHeaders, verify=self.checkURL)
-                if type(r.content) == bytes:
-                    rData = json.loads(r.content.decode("utf-8"))
-                else:
-                    rData = json.loads(r.content)
-                return rData
-            except Exception as err:
                 return {"success": False, "error": err}
+            return data.getvalue()
+        def deleteJob(self, jobId):
+            url = "{0}/jobs/{1}".format(self.baseURL, jobId)
+            rData = self.__genericDeleteRequest__(url, None)
+            return rData
 
-        def executeSingleScript(self, scriptID, scriptOptions):
-            url = "{0}/jobs/createTask".format(self.baseURL)
+        def getEndpointByIP(self, ip):
+            url = "{0}/endpoints/search".format(self.baseURL)
+            searchCriteria = {"ip": ip}
+            rData = self.__genericPostRequest__(url, searchCriteria)
+            return rData
+
+        def getProductInfo(self):
+            url = "{0}/product-info".format(self.baseURL)
+            rData = self.__genericGetRequest__(url)
+            return rData
+
+        def getScriptPackages(self):
+            url = "{0}/packages".format(self.baseURL)
+            rData = self.__genericGetRequest__(url)
+            return rData
+
+        def getScriptPackageFile(self, scriptPackageId):
+            url = "{0}/packages/{1}?type=File".format(self.baseURL, scriptPackageId)
+
+            #Copy our headers and remove the Content-Type
+            headers = {}
+            for k in self.headers:
+                headers[k] = self.headers[k]
+            del headers["Content-Type"]
+
+            #Create a byte stream to copy the data into
+            data = io.BytesIO()
+            try:
+                with requests.get(url, headers = headers, verify=self.checkURL, stream=True) as r:
+                    r.raise_for_status()
+                    for chunk in r.iter_content(chunk_size=1024):
+                        data.write(chunk)
+            except Exception as err:
+                return None
+            return data.getvalue()
+
+        def getScriptPackageManifest(self, scriptPackageId):
+            url = "{0}/packages/{1}?type=Manifest".format(self.baseURL, scriptPackageId)
+            rData = self.__genericGetRequest__(url)
+            return rData
+
+        def getScriptPackageMetadata(self, scriptPackageId):
+            url = "{0}/packages/{1}?type=Metadata".format(self.baseURL, scriptPackageId)
+            rData = self.__genericGetRequest__(url)
+            return rData
+
+        def getScriptPackageTemplate(self, scriptPackageId):
+            url = "{0}/packages/{1}?type=Template".format(self.baseURL, scriptPackageId)
+            rData = self.__genericGetRequest__(url)
+            return rData
+
+        def executeScriptPackage(self, scriptCriteria):
+            url = "{0}/packages/{1}/execute".format(self.baseURL, scriptCriteria["scriptPackageId"])
+            rData = self.__genericPostRequest__(url, scriptCriteria)
+            return rData
+
+        def getScriptJobResults(self, jobResultId):
+            url = "{0}/jobresults/scriptjob_{1}".format(self.baseURL, jobResultId)
+            rData = self.__genericPostRequest__(url, None)
+            return rData
+
+        def getScriptJobTargets(self, jobResultId):
+            url = "{0}/jobs/getjobtargets/{1}".format(self.baseURL, jobResultId)
+            rData = self.__genericGetRequest__(url)
+            return rData
+
+        def createScriptPackage(self, scriptOptions):
+            url = "{0}/scriptPackages/createUpdate".format(self.baseURL)
+            rData = self.__genericPostRequest__(url, scriptOptions)
+            return rData
+
+        def uploadScriptPackageFiles(self, scriptPackageId, fileData):
+
+            ##########################################################################################
+            # fileData must be a JSON dictionary containing the files to upload with their names
+            # For example: fileData = {"test.txt": open("C:\\test.txt", "rb")}
+            ##########################################################################################
+
+            url = "{0}/scriptPackages/scriptPackageFileUpload/{1}".format(self.baseURL, scriptPackageId)
+            #Copy our headers and change the Content-Type
+            headers = {}
+            for k in self.headers:
+                headers[k] = self.headers[k]
+            del headers["Content-Type"]# = "multipart/form-data"
+
+            #Ignore SSL errors?
             if self.ignoressl:
                 requests.packages.urllib3.disable_warnings()
-            headers = self.headers
+
+            #Make the request
             try:
-                r = requests.post(url, data = json.dumps(scriptOptions), headers = headers, verify=self.checkURL)
+                r = requests.post(url, headers = headers, files = fileData, data = None, verify=self.checkURL)
                 if type(r.content) == bytes:
                     rData = json.loads(r.content.decode("utf-8"))
                 else:
                     rData = json.loads(r.content)
-            except Exception as err:
-                self.lastError = err
-                return None
-            try:
                 return rData
-            except Exception as err:
-                self.lastError = err
-                return None
-
-        def getJobStatus(self, jobID, jobResultId):
-            url = "{0}/jobs/getjobStatus/{1}/{2}".format(self.baseURL, jobID, jobResultId)
-            data = self.__findWithSearchCriteria__(url, None, None)
-            try:
-                return data
             except Exception as err:
                 return {"success": False, "error": err}
 
-        def getScriptJobResults(self, jobID):
-            url = "{0}/jobresults/scriptjob_{1}".format(self.baseURL, jobID)
-            if self.ignoressl:
-                requests.packages.urllib3.disable_warnings()
-            headers = self.headers
-            try:
-                r = requests.post(url, headers = headers, verify=self.checkURL)
-                if type(r.content) == bytes:
-                    rData = json.loads(r.content.decode("utf-8"))
-                else:
-                    rData = json.loads(r.content)
-            except Exception as err:
-                self.lastError = err
-                return None
-            try:
-                return rData
-            except Exception as err:
-                self.lastError = err
-                return None
-
-        def searchEvents(self, searchCriteria, limit):
-            url = "{0}/v2/events?pageSize={1}".format(self.baseURL, limit)
-            if self.ignoressl:
-                requests.packages.urllib3.disable_warnings()
-            headers = self.headers
-            try:
-                r = requests.post(url, headers = headers, data = json.dumps(searchCriteria), verify=self.checkURL)
-                if type(r.content) == bytes:
-                    rData = json.loads(r.content.decode("UTF-8"))
-                else:
-                    rData = json.loads(r.content)
-            except Exception as err:
-                self.lastError = err
-                return {"success": False, "error": err}
-            try:
-                return rData
-            except Exception as err:
-                self.lastError = err
-                return {"success": False, "error": err}
-
-        def deleteAlert(self, alertId):
-            url = "{0}/alerts/deletealerts".format(self.baseURL)
-            if self.ignoressl:
-                requests.packages.urllib3.disable_warnings()
-            headers = self.headers
-            alertList = []
-            alertList.append(alertId)
-            try:
-                r = requests.post(url, headers = headers, data = json.dumps(alertList), verify=self.checkURL)
-                if type(r.content) == bytes:
-                    rData = json.loads(r.content.decode("UTF-8"))
-                else:
-                    rData = json.loads(r.content)
-            except Exception as err:
-                self.lastError = err
-                return {"success": False, "error": err}
-            try:
-                return rData
-            except Exception as err:
-                self.lastError = err
-                return {"success": False, "error": err}
+        def finalizeScriptPackage(self, scriptPackageId):
+            url = "{0}/scriptPackages/PackageChangeComplete/{1}/false".format(self.baseURL, scriptPackageId)
+            rData = self.__genericPostRequest__(url, [])
+            return rData
 
     class functions:
         def __init__(self, args, params):
@@ -675,46 +436,87 @@ script:
             if self.params["ignoressl"]:
                 self.ignoressl = True
                 self.checkURL = False
-            self.fep = fidelisEndpoint(self.params["ip"], self.params["authentication"]["identifier"], self.params["authentication"]["password"], self.ignoressl, self.checkURL)
+            self.fep = fidelisEndpoint(self.params["host"], self.params["authentication"]["identifier"], self.params["authentication"]["password"], self.params["method"], self.ignoressl)
 
-        def getTasks(self):
-            allTasks = self.fep.getAllTasks()
-            md = ""
-            if allTasks["success"]:
-                md = "Name | Platforms(s) | Task Description\n--------- | ----------------- | ---------------"
-                taskList = []
-                for task in allTasks["data"]["scripts"]:
-                    meta = self.fep.getScriptPackageManifest(task["id"])
-                    if meta["success"]:
-                        meta = meta["data"]
-                        platforms = [x for x in meta["platforms"] if meta["platforms"][x] is True]
-                        platforms = ",".join(platforms)
-                    else:
-                        platforms = None
-                    md = "{0}\n{1} | {2} | {3}".format(md, task["name"], platforms, task["description"])
+        def test(self):
+            times = int(self.params["lastDays"])
+            now = datetime.now()
+            startDate = now - timedelta(days=int(self.params["lastDays"]))
+            allAlerts = self.fep.getAlerts(0, 500, "insertionDate+Ascending", None, startDate, None)
+            for alert in allAlerts["data"]["entities"]:
+                latestinsertiondate = (datetime.strptime(alert["insertionDate"],"%Y-%m-%dT%H:%M:%S.%fZ")).strftime("%Y-%m-%dT%H:%M:%SZ")
+            demisto.results(latestinsertiondate)
+            exit(0)
 
+        def __findTaskForEndpoint__(self, hostname, taskName):
 
-                entry = {'Type' : entryTypes['note'],
-                'Contents': None,
-                'ContentsFormat' : None,
-                'HumanReadable': md,
-                'ReadableContentsFormat' : formats['markdown'],
-                'EntryContext' : None}
-                demisto.results(entry)
+            #Get the host data
+            endpoints = self.fep.getEndpoints(0, 1000000, None)
+            if not endpoints["success"] and len(endpoints["data"]["endpoints"]) < 1:
+                demisto.results("Could not get a list of endpoints = {0".format(endpoints["error"]))
+                exit(0)
+            endpoint = None
+            for x in endpoints["data"]["endpoints"]:
+                if x["hostName"] == hostname:
+                    endpoint = x
+            if endpoint is None:
+                demisto.results("Could not find a Fidelis Endpoint agent installed for hostname '{0}'".format(hostname))
+                exit(0)
 
+            #Get the list of available scripts
+            scripts = self.fep.getScriptPackages()
+            if not scripts["success"]:
+                demisto.results("Could not obtain a list of scripts - {0}".format(scripts["error"]))
+                exit(0)
 
-            #demisto.results({"tasklist": taskList})
+            #Find the correct script
+            potentialscripts = []
+            script = None
+            manifest = None
+            for x in scripts["data"]["scripts"]:
+                if x["name"] == taskName:
+                    potentialscripts.append(x)
+            if len(potentialscripts) < 1:
+                demisto.results("Could not find a task to list processes")
+                exit(0)
 
-        def camelToTitle(self, name):
-            underscore = camel_case_to_underscore(name)
-            spaces = underscore.replace("_", " ")
-            title = spaces.title()
-            return title
-            #s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
-            #s2 = re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
-            #s3 = s2.replace("_", " ")
-            #s4 = s3.title()
-            #return s4
+            #For each of our potential scripts, get the metadata to match against the endpoint type
+            for x in potentialscripts:
+                thisManifest = self.fep.getScriptPackageManifest(x["id"])
+                try:
+                    if not thisManifest["success"]:
+                        continue
+                    platforms = thisManifest["data"]["platforms"]
+
+                    #If the endpoint is windows 64-bit
+                    if endpoint["osType"] == 1 and endpoint["osArch"] == 2 and platforms["windows64"]:
+                        processTask = x
+                        manifest = thisManifest
+                        break
+                    #If the endpoint is windows 32-bit
+                    if endpoint["osType"] == 1 and endpoint["osArch"] == 1 and platforms["windows32"]:
+                        processTask = x
+                        manifest = thisManifest
+                        break
+                    #If the endpoint is Linux 64-bit
+                    if endpoint["osType"] == 2 and endpoint["osArch"] == 2 and platforms["linux64"]:
+                        processTask = x
+                        manifest = thisManifest
+                        break
+                    #If the endpoint is Linux 32-bit
+                    if endpoint["osType"] == 2 and endpoint["osArch"] == 1 and platforms["linux32"]:
+                        processTask = x
+                        manifest = thisManifest
+                        break
+                    #If the endpoint is Mac 64-bit
+                    #There is no Mac Version yet
+
+                except:
+                    pass
+            if processTask is None:
+                demisto.results("Could not find a task to list processes")
+                exit(0)
+            return processTask
 
         def testModule(self):
             if self.fep.authToken != None:
@@ -736,24 +538,16 @@ script:
             #Try and assign the date from the lastRun dict to the start date - We always want to end date to be now
             try:
                 startDate = lastRun["date"]
+                startDate = datetime.strptime(startDate, "%Y-%m-%dT%H:%M:%SZ")
                 demisto.debug("Last run date was {0}".format(lastRun["date"]))
+
+            #If there is no start date form the last run variable, try and use the provided "last X" number of days for the first ever call
             except:
+                startDate = None
+
+            if startDate is None:
                 demisto.debug("No last run date found")
-                now = datetime.now()
-                if self.params["firstdate"] == "unlimited":
-                    startDate = None
-                if self.params["firstdate"] == "90 days":
-                    startDate = now - timedelta(days=90)
-                    startDate = datetime.strftime(startDate, "%Y-%m-%dT%H:%M:%SZ")
-                if self.params["firstdate"] == "30 days":
-                    startDate = now - timedelta(days=30)
-                    startDate = datetime.strftime(startDate, "%Y-%m-%dT%H:%M:%SZ")
-                if self.params["firstdate"] == "10 days":
-                    startDate = now - timedelta(days=10)
-                    startDate = datetime.strftime(startDate, "%Y-%m-%dT%H:%M:%SZ")
-                if self.params["firstdate"] == "5 days":
-                    startDate = now - timedelta(days=5)
-                    startDate = datetime.strftime(startDate, "%Y-%m-%dT%H:%M:%SZ")
+                startDate = (datetime.now() - timedelta(days=int(self.params["lastDays"])))
                 demisto.debug("Using start date of {0}".format(startDate))
 
             #Create a marker for the alert ID
@@ -771,7 +565,7 @@ script:
             incidents = []
 
             #Gather all the alerts - 500 at a time and sort by their insertion date
-            allAlerts = self.fep.searchAlerts({}, 500, startDate, endDate, "insertionDate+Ascending")
+            allAlerts = self.fep.getAlerts(None, 500, "insertionDate+Ascending", None, startDate, endDate)
 
             #Create a marker for the latest alert insertion date
             latestInsertionDate = None
@@ -780,8 +574,9 @@ script:
                     demisto.debug("No new alerts found")
                     sys.exit(0)
             except Exception as err:
-                demisto.error("Error -{0}".format(err))
+                demisto.error("Error - {0}".format(err))
                 sys.exit(-1)
+
             allAlerts = allAlerts["data"]["entities"]
             if allAlerts is None:
                 demisto.debug("No new alerts found")
@@ -814,9 +609,10 @@ script:
                     #Create an ignore list for alert details that the user will not find relevant
                     alertIgnoreList = ["createDate", "reportId", "insertionDate", "viewed", "parentEventId", "eventTime", "userFlagged", "validatedDate", "alertTargetId", "status", "respondedDate", "eventIndex", "eventId"]
                     for key in alert:
+
+                        #For each field in the alert (except those in the ignore list) create an entry with the details
                         if key not in alertIgnoreList:
                             field = self.camelToTitle(key)
-                            #field = "fidelis-edr-alert-{0}".format(key)
                             combined[field] = alert[key]
 
                     #Whether to enrich the alert with event data
@@ -837,10 +633,19 @@ script:
                                 eventEnd = datetime.strftime(eventEnd, "%Y-%m-%dT%H:%M:%SZ")
 
 
-                            #Create a marker for the event type
+                            #Create an eventType fields for use later
                             thisEventType = ""
+
+                            ###############################
                             #Create the search criteria
+                            ###############################
+
+                            #Define the date range
                             searchCriteria = {"dateRange": {"start": eventStart, "end": eventEnd}, "criteriaV3": {}}
+
+                            ##
+                            #Define the eventType
+                            ##
 
                             #If this is process based
                             if alert["eventType"] == 0 or alert["eventType"] == 30:
@@ -892,8 +697,12 @@ script:
                                 searchCriteria["criteriaV3"]["entityType"] = "script"
                                 thisEventType = "script"
 
+                            #Populate the criteriaV3 with fields that allow us to search for relevant events
                             searchCriteria["criteriaV3"]["filter"] = {"filterType": "composite", "logic": "and", "filters": [{"filterType": "criteria", "column": "eventType", "operator": "=", "value": alert["eventType"]}, {"filterType": "criteria", "column": "endpointName", "operator": "=~", "value": alert["target"]}]}
-                            events = self.fep.searchEvents(searchCriteria, 1000)
+
+                            #Carry out the search
+                            getEvents(self, searchCriteria, pageSize)
+                            events = self.fep.getEvents(searchCriteria, 1000)
 
                             #If we receive a valid alert
                             event = None
@@ -909,10 +718,10 @@ script:
 
                             if event:
 
-                                #Create a list of fields that are not relevant and ignore them if they appear
+                                #Create a list of fields that are not relevant for the user
                                 eventIgnoreList = ["indexingTime", "eventTime", "firstEventTime", "insertionDate", "parentId", "targetId", "viewed", "reportId", "parentEventId", "lastEventTime", "eventIndex", "eventTime", "eventType", "sourceType", "userFlagged", "validatedDate", "esIndex"]
 
-                                #Append all the fields from the event
+                                #Append all the fields from the event, ignoring those that are not relevant
                                 for key in event:
                                     if key not in eventIgnoreList:
                                         field = self.camelToTitle(key)
@@ -927,7 +736,12 @@ script:
                         incident["Fidelis Event Found"] = False
                     incident["rawJSON"] = json.dumps(combined)
                     incidents.append(incident)
-                    latestInsertionDate = alert["insertionDate"]
+
+                    #Update the latest insertion date for the last run variable
+                    try:
+                        latestInsertionDate = (datetime.strptime(alert["insertionDate"],"%Y-%m-%dT%H:%M:%S.%fZ")).strftime("%Y-%m-%dT%H:%M:%SZ")
+                    except:
+                        pass
 
             # Store the last run time...
             demisto.setLastRun({'date': latestInsertionDate, "id": latestAlertId})
@@ -938,6 +752,37 @@ script:
                 sys.exit(0)
             demisto.incidents(incidents)
             sys.exit(0)
+
+        def camelToTitle(self, name):
+            underscore = camel_case_to_underscore(name)
+            spaces = underscore.replace("_", " ")
+            title = spaces.title()
+            return title
+            #s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+            #s2 = re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+            #s3 = s2.replace("_", " ")
+            #s4 = s3.title()
+            #return s4
+
+        def getTasks(self):
+            allScripts = self.fep.getScriptPackages()
+            if not allScripts["success"]:
+                demisto.results("Error obtaining list of scripts - {0}".format(allScripts["error"]))
+                exit(0)
+            scriptResults = []
+            duplicates = []
+            for script in allScripts["data"]["scripts"]:
+                if script["name"] in duplicates:
+                    continue
+                duplicates.append(script["name"])
+                scriptResults.append({"name": script["name"], "description": script["description"]})
+            entry = {'Type' : entryTypes['note'],
+            'Contents': None,
+            'ContentsFormat' : None,
+            'HumanReadable': scriptResults,
+            'ReadableContentsFormat' : formats['markdown'],
+            'EntryContext' : None}
+            demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': scriptResults} )
 
         def getEventForAlert(self):
 
@@ -964,9 +809,13 @@ script:
                 demisto.results("No alert ID provided and could not find an Alert ID in this incident")
                 exit(-1)
 
-            #Retrieve all alerts
-            searchCriteria = {"searchFields": [{"fieldName": "id", "value": alertId}]}
-            alerts = self.fep.searchAlerts(searchCriteria, 1000000, None, None, None)
+            #####################
+            #Retrieve the alert
+            #####################
+            facetSearch = {"searchFields":[{"fieldName":"Id","values":[{"value":alertId,"operator":0}]}]}
+            alerts = self.fep.getAlerts(None, 1, None, json.dumps(facetSearch), None, None)
+
+
 
             #If we cannot find any alerts, there's no point looking for the event anymore
             try:
@@ -988,7 +837,6 @@ script:
             if alert is None:
                 demisto.results("Could not locate alert with ID {0}".format(alertId))
                 exit(0)
-
 
             #Only continue if the alert has a related event
             try:
@@ -1045,7 +893,7 @@ script:
                 searchCriteria["criteriaV3"]["entityType"] = "script"
 
             searchCriteria["criteriaV3"]["filter"] = {"filterType": "composite", "logic": "and", "filters": [{"filterType": "criteria", "column": "eventType", "operator": "=", "value": alert["eventType"]}, {"filterType": "criteria", "column": "endpointName", "operator": "=~", "value": alert["target"]}]}
-            events = self.fep.searchEvents(searchCriteria, 1000)
+            events = self.fep.getEvents(searchCriteria, 1000)
 
             #Check to see if the call was successful or not
             if not events["success"]:
@@ -1119,9 +967,17 @@ script:
                 searchValue = ip
 
             #Get all endpoints
-            endpoints = self.fep.getAllEndpoints(1000000)
-            thisEndpoint = None
+            endpoints = self.fep.getEndpoints(0, 1000000, None)
 
+            try:
+                if endpoints["success"]:
+                    endpoints = endpoints["data"]["endpoints"]
+                else:
+                    demisto.results("Could not retrieve endpoints = {0}".format(endpoints["error"]))
+            except Exception as err:
+                demisto.results("Could not retrieve endpoints = {0}".format(err))
+
+            thisEndpoint = None
             for endpoint in endpoints:
                 if endpoint[searchField].lower() == searchValue.lower():
                     thisEndpoint = endpoint
@@ -1138,19 +994,43 @@ script:
             sys.exit(0)
 
         def deleteAlert(self):
+
             alertId = None
             try:
                 alertId = int(self.args["alertId"])
-            except Exception as err:
-                alertId = demisto.get(demisto.context(), "alertId")
+            except:
+                alertId = None
+
+            if alertId is None:
+                try:
+                    alertId = demisto.get(demisto.context(), "Alert ID")
+                except:
+                    alertId = None
+
             if alertId is None:
                 demisto.results("No alert ID provided or found trying to find one")
                 exit(0)
-            deleteResult = self.fep.deleteAlert(alertId)
-            if deleteResult["success"]:
+
+            url = "{0}/alerts/deletealerts".format(self.fep.baseURL)
+            if self.fep.ignoressl:
+                requests.packages.urllib3.disable_warnings()
+            headers = self.fep.headers
+            alertList = []
+            alertList.append(alertId)
+            try:
+                r = requests.post(url, headers = headers, data = json.dumps(alertList), verify=self.fep.checkURL)
+                if type(r.content) == bytes:
+                    rData = json.loads(r.content.decode("UTF-8"))
+                else:
+                    rData = json.loads(r.content)
+            except Exception as err:
+                self.lastError = err
+                return {"success": False, "error": err}
+
+            if rData["success"]:
                 demisto.results("Successfully deleted alert ID {0} from Fidelis Endpoint".format(alertId))
             else:
-                demisto.results("Failed to delete alert ID {0} - {1}}".format(alertId, deleteResult["error"]))
+                demisto.results("Failed to delete alert ID {0} - {1}}".format(alertId, rData["error"]))
             exit(0)
 
         def collectFile(self):
@@ -1183,190 +1063,111 @@ script:
                 demisto.results("No timeout provided")
                 exit(-1)
 
-            #Get the Agent ID of the hostname (if it exists)
-            endpoint = self.fep.getEndpointFromHostname(hostname)
-
-            #If there is no endpoint returned, then there is no agent installed
-            if endpoint is None:
-                demisto.error("There is no agent installed on {0}".format(self.args["hostname"]))
+            #Find our endpoint data
+            endpoint = None
+            endpoints = self.fep.getEndpoints(0, 1000000, None)
+            if not endpoints["success"] and len(endpoints["data"]["endpoints"] < 1):
+                demisto.results("Could not obtain a list of endpoints - {0}".format(endpoints["error"]))
                 exit(0)
+            for x in endpoints["data"]["endpoints"]:
+                if x["hostName"] == hostname:
+                    endpoint = x
 
             #Find the script we need to run
-            thisScript = self._findTaskandManifestForEndpoint(hostname, "Single File Collection by Path")
+            script = self.__findTaskForEndpoint__(hostname, "Single File Collection by Path")
 
-            if thisScript is None:
+            if script is None:
                 demisto.results("Could not located a file collection script suitable for {0}".format(self.args["hostname"]))
                 exit(0)
 
-            #Get the script data
-            script = thisScript["task"]
-
             #Get the script manifest
-            manifestData = thisScript["manifest"]
+            manifestData = self.fep.getScriptPackageManifest(script["id"])
 
             #Get the template to use
             template = self.fep.getScriptPackageTemplate(script["id"])
 
-            #Populate the script execution details with answers to questions
+            #Get the script metadata
+            metadata = self.fep.getScriptPackageMetadata(script["id"])
 
-            results = self.executeTask(hostname, "Single File Collection by Path", {"1": filepath}, timeoutInSeconds, False)
+            #Populate the script execution details with answers to questions
+            questions = template["data"]["questions"]
+            questions["1"] = filepath
+            scriptPackageId = template["data"]["scriptPackageId"]
+
+            scriptCriteria = {}
+            scriptCriteria["timeoutInSeconds"] = timeoutInSeconds
+            scriptCriteria["scriptPackageId"] = scriptPackageId
+            scriptCriteria["hosts"] = [endpoint["ipAddress"]]
+            scriptCriteria["integrationOutputs"] =  []
+            scriptCriteria["questions"] =  questions
+
+            results = self.fep.executeScriptPackage(scriptCriteria)
+
+            if not results["success"]:
+                demisto.results("There was an error executing \"{0}\" against \"{1}\" - {2}".format("Single File Collection by Path", hostname, results["error"]))
+                exit(0)
 
             #Get our results ID
             jobResultsId = results["data"]["jobResultId"]
 
             #Get our job ID
-            jobID = results["data"]["jobId"]
+            jobId = results["data"]["jobId"]
 
             #Monitor our job until it has complete
             counter = 0
-            status = self.fep.getJobStatus(jobID, jobResultsId)["data"]["statusCode"]
-
-            while status != 3:
-                if counter > timeoutInSeconds:
+            results = self.fep.fileSearchJobStatus(jobId, jobResultsId)
+            while counter < timeoutInSeconds:
+                counter += 1
+                results = self.fep.fileSearchJobStatus(jobId, jobResultsId)
+                if results["data"]["status"] == "Completed":
                     break
-                status = self.fep.getJobStatus(jobID, jobResultsId)["data"]["statusCode"]
                 time.sleep(1)
-                counter = counter + 1
 
-            results = self.fep.getJobStatus(jobID, jobResultsId)
+            time.sleep(5)
+            results = self.fep.fileSearchJobResults(jobId, jobResultsId)
 
-            if results["data"]["statusCode"] != 3:
-                demisto.results("The job executed with errors (or timed out) - {0}".format(results["data"]))
-                exit(0)
+            collectedFiles = results["data"]["jobResultInfos"][0]["collectedFiles"][0]
 
-            #Get our file from the results
-            results = self.fep.getFileSearchResults(jobID, jobResultsId)
-
-            #For each of our files found, return something into the console (the file)
-            if results["success"]:
-
-                #If there is no resulting information (file not located), then exit
-                try:
-                    if len(results["data"]["jobResultInfos"]) < 1:
-                        demisto.results("The task completed, but no files were found")
-                        exit(0)
-                except:
-                    demisto.results("The task executed, but no files were found")
-                    exit(0)
-
-                for item in results["data"]["jobResultInfos"]:
-                    output = {"target" : item["hostName"]}
-
-                    #If there are no files, then exit
-                    try:
-                        if len(item["collectedFiles"]) < 1:
-                            demisto.results("The task executed, but no files were collected")
-                            exit(0)
-                    except:
-                        demisto.results("The task executed, but no files were collected")
-                        exit(0)
-
-                    #For each file that was collected, grab the file stream from the platform
-                    for file in item["collectedFiles"]:
-                        fileStream = self.fep.getFileStream(file["id"])
-                        demisto.results(fileResult(file["name"],fileStream.getvalue()))
-            else:
-                demisto.results("Error whilst executing task - {0}".format(results["error"]))
-                exit(-1)
+            #Grab the file stream
+            fileStream = self.fep.fileSearchGetStream(collectedFiles["id"])
+            demisto.results(fileResult(collectedFiles["name"],fileStream))
             exit(0)
-
-        def _findTaskandManifestForEndpoint(self, hostname, taskName):
-
-            #Get the host data
-            endpoint = self.fep.getEndpointFromHostname(hostname)
-            if endpoint is None:
-                demisto.results("Could not find a Fidelis Endpoint agent installed for hostname '{0}'".format(hostname))
-                exit(0)
-
-            #Get the list of available tasks
-            tasks = self.fep.getAllTasks()
-            try:
-                if tasks["success"] is not True:
-                    demisto.results("Could not obtain a list of tasks - {0}".format(tasks["error"]))
-                    exit(0)
-            except Exception as err:
-                demisto.results("Could not obtain a list of tasks - {0}".format(err))
-                exit(-1)
-
-            #Find the processes task
-            potentialTasks = []
-            processTask = None
-            manifest = None
-            for task in tasks["data"]["scripts"]:
-                if task["name"] == taskName:
-                    potentialTasks.append(task)
-            if len(potentialTasks) < 1:
-                demisto.results("Could not find a task to list processes")
-                exit(0)
-
-            #For each of our potential tasks, get the metadata to match against the endpoint type
-            for task in potentialTasks:
-                thisManifest = self.fep.getScriptPackageManifest(task["id"])
-                try:
-                    if not thisManifest["success"]:
-                        continue
-                    platforms = thisManifest["data"]["platforms"]
-
-                    #If the endpoint is windows 64-bit
-                    if endpoint["osType"] == 1 and endpoint["osArch"] == 2 and platforms["windows64"]:
-                        processTask = task
-                        manifest = thisManifest
-                        break
-                    #If the endpoint is windows 32-bit
-                    if endpoint["osType"] == 1 and endpoint["osArch"] == 1 and platforms["windows32"]:
-                        processTask = task
-                        manifest = thisManifest
-                        break
-                    #If the endpoint is Linux 64-bit
-                    if endpoint["osType"] == 2 and endpoint["osArch"] == 2 and platforms["linux64"]:
-                        processTask = task
-                        manifest = thisManifest
-                        break
-                    #If the endpoint is Linux 32-bit
-                    if endpoint["osType"] == 2 and endpoint["osArch"] == 1 and platforms["linux32"]:
-                        processTask = task
-                        manifest = thisManifest
-                        break
-                    #If the endpoint is Mac 64-bit
-                    #There is no Mac Version yet
-                except:
-                    pass
-            if processTask is None:
-                demisto.results("Could not find a task to list processes")
-                exit(0)
-            return {"task": processTask, "manifest": manifest}
 
         def executeTask(self, hostname, taskName, inputQuestions, timeoutInSeconds, waitAndHandle):
 
             #Set the timeout to integer, just in case
             timeoutInSeconds = int(timeoutInSeconds)
 
-            #Get the host data
-            endpoint = self.fep.getEndpointFromHostname(hostname)
-            if endpoint is None:
-                demisto.results("Could not find a Fidelis Endpoint agent installed for hostname '{0}'".format(hostname))
+            #Find our endpoint data
+            endpoint = None
+            endpoints = self.fep.getEndpoints(0, 1000000, None)
+            if not endpoints["success"] and len(endpoints["data"]["endpoints"] < 1):
+                demisto.results("Could not obtain a list of endpoints - {0}".format(endpoints["error"]))
+                exit(0)
+            for x in endpoints["data"]["endpoints"]:
+                if x["hostName"] == hostname:
+                    endpoint = x
+
+            #Find the script we need to run
+            script = self.__findTaskForEndpoint__(hostname, taskName)
+
+            if script is None:
+                demisto.results("Could not located a file collection script suitable for {0}".format(self.args["hostname"]))
                 exit(0)
 
-            #Get the task details
-            data = self._findTaskandManifestForEndpoint(hostname, taskName)
-            processTask = data["task"]
-            manifest = data["manifest"]
+            #Get the script manifest
+            manifestData = self.fep.getScriptPackageManifest(script["id"])
 
-            #Get the package template for the task
-            template = self.fep.getScriptPackageTemplate(processTask["id"])
+            #Get the template to use
+            template = self.fep.getScriptPackageTemplate(script["id"])
 
-            try:
-                if not template["success"]:
-                    demisto.results("Error getting script template - {0}".format(tempalte["error"]))
-                    error(0)
-            except Exceptin as err:
-                demisto.results("Error getting script template - {0}".format(err))
-                exit(-1)
+            #Get the script metadata
+            metadata = self.fep.getScriptPackageMetadata(script["id"])
 
             if inputQuestions is not None:
                 for key in inputQuestions:
                     if key == "last":
-                        lastOption = len(manifest["data"]["questions"])
+                        lastOption = len(manifestData["data"]["questions"])
                         template["data"]["questions"][str(lastOption)] = inputQuestions[key]
 
                 for key in inputQuestions:
@@ -1376,66 +1177,55 @@ script:
                         except:
                             pass
 
+            #Build the criteria
+            scriptCriteria = {}
+            scriptCriteria["timeoutInSeconds"] = timeoutInSeconds
+            scriptCriteria["scriptPackageId"] = template["data"]["scriptPackageId"]
+            scriptCriteria["hosts"] = [endpoint["ipAddress"]]
+            scriptCriteria["integrationOutputs"] =  []
+            scriptCriteria["questions"] =  template["data"]["questions"]
+
             #Execute the task
-            questions = template["data"]["questions"]
-            scriptId = processTask["id"]
-            endpoints = [endpoint["ipAddress"]]
-            result = self.fep.executeScriptPackage(scriptId, endpoints, questions, timeoutInSeconds)
+            results = self.fep.executeScriptPackage(scriptCriteria)
 
+            #Return the result if this routine is not handling the output
             if not waitAndHandle:
-                return result
+                return results
 
-            #Check it executed successfully
-            try:
-                if not result["success"]:
-                    demisto.results("Could not execute task - {0}".format(result["error"]))
-                    exit(0)
-            except Exception as err:
-                demisto.results("Could not execute task - {0}".format(err))
-                exit(-1)
-
-            #Get the jobId and resultsId
-            jobId = result["data"]["jobId"]
-            jobResultId = result["data"]["jobResultId"]
-
-
-            #Wait until the job has complete
-            counter = 0
-            status = self.fep.getJobStatus(jobId, jobResultId)
-            while status["success"] and status["data"]["statusCode"] == 21:
-                if counter >= timeoutInSeconds:
-                    break
-                time.sleep(1)
-                counter += 1
-
-                status = self.fep.getJobStatus(jobId, jobResultId)
-
-            #Loop getting the job results up to the timeout to give the system time to populate them
-            jobResult = self.fep.getScriptJobResult(jobResultId)
-
-            if not jobResult["success"]:
-                demisto.results("Error getting task results - {0}".format(jobTargets["error"]))
+            #Check the result
+            if not results["success"]:
+                demisto.results("There was an error executing \"{0}\" against \"{1}\" - {2}".format(taskName, hostname, results["error"]))
                 exit(0)
 
-            counter = 0;
-            while len(jobResult["data"]["hits"]["hits"]) < 1:
-                if counter >= timeoutInSeconds:
+            #Get our results ID
+            jobResultsId = results["data"]["jobResultId"]
+
+            #Get our job ID
+            jobId = results["data"]["jobId"]
+
+            #Monitor our job until it has complete
+            counter = 0
+            results = self.fep.fileSearchJobStatus(jobId, jobResultsId)
+            while counter < timeoutInSeconds:
+                counter += 1
+                results = self.fep.fileSearchJobStatus(jobId, jobResultsId)
+                if results["data"]["status"] == "Completed":
                     break
                 time.sleep(1)
-                jobResult = self.fep.getScriptJobResult(jobResultId)
 
-            jobResult = self.fep.getScriptJobResult(jobResultId)
+            time.sleep(5)
+            results = self.fep.getScriptJobResults(jobResultsId)
 
-            if len(jobResult["data"]["hits"]["hits"]) < 1:
+            if len(results["data"]["hits"]["hits"]) < 1:
                 demisto.results("Task executed but no results received")
                 exit(0)
 
-            columns = jobResult["data"]["columns"]
+            columns = results["data"]["columns"]
             columns [:] = (x for x in columns if "_" not in x)
 
             #Parse through the items creating an entry for each
             entries = []
-            for item in jobResult["data"]["hits"]["hits"]:
+            for item in results["data"]["hits"]["hits"]:
                 entry = {}
                 for k in columns:
                     try:
@@ -1443,7 +1233,6 @@ script:
                     except:
                         entry[k] = ""
                 entries.append(entry)
-                #demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': entry})
             demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': entries})
             exit(0)
 
@@ -1467,7 +1256,7 @@ script:
                 hostname = None
             if hostname is None:
                 try:
-                    demisto.get(demisto.context(), "Endpoint.Hostname")
+                    hostname = demisto.get(demisto.context(), "Endpoint.Hostname")
                 except:
                     hostname = None
             if hostname is None:
@@ -1501,7 +1290,7 @@ script:
                 hostname = None
             if hostname is None:
                 try:
-                    demisto.get(demisto.context(), "Endpoint.Hostname")
+                    hostname = demisto.get(demisto.context(), "Endpoint.Hostname")
                 except:
                     hostname = None
             if hostname is None:
@@ -1525,7 +1314,7 @@ script:
                 hostname = None
             if hostname is None:
                 try:
-                    demisto.get(demisto.context(), "Endpoint.Hostname")
+                    hostname = demisto.get(demisto.context(), "Endpoint.Hostname")
                 except:
                     hostname = None
             if hostname is None:
@@ -1540,11 +1329,6 @@ script:
             except:
                 additionalIPs = None
 
-            #Get the context path
-
-            #Get the endpoint details
-            endpoint = self.fep.getEndpointFromHostname(hostname)
-
             #Get the timeout
             timeoutInSeconds = 30
             try:
@@ -1552,16 +1336,27 @@ script:
             except:
                 timeoutInSeconds = 30
 
-            #Get the task details
-            data = self._findTaskandManifestForEndpoint(hostname, "Network Isolation")
-            processTask = data["task"]
-            manifest = data["manifest"]
+            #Find the script we need to run
+            script = self.__findTaskForEndpoint__(hostname, "Network Isolation")
+
+            if script is None:
+                demisto.results("Could not find a script named \"{0}\" suitable for {1}".format("Network Isolation", self.args["hostname"]))
+                exit(0)
+
+            #Get the script manifest
+            manifestData = self.fep.getScriptPackageManifest(script["id"])
+
+            #Get the template to use
+            template = self.fep.getScriptPackageTemplate(script["id"])
+
+            #Get the script metadata
+            metadata = self.fep.getScriptPackageMetadata(script["id"])
 
             #Get the template
-            template = self.fep.getScriptPackageTemplate(processTask["id"])
+            template = self.fep.getScriptPackageTemplate(script["id"])
 
             #Populate the template
-            completeIPs = manifest["data"]["questions"][0]["answer"].split(",")
+            completeIPs = manifestData["data"]["questions"][0]["answer"].split(",")
             if additionalIPs is not None:
                 completeIPs = list(set(completeIPs + additionalIPs))
 
@@ -1569,10 +1364,7 @@ script:
             template["data"]["questions"]["1"] = ",".join(completeIPs)
 
             #Execute the task
-            data = self.executeTask(hostname, "Network Isolation", {"1": ",".join(completeIPs)}, timeoutInSeconds, True)
-
-
-            demisto.results(template)
+            result = self.executeTask(hostname, "Network Isolation", {"1": ",".join(completeIPs)}, timeoutInSeconds, True)
             exit(0)
 
         def removeIsolation(self):
@@ -1585,7 +1377,7 @@ script:
                 hostname = None
             if hostname is None:
                 try:
-                    demisto.get(demisto.context(), "Endpoint.Hostname")
+                    hostname = demisto.get(demisto.context(), "Endpoint.Hostname")
                 except:
                     hostname = None
             if hostname is None:
@@ -1602,52 +1394,86 @@ script:
 
             #Execute the task
             data = self.executeTask(hostname, "Network Isolation Remove", None, timeoutInSeconds, True)
-
-
-            demisto.results(template)
             exit(0)
 
-        def _findEvents(self, searchCriteria, duration, limit):
+        def getEvents(self, searchCriteria, duration, limit, removeduplicates, hostname):
 
-            #Build the time start and end dates
+            #Build the search criteria
             now = datetime.now()
-            end = now.strftime("%Y-%m-%dT%H:%M:%SZ")
-            then = now - timedelta(hours=duration)
-            start = then.strftime("%Y-%m-%dT%H:%M:%SZ")
+            searchCriteria["dateRange"] = {"start": datetime.strftime(now - timedelta(hours=duration), "%Y-%m-%dT%H:%M:%S.000Z"), "end": datetime.strftime(now, "%Y-%m-%dT%H:%M:%S.000Z")}
 
-            thisSearchCriteria = {"dateRange": {"start": start, "end": end}, "criteriaV3": searchCriteria}
+            #If we have a hostname, then use it
+            if hostname is not None:
+                searchCriteria["filter"]["filters"].append({"filterType": "criteria", "column": "endpointName", "operator": "=", "value": hostname})
 
-            #Perform the search
-            events = self.fep.searchEvents(thisSearchCriteria, limit)
+            #Get the events
+            events = self.fep.getEvents(searchCriteria, 10000)
 
-            return events
+            #Ensure there are no errors
+            if not events["success"]:
+                demisto.results("There was an error - {0}".format(events["error"]))
+                exit(-1)
+
+            if events["success"] and len(events["data"]["events"]) < 1:
+                demisto.results("Could not find any events")
+                exit(0)
+
+            #Parse the events
+            endpoints = []
+            counter = 0
+            eventResults = []
+            for event in events["data"]["events"]:
+                if counter >= limit:
+                    break
+                if removeduplicates and event["endpointName"] in endpoints:
+                    continue
+
+                if event["endpointName"] not in endpoints:
+                    endpoints.append(event["endpointName"])
+
+                ignoreList = ["entityType", "esDocumentType", "esIndex", "eventIndex", "fileCategory", "fileType", "indexingTime", "parentId", "reportId", "targetId"]
+
+                entry = {}
+                for x in event:
+                    if x in ignoreList:
+                        continue
+                    field = self.camelToTitle(x)
+
+                    entry[field] = event[x]
+                eventResults.append(entry)
+                #demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': entry})
+                counter += 1
+            demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': eventResults})
 
         def findFileEventsByHash(self):
 
+            #Get the duration
+            duration = 24
             try:
-                #Get the duration
                 duration = int(self.args["duration"])
+            except:
+                pass
 
-                #Get the limit
+            #Get the limit
+            limit = 100
+            try:
                 limit = int(self.args["limit"])
+            except:
+                pass
 
-                #Get the remove duplicates value
+            #Get the remove duplicates value
+            removeduplicates = False
+            try:
                 removeduplicates = self.args["removeduplicates"]
-            except Exception as err:
-                demisto.results("Error with inputs - {0}".format(err))
-                exit(-1)
+            except:
+                pass
 
-            #Get the hostname
+            #Get the hostname - but it's not important
             hostname = None
             try:
                 hostname = self.args["hostname"]
             except:
                 hostname = None
-            if hostname is None:
-                try:
-                    demisto.get(demisto.context(), "Endpoint.Hostname")
-                except:
-                    hostname = None
 
             #Check the hash length to ensure it is MD5
             if len(self.args["hash"]) != 32:
@@ -1656,70 +1482,36 @@ script:
             md5 = self.args["hash"]
 
             #Build the search criteria
-            searchCriteria = {}
-            searchCriteria["entityType"] = "file"
-            searchCriteria["filter"] = {"filterType": "composite", "logic": "and", "filters": [{"filterType": "criteria", "column": "eventType", "operator": "=", "value": 6}, {"filterType": "criteria", "column": "hash", "operator": "=", "value": md5}]}
+            searchCriteria = {"criteriaV3": {} }
+            searchCriteria["criteriaV3"]["entityType"] = "file"
+            searchCriteria["criteriaV3"]["filter"] = {"filterType": "composite", "logic": "and", "filters": [{"filterType": "criteria", "column": "eventType", "operator": "=", "value": 6}, {"filterType": "criteria", "column": "hash", "operator": "=", "value": md5}]}
 
-            #If we have a hostname, then use it
-            if hostname is not None:
-                searchCriteria["filter"]["filters"].append({"filterType": "criteria", "column": "endpointName", "operator": "=", "value": hostname})
-
-            #Get the events
-            events = self._findEvents(searchCriteria, duration, 10000)
-
-            #Ensure ther are no errors
-            if not events["success"]:
-                demisto.results("There was an error - {0}".format(events["error"]))
-                exit(-1)
-
-            if events["success"] and len(events["data"]["events"]) < 1:
-                demisto.results("Could not find any events")
-                exit(0)
-
-            #Parse the events
-            endpoints = []
-            counter = 0
-            for event in events["data"]["events"]:
-                if counter >= limit:
-                    break
-                if removeduplicates and event["endpointName"] in endpoints:
-                    continue
-
-                if event["endpointName"] not in endpoints:
-                    endpoints.append(event["endpointName"])
-
-                ignoreList = ["entityType", "esDocumentType", "esIndex", "eventIndex", "fileCategory", "fileType", "indexingTime", "parentId", "reportId", "targetId"]
-
-                entry = {}
-                for x in event:
-                    if x in ignoreList:
-                        continue
-                    field = self.camelToTitle(x)
-
-                    entry[field] = event[x]
-
-                demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': entry})
-                counter += 1
+            #Carry out the search
+            self.getEvents(searchCriteria, duration, limit, removeduplicates, hostname)
             exit(0)
 
         def findProcessEventsByHash(self):
 
+            #Get the duration
             try:
-                #Get the duration
                 duration = int(self.args["duration"])
+            except:
+                pass
 
-                #Get the limit
+            #Get the limit
+            try:
                 limit = int(self.args["limit"])
+            except:
+                pass
 
-                #Get the remove duplicates value
+            #Get the remove duplicates value
+            try:
                 removeduplicates = self.args["removeduplicates"]
+            except:
+                pass
 
-                #Get the hash
-                md5 = self.args["hash"]
-
-            except Exception as err:
-                demisto.results("Error with inputs - {0}".format(err))
-                exit(-1)
+            #Get the hash
+            md5 = self.args["hash"]
 
             #Get the hostname
             hostname = None
@@ -1727,11 +1519,6 @@ script:
                 hostname = self.args["hostname"]
             except:
                 hostname = None
-            if hostname is None:
-                try:
-                    demisto.get(demisto.context(), "Endpoint.Hostname")
-                except:
-                    hostname = None
 
             #Check the hash length to ensure it is MD5
             if len(md5) != 32:
@@ -1740,68 +1527,33 @@ script:
 
 
             #Build the search criteria
-            searchCriteria = {}
-            searchCriteria["entityType"] = "process"
-            searchCriteria["filter"] = {"filterType": "composite", "logic": "and", "filters": [{"filterType": "criteria", "column": "eventType", "operator": "=", "value": 0}, {"filterType": "criteria", "column": "hash", "operator": "=", "value": md5}]}
+            searchCriteria = {"criteriaV3": {} }
+            searchCriteria["criteriaV3"]["entityType"] = "process"
+            searchCriteria["criteriaV3"]["filter"] = {"filterType": "composite", "logic": "and", "filters": [{"filterType": "criteria", "column": "eventType", "operator": "=", "value": 0}, {"filterType": "criteria", "column": "hash", "operator": "=", "value": md5}]}
 
-            #If we have a hostname, then use it
-            if hostname is not None:
-                searchCriteria["filter"]["filters"].append({"filterType": "criteria", "column": "endpointName", "operator": "=", "value": hostname})
-
-            #Get the events
-            events = self._findEvents(searchCriteria, duration, 10000)
-
-            #Ensure ther are no errors
-            if not events["success"]:
-                demisto.results("There was an error - {0}".format(events["error"]))
-                exit(-1)
-
-            if events["success"] and len(events["data"]["events"]) < 1:
-                demisto.results("Could not find any events")
-                exit(0)
-
-            #Parse the events
-            endpoints = []
-            counter = 0
-            for event in events["data"]["events"]:
-                if counter >= limit:
-                    break
-                if removeduplicates and event["endpointName"] in endpoints:
-                    continue
-
-                if event["endpointName"] not in endpoints:
-                    endpoints.append(event["endpointName"])
-
-                ignoreList = ["entityType", "esDocumentType", "esIndex", "eventIndex", "fileCategory", "fileType", "indexingTime", "parentId", "reportId", "targetId"]
-
-                entry = {}
-                for x in event:
-                    if x in ignoreList:
-                        continue
-                    field = self.camelToTitle(x)
-
-                    entry[field] = event[x]
-
-                demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': entry})
-                counter += 1
+            #Carry out the search
+            self.getEvents(searchCriteria, duration, limit, removeduplicates, hostname)
             exit(0)
 
         def findUSBEvents(self):
 
-            #Set some default values
+            #Get the duration
             try:
-                #Get the duration
                 duration = int(self.args["duration"])
+            except:
+                pass
 
-                #Get the limit
+            #Get the limit
+            try:
                 limit = int(self.args["limit"])
+            except:
+                pass
 
-                #Get the remove duplicates
+            #Get the remove duplicates value
+            try:
                 removeduplicates = self.args["removeduplicates"]
-
-            except Exception as err:
-                demisto.results("Error with inputs - {0}".format(err))
-                exit(-1)
+            except:
+                pass
 
             #Try and get our hostname
             hostname = None
@@ -1809,11 +1561,6 @@ script:
                 hostname = self.args["hostname"]
             except:
                 hostname = None
-            if hostname is None:
-                try:
-                    demisto.get(demisto.context(), "Endpoint.Hostname")
-                except:
-                    hostname = None
 
             #Try and get a serial number
             serial = None
@@ -1823,54 +1570,16 @@ script:
                 serial = None
 
             #Build the search criteria
-            searchCriteria = {}
-            searchCriteria["entityType"] = "usb"
-            searchCriteria["filter"] = {"filterType": "composite", "logic": "and", "filters": []}
-
-            #If we have a hostname, then use it
-            if hostname is not None:
-                searchCriteria["filter"]["filters"].append({"filterType": "criteria", "column": "endpointName", "operator": "=", "value": hostname})
+            searchCriteria = {"criteriaV3": {} }
+            searchCriteria["criteriaV3"]["entityType"] = "usb"
+            searchCriteria["criteriaV3"]["filter"] = {"filterType": "composite", "logic": "and", "filters": []}
 
             #If we have a USB serial number to use then use it
             if serial is not None:
-                searchCriteria["filter"]["filters"].append({"filterType": "criteria", "column": "serial", "operator": "=", "value": serial})
+                searchCriteria["criteriaV3"]["filter"]["filters"].append({"filterType": "criteria", "column": "serial", "operator": "=", "value": serial})
 
-            #Get the events
-            events = self._findEvents(searchCriteria, duration, 10000)
-
-            #Ensure ther are no errors
-            if not events["success"]:
-                demisto.results("There was an error - {0}".format(events["error"]))
-                exit(-1)
-
-            if events["success"] and len(events["data"]["events"]) < 1:
-                demisto.results("Could not find any events")
-                exit(0)
-
-            #Parse the events
-            endpoints = []
-            counter = 0
-            for event in events["data"]["events"]:
-                if counter >= limit:
-                    break
-                if removeduplicates and event["endpointName"] in endpoints:
-                    continue
-
-                if event["endpointName"] not in endpoints:
-                    endpoints.append(event["endpointName"])
-
-                ignoreList = ["entityType", "esDocumentType", "esIndex", "eventIndex", "fileCategory", "fileType", "indexingTime", "parentId", "reportId", "targetId"]
-
-                entry = {}
-                for x in event:
-                    if x in ignoreList:
-                        continue
-                    field = self.camelToTitle(x)
-
-                    entry[field] = event[x]
-
-                demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': entry})
-                counter += 1
+            #Carry out the search
+            self.getEvents(searchCriteria, duration, limit, removeduplicates, hostname)
             exit(0)
 
         def killProcessBySearch(self):
@@ -1915,7 +1624,7 @@ script:
     ##########################################################################################
     # Check that we have an IP and authentication details to use
     ##########################################################################################
-    if thisFunction.params["ip"] and thisFunction.params["authentication"]:
+    if thisFunction.params["host"] and thisFunction.params["authentication"]:
         pass
     else:
         demisto.results('Failed - Not enough parameters (IP, Username, Password) provided')
@@ -1936,6 +1645,8 @@ script:
         thisFunction.testModule()
     if demisto.command() == 'fetch-incidents':
         thisFunction.fetchIncidents()
+    if demisto.command() == 'fidelis-test':
+        thisFunction.test()
     if demisto.command() == 'fidelis-edr-get-event-for-alert':
         thisFunction.getEventForAlert()
     if demisto.command() == 'fidelis-edr-get-endpoint-info':
@@ -1963,6 +1674,7 @@ script:
     if demisto.command() == 'fidelis-edr-USB-activity':
         thisFunction.findUSBEvents()
     ##########################################################################################
+
 
 
   type: python
@@ -2008,7 +1720,7 @@ script:
       defaultValue: "24"
     - name: limit
       description: Maximum number of events to bring back
-      defaultValue: "1000"
+      defaultValue: "100"
     - name: removeduplicates
       auto: PREDEFINED
       predefined:
@@ -2037,14 +1749,6 @@ script:
       - "True"
       - "False"
       description: Only return 1 event per endpoint
-      defaultValue: "False"
-    - name: extended
-      auto: PREDEFINED
-      predefined:
-      - "True"
-      - "False"
-      description: Get extended data (otherwise only process name, user, hostname
-        and process start time are returned)
       defaultValue: "False"
     description: Finds executions of a process that matches an MD5 hash
   - name: fidelis-edr-get-tasks
@@ -2126,6 +1830,8 @@ script:
       description: Timeout to wait for the job to complete (default is 60 seconds)
       defaultValue: "60"
     description: Attempts to obtain a list of services from the endpoint.
+  - name: fidelis-test
+    arguments: []
   dockerimage: demisto/python3:3.7.3.221
   isfetch: true
   runonce: false
