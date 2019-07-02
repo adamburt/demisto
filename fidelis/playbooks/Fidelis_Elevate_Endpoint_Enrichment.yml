@@ -1,6 +1,9 @@
 id: e7ac9021-96ee-451c-88fa-a2a027f5f20b
-version: 201
+version: 202
 name: Fidelis Elevate Endpoint Enrichment
+description: This playbook will attempt to gather event data for the alert (if it
+  exists and the alert does not already have event data). It will also assign an incident
+  type based on the event data it finds.
 starttaskid: "0"
 tasks:
   "0":

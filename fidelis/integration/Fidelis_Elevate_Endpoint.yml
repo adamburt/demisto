@@ -438,16 +438,6 @@ script:
                 self.checkURL = False
             self.fep = fidelisEndpoint(self.params["host"], self.params["authentication"]["identifier"], self.params["authentication"]["password"], self.params["method"], self.ignoressl)
 
-        def test(self):
-            times = int(self.params["lastDays"])
-            now = datetime.now()
-            startDate = now - timedelta(days=int(self.params["lastDays"]))
-            allAlerts = self.fep.getAlerts(0, 500, "insertionDate+Ascending", None, startDate, None)
-            for alert in allAlerts["data"]["entities"]:
-                latestinsertiondate = (datetime.strptime(alert["insertionDate"],"%Y-%m-%dT%H:%M:%S.%fZ")).strftime("%Y-%m-%dT%H:%M:%SZ")
-            demisto.results(latestinsertiondate)
-            exit(0)
-
         def __findTaskForEndpoint__(self, hostname, taskName):
 
             #Get the host data
@@ -1645,8 +1635,6 @@ script:
         thisFunction.testModule()
     if demisto.command() == 'fetch-incidents':
         thisFunction.fetchIncidents()
-    if demisto.command() == 'fidelis-test':
-        thisFunction.test()
     if demisto.command() == 'fidelis-edr-get-event-for-alert':
         thisFunction.getEventForAlert()
     if demisto.command() == 'fidelis-edr-get-endpoint-info':
@@ -1830,8 +1818,6 @@ script:
       description: Timeout to wait for the job to complete (default is 60 seconds)
       defaultValue: "60"
     description: Attempts to obtain a list of services from the endpoint.
-  - name: fidelis-test
-    arguments: []
   dockerimage: demisto/python3:3.7.3.221
   isfetch: true
   runonce: false
