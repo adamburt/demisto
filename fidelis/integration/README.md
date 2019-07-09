@@ -8,8 +8,16 @@ _____
 
 This integration requires the creation of the following incident types:
 
-1. Suspicious File
-2. Suspicious Registry
-3. Suspicious Process
+1. Suspicious Process
+2. Suspicious File
+3. Suspicious Registry
+4. Windows Event ID
+5. USB
+6. Fidelis Elevate Endpoint
 
+_____
+
+
+
+_____
 _____
