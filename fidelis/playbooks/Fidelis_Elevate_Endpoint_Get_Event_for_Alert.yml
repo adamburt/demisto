@@ -1,5 +1,5 @@
 id: ffcd505b-7a89-40c0-86bb-8b59ab5e0bb8
-version: 56
+version: 58
 name: Fidelis Elevate Endpoint Get Event for Alert
 description: Attempts to look up the event data associated with an alert generated
   by Fidelis Elevate Endpoint
