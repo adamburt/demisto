@@ -14,7 +14,7 @@ detaileddescription: "***Fidelis Endpoint EDR Platform***\n\n**Overview**\nThis 
 configuration:
 - display: Host / IP Address
   name: host
-  defaultvalue: 127.0.0.1
+  defaultvalue: ""
   type: 0
   required: true
 - display: Username
@@ -45,11 +45,6 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
-- display: Attempt to Lookup Event Data
-  name: enrich
-  defaultvalue: "false"
-  type: 8
-  required: true
 - display: Initial number of days to go back to for first import
   name: lastDays
   defaultvalue: "5"
@@ -65,6 +60,7 @@ script:
     from datetime import timedelta
     import time
     import io
+
 
 
     class fidelisEndpoint:
@@ -317,6 +313,7 @@ script:
             except Exception as err:
                 return {"success": False, "error": err}
             return data.getvalue()
+
         def deleteJob(self, jobId):
             url = "{0}/jobs/{1}".format(self.baseURL, jobId)
             rData = self.__genericDeleteRequest__(url, None)
@@ -602,128 +599,9 @@ script:
 
                         #For each field in the alert (except those in the ignore list) create an entry with the details
                         if key not in alertIgnoreList:
-                            field = self.camelToTitle(key)
+                            field = pascalToSpace(key)
                             combined[field] = alert[key]
 
-                    #Whether to enrich the alert with event data
-                    try:
-                        if self.params["enrich"] and alert["eventTime"] is not None and alert["eventType"] is not None and alert["eventId"] is not None:
-                            #Detect the long date type
-                            if "." in alert["eventTime"]:
-                                eventStart = datetime.strptime(alert["eventTime"], '%Y-%m-%dT%H:%M:%S.%fZ') - timedelta(seconds=1)
-                                eventEnd = datetime.strptime(alert["eventTime"], '%Y-%m-%dT%H:%M:%S.%fZ') + timedelta(seconds=1)
-                                eventStart = datetime.strftime(eventStart, "%Y-%m-%dT%H:%M:%SZ")
-                                eventEnd = datetime.strftime(eventEnd, "%Y-%m-%dT%H:%M:%SZ")
-
-                            #Detect the short date type
-                            else:
-                                eventStart = datetime.strptime(alert["eventTime"], '%Y-%m-%dT%H:%M:%SZ') - timedelta(seconds=1)
-                                eventEnd = datetime.strptime(alert["eventTime"], '%Y-%m-%dT%H:%M:%SZ') + timedelta(seconds=1)
-                                eventStart = datetime.strftime(eventStart, "%Y-%m-%dT%H:%M:%SZ")
-                                eventEnd = datetime.strftime(eventEnd, "%Y-%m-%dT%H:%M:%SZ")
-
-
-                            #Create an eventType fields for use later
-                            thisEventType = ""
-
-                            ###############################
-                            #Create the search criteria
-                            ###############################
-
-                            #Define the date range
-                            searchCriteria = {"dateRange": {"start": eventStart, "end": eventEnd}, "criteriaV3": {}}
-
-                            ##
-                            #Define the eventType
-                            ##
-
-                            #If this is process based
-                            if alert["eventType"] == 0 or alert["eventType"] == 30:
-                                searchCriteria["criteriaV3"]["entityType"] = "process"
-                                thisEventType = "process"
-
-                            #If this is file based
-                            if alert["eventType"] > 3  and alert["eventType"] < 9:
-                                searchCriteria["criteriaV3"]["entityType"] = "file"
-                                thisEventType = "file"
-
-                            #If this is network based
-                            if alert["eventType"] == 3:
-                                searchCriteria["criteriaV3"]["entityType"] = "network"
-                                thisEventType = "network"
-
-                            #If this is DNS based
-                            if alert["eventType"] == 17:
-                                searchCriteria["criteriaV3"]["entityType"] = "dns"
-                                thisEventType = "dns"
-
-                            #If this is registry based
-                            if alert["eventType"] > 9 and alert["eventType"] < 13:
-                                searchCriteria["criteriaV3"]["entityType"] = "registry"
-                                thisEventType = "registry"
-
-                            #If this is USB based
-                            if alert["eventType"] > 13 and alert["eventType"] < 17:
-                                searchCriteria["criteriaV3"]["entityType"] = "usb"
-                                thisEventType = "usb"
-
-                            #If this is WEV based
-                            if alert["eventType"] == 13:
-                                searchCriteria["criteriaV3"]["entityType"] = "windowsevent"
-                                thisEventType = "windowsevent"
-
-                            #If this is Malware based
-                            if alert["eventType"] > 17 and alert["eventType"] < 30:
-                                searchCriteria["criteriaV3"]["entityType"] = "antiMalware"
-                                thisEventType = "antiMalware"
-
-                            #If this is a thread execution
-                            if alert["eventType"] == 31 or alert["eventType"] == 32:
-                                searchCriteria["criteriaV3"]["entityType"] = "remoteThread"
-                                thisEventType = "remoteThread"
-
-                            #If this is a script execution
-                            if alert["eventType"] == 34 :
-                                searchCriteria["criteriaV3"]["entityType"] = "script"
-                                thisEventType = "script"
-
-                            #Populate the criteriaV3 with fields that allow us to search for relevant events
-                            searchCriteria["criteriaV3"]["filter"] = {"filterType": "composite", "logic": "and", "filters": [{"filterType": "criteria", "column": "eventType", "operator": "=", "value": alert["eventType"]}, {"filterType": "criteria", "column": "endpointName", "operator": "=~", "value": alert["target"]}]}
-
-                            #Carry out the search
-                            getEvents(self, searchCriteria, pageSize)
-                            events = self.fep.getEvents(searchCriteria, 1000)
-
-                            #If we receive a valid alert
-                            event = None
-                            possibleEvents = []
-                            if events["success"] and len(events["data"]["events"]) > 0:
-                                events = events["data"]["events"]
-                                for item in events:
-                                    if item["targetId"] == alert["eventId"] and item["parentId"] == alert["parentEventId"] and item["eventIndex"] == alert["eventIndex"]:
-                                        possibleEvents.append(item)
-
-                            if len(possibleEvents) == 1:
-                                event = possibleEvents[0]
-
-                            if event:
-
-                                #Create a list of fields that are not relevant for the user
-                                eventIgnoreList = ["indexingTime", "eventTime", "firstEventTime", "insertionDate", "parentId", "targetId", "viewed", "reportId", "parentEventId", "lastEventTime", "eventIndex", "eventTime", "eventType", "sourceType", "userFlagged", "validatedDate", "esIndex"]
-
-                                #Append all the fields from the event, ignoring those that are not relevant
-                                for key in event:
-                                    if key not in eventIgnoreList:
-                                        field = self.camelToTitle(key)
-                                        combined[field] = event[key]
-                                combined["Fidelis Event Found"] = True
-
-                            if event is None:
-                                combined["Fidelis Event Found"] = False
-                        if not self.params["enrich"] or alert["eventTime"] is None or alert["eventType"] is None or alert["eventId"] is None:
-                            combined["Fidelis Event Found"] = False
-                    except:
-                        incident["Fidelis Event Found"] = False
                     incident["rawJSON"] = json.dumps(combined)
                     incidents.append(incident)
 
@@ -743,55 +621,104 @@ script:
             demisto.incidents(incidents)
             sys.exit(0)
 
-        def camelToTitle(self, name):
-            underscore = camel_case_to_underscore(name)
-            spaces = underscore.replace("_", " ")
-            title = spaces.title()
-            return title
-            #s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
-            #s2 = re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
-            #s3 = s2.replace("_", " ")
-            #s4 = s3.title()
-            #return s4
+        def getScripts(self):
 
-        def getTasks(self):
+            #This function will add to conext and not overwrite any context
+
             allScripts = self.fep.getScriptPackages()
             if not allScripts["success"]:
                 demisto.results("Error obtaining list of scripts - {0}".format(allScripts["error"]))
                 exit(0)
+
             scriptResults = []
             duplicates = []
+            entries = {}
             for script in allScripts["data"]["scripts"]:
-                if script["name"] in duplicates:
-                    continue
-                duplicates.append(script["name"])
-                scriptResults.append({"name": script["name"], "description": script["description"]})
-            entry = {'Type' : entryTypes['note'],
-            'Contents': None,
-            'ContentsFormat' : None,
-            'HumanReadable': scriptResults,
-            'ReadableContentsFormat' : formats['markdown'],
-            'EntryContext' : None}
-            demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': scriptResults} )
 
-        def getEventForAlert(self):
+                #Create an entry
+                output = {"ID": script["id"], "Name": script["name"], "Description": script["description"]}
+
+                #Get the manifest
+                manifest = self.fep.getScriptPackageManifest(script["id"])
+                if not manifest["success"]:
+                    continue
+
+                output["Platforms"] = []
+                for p in manifest["data"]["platforms"]:
+                    if manifest["data"]["platforms"][p]:
+                        output["Platforms"].append(p)
+
+                platformString = ",".join(output["Platforms"])
+
+                entryName = "{0} ({1})".format(script["name"], platformString)
+                entries[entryName] = output
+
+            demisto.results({
+                "Type": entryTypes["note"],
+                "ContentsFormat": formats["text"],
+                "Contents": "Script context updated",
+                "ReadableContentsFormat": None,
+                "HumanReadable": None,
+                "EntryContext": {"Fidelis.Endpoint.Scripts" : entries}
+                }
+            )
+            exit(0)
+
+        def getScriptQuestions(self):
+
+            scriptId = None
+
+            #Try and get the script ID from the input
+            try:
+                scriptId = self.args["scriptId"]
+            except:
+                scriptId = None
+
+            #If there is none, exit
+            if scriptId is None:
+                demisto.results("No script ID provided")
+                exit(0)
+
+            manifest = self.fep.getScriptPackageManifest(scriptId)
+
+            if not manifest["success"]:
+                demisto.results("No script found with ID {0}".format(scriptId))
+                exit(0)
+
+            questions = manifest["data"]["questions"]
+            demisto.results({
+                "Type": entryTypes["note"],
+                "ContentsFormat": formats["text"],
+                "Contents": "Questions context updated",
+                "ReadableContentsFormat": None,
+                "HumanReadable": None,
+                "EntryContext": {"Fidelis.Endpoint.Script.Questions" : questions}
+                }
+            )
+            exit(0)
+
+        def getAlertDetails(self):
+            alertTest = demisto.get(demisto.context(), 'Fidelis.Endpoint.Alert.Id')
+            if alertTest is not None:
+                demisto.results("Alert details already exists in context")
+                exit(0)
 
             #See if we have an alert ID to work with
             alertId = None
             try:
-                alertId = self.args["alertId"]
+                alertId = int(self.args["alertId"])
             except:
                 alertId = None
 
             if alertId is None:
                 try:
-                    alertId = demisto.get(demisto.context(), "Alert ID")
+                    alertId = int(demisto.get(demisto.context(), "Alert ID"))
                 except:
                     alertId = None
 
             if alertId is None:
                 try:
-                    alertId = demisto.get(demisto.context(), "incident.labels.Id")
+                    alertId = int(demisto.get(demisto.context(), "incident.labels.Id"))
                 except:
                     alertId = None
 
@@ -803,9 +730,8 @@ script:
             #Retrieve the alert
             #####################
             facetSearch = {"searchFields":[{"fieldName":"Id","values":[{"value":alertId,"operator":0}]}]}
-            alerts = self.fep.getAlerts(None, 1, None, json.dumps(facetSearch), None, None)
 
-
+            alerts = self.fep.getAlerts(0, 1000, None, json.dumps(facetSearch), None, None)
 
             #If we cannot find any alerts, there's no point looking for the event anymore
             try:
@@ -814,6 +740,83 @@ script:
                     exit(-1)
             except Exception as err:
                 demisto.error({"Error": "Error looking through alerts - {0}".format(err)})
+
+                exit(-1)
+
+            #Find our specific alert by the id
+            alert = None
+            for thisAlert in alerts["data"]["entities"]:
+                if thisAlert["id"] == alertId:
+                    alert = thisAlert
+                    break
+
+            #Only continue if we have found the alert information
+            if alert is None:
+                demisto.results("Could not locate alert with ID {0}".format(alertId))
+                exit(0)
+
+            #If we have alert details then add them to the context
+            if alert:
+                alertIgnoreList = ["eventType", "validatedDate", "viewed", "alertTargtId", "reportId", "eventIndex", "status", "intelSourceType", "parentEventId", "respondedDate", "sourceType"]
+                alertDetails = {}
+                for field in alert:
+                    if field not in alertIgnoreList:
+                        newField = pascalToSpace(field)
+                        alertDetails[newField] = alert[field]
+
+                demisto.results(
+                    {'Type': entryTypes["note"],
+                    'ContentsFormat': formats["text"],
+                    'Contents': "Alert context updated",
+                    'ReadableContentsFormat': None,
+                    'HumanReadable': None,
+                    'EntryContext': {'Fidelis.Endpoint.Alert': alertDetails}})
+
+        def getEventForAlert(self):
+
+            eventTest = demisto.get(demisto.context(), 'Fidelis.Endpoint.Alert.Event')
+            if eventTest is not None:
+                demisto.results("Event details already exist in context")
+                exit(0)
+
+            #See if we have an alert ID to work with
+            alertId = None
+            try:
+                alertId = int(self.args["alertId"])
+            except:
+                alertId = None
+
+            if alertId is None:
+                try:
+                    alertId = int(demisto.get(demisto.context(), "Alert ID"))
+                except:
+                    alertId = None
+
+            if alertId is None:
+                try:
+                    alertId = int(demisto.get(demisto.context(), "incident.labels.Id"))
+                except:
+                    alertId = None
+
+            if alertId is None:
+                demisto.results("No alert ID provided and could not find an Alert ID in this incident")
+                exit(0)
+
+            #####################
+            #Retrieve the alert
+            #####################
+            facetSearch = {"searchFields":[{"fieldName":"Id","values":[{"value":alertId,"operator":0}]}]}
+
+            alerts = self.fep.getAlerts(0, 1000, None, json.dumps(facetSearch), None, None)
+
+            #If we cannot find any alerts, there's no point looking for the event anymore
+            try:
+                if not alerts["success"] and len(alerts["data"]["entities"]) < 1:
+                    demisto.results("Could not retrieve any alerts - {0}".format(alerts["error"]))
+                    exit(-1)
+            except Exception as err:
+                demisto.error({"Error": "Error looking through alerts - {0}".format(err)})
+
                 exit(-1)
 
             #Find our specific alert by the id
@@ -904,28 +907,45 @@ script:
 
             #Check to see if our event is there
             possibleEvents = []
-            event = None
-            for item in events:
-                if item["targetId"] == alert["eventId"] and item["parentId"] == alert["parentEventId"] and item["eventIndex"] == alert["eventIndex"]:
-                    possibleEvents.append(item)
+            matchedEvent = None
+
+            for event in events:
+                if event["targetId"] == alert["eventId"] and (event["parentId"] == alert["parentEventId"] or alert["parentEventId"] == event["targetId"]) and event["eventIndex"] == alert["eventIndex"]:
+                    possibleEvents.append(event)
+
 
             if len(possibleEvents) == 1:
-                event = possibleEvents[0]
+                matchedEvent = possibleEvents[0]
 
-            if not event:
-                demisto.error({"Error": "Could not find an event for alert ID".format(alertId)})
+            if not matchedEvent:
+                demisto.results({"Error": "Could not find an event for alert ID".format(alertId)})
                 exit(-1)
 
-            if event:
+            if matchedEvent:
+                eventIgnoreList = ["esIndex", "reportId", "targetId", "eventIndex", "esDocumentType", "indexingTime", "parentId", "scanType", "fileType"]
                 newEvent = {}
-                for field in event:
-                    newField = self.camelToTitle(field)
-                    #newField = "fidelis.edr.event.{0}".format(field)
-                    newEvent[newField] = event[field]
-                demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': newEvent} )
+                for field in matchedEvent:
+                    if field not in eventIgnoreList:
+                        newField = pascalToSpace(field)
+                        newEvent[newField] = matchedEvent[field]
+
+                demisto.results(
+                    {'Type': entryTypes["note"],
+                    'ContentsFormat': formats["text"],
+                    'Contents': "Event context updated",
+                    'ReadableContentsFormat': None,
+                    'HumanReadable': None,
+                    'EntryContext': {'Fidelis.Endpoint.Alert.Event': newEvent}})
             sys.exit(0)
 
         def getEndpointInfo(self):
+
+            #If there is already endpoint data, exit
+            endpointTest = demisto.get(demisto.context(), 'Fidelis.Endpoint.Alert.Endpoint')
+            if endpointTest is not None:
+                demisto.restuls("Endpoint details already exist in the context")
+                exit(0)
+
             #Check we have our arguments
             hostname = None
             try:
@@ -939,8 +959,14 @@ script:
                     pass
 
             if hostname is None:
+                try:
+                    hostname = demisto.get(demisto.context(), "Fidelis.Endpoint.Alert.Target")
+                except:
+                    pass
+
+            if hostname is None:
                 demisto.error('Could not lookup hostname from the incident, please provide one to use')
-                sys.exit(-1)
+                sys.exit(0)
 
             if is_ip_valid(hostname):
                 ip = hostname
@@ -966,6 +992,7 @@ script:
                     demisto.results("Could not retrieve endpoints = {0}".format(endpoints["error"]))
             except Exception as err:
                 demisto.results("Could not retrieve endpoints = {0}".format(err))
+                exit(0)
 
             thisEndpoint = None
             for endpoint in endpoints:
@@ -976,11 +1003,25 @@ script:
             if thisEndpoint is None:
                 demisto.results("Could not find endpoint with {0} containing {1}".format(searchField, searchValue))
                 exit(0)
+
             if thisEndpoint is not None:
-                entry = {}
+                endpoint = {}
+                endpointIgnoreList = ["port", "activeDirectoryId", "agentScoreboardHash", "investigativeModeDuration", "investigativeModeEnabled", "flag", "interfaceIPs", "groups", "createdByType", "investigativeModeStartTime", "eventsVersion"]
                 for x in thisEndpoint:
-                    entry[x] = thisEndpoint[x]
-                demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': entry})
+                    if x not in endpointIgnoreList:
+                        field = pascalToSpace(x)
+                        endpoint[field] = thisEndpoint[x]
+
+                demisto.results(
+                    {'Type': entryTypes["note"],
+                    'ContentsFormat': formats["text"],
+                    'Contents': "Endpoint context updated",
+                    'ReadableContentsFormat': None,
+                    'HumanReadable': None,
+                    'EntryContext': {'Fidelis.Endpoint.Alert.Endpoint': endpoint}})
+
+            else:
+                demisto.results("Could not find a hostname in the input, incident or Fidelis Alert")
             sys.exit(0)
 
         def deleteAlert(self):
@@ -1224,6 +1265,13 @@ script:
                         entry[k] = ""
                 entries.append(entry)
             demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': entries})
+            demisto.results(
+                    {'Type': entryTypes["note"],
+                    'ContentsFormat': formats["text"],
+                    'Contents': "Endpoint task context updated",
+                    'ReadableContentsFormat': None,
+                    'HumanReadable': None,
+                    'EntryContext': {'Fidelis.Endpoint.Alert.Endpoint.Task.{}'.format(taskName): entries}})
             exit(0)
 
         def getRunningProcesses(self):
@@ -1425,11 +1473,9 @@ script:
 
                 entry = {}
                 for x in event:
-                    if x in ignoreList:
-                        continue
-                    field = self.camelToTitle(x)
-
-                    entry[field] = event[x]
+                    if x not in ignoreList:
+                        field = pascalToSpace(x)
+                        entry[field] = event[x]
                 eventResults.append(entry)
                 #demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': entry})
                 counter += 1
@@ -1647,8 +1693,8 @@ script:
         thisFunction.findFileEventsByHash()
     if demisto.command() == 'fidelis-edr-find-process-hash-event':
         thisFunction.findProcessEventsByHash()
-    if demisto.command() == 'fidelis-edr-get-tasks':
-        thisFunction.getTasks()
+    if demisto.command() == 'fidelis-edr-get-scripts':
+        thisFunction.getScripts()
     if demisto.command() == 'fidelis-edr-get-running-processes':
         thisFunction.getRunningProcesses()
     if demisto.command() == 'fidelis-edr-get-services':
@@ -1661,9 +1707,13 @@ script:
         thisFunction.removeIsolation()
     if demisto.command() == 'fidelis-edr-USB-activity':
         thisFunction.findUSBEvents()
+    if demisto.command() == 'fidelis-edr-populate-tasks':
+        thisFunction.__populateTasks__()
+    if demisto.command() == 'fidelis-edr-get-alert-details':
+        thisFunction.getAlertDetails()
+    if demisto.command() == 'fidelis-edr-get-script-questions':
+        thisFunction.getScriptQuestions()
     ##########################################################################################
-
-
 
   type: python
   commands:
@@ -1671,12 +1721,16 @@ script:
     arguments:
     - name: hostname
       description: Host Name (or IP) to target
+    outputs:
+    - contextPath: Fidelis.Endpoint.Alert.Endpoint
     description: Retrieves information about an endpoint, if there is a Fidelis Endpoint
       agent installed.
   - name: fidelis-edr-get-event-for-alert
     arguments:
     - name: alertId
       description: The alert ID to get the event for
+    outputs:
+    - contextPath: Fidelis.Endpoint.Alert.Event
     description: Retrieves the event details for a particular alert generated by Fidelis
       Endpoint (if the event still exists)
   - name: fidelis-edr-delete-alert
@@ -1818,6 +1872,27 @@ script:
       description: Timeout to wait for the job to complete (default is 60 seconds)
       defaultValue: "60"
     description: Attempts to obtain a list of services from the endpoint.
+  - name: fidelis-edr-get-scripts
+    arguments: []
+    outputs:
+    - contextPath: Fidelis.Endpoint.Scripts
+      type: unknown
+    description: Retrieves a list of available scripts
+  - name: fidelis-edr-get-alert-details
+    arguments:
+    - name: alertId
+      description: The alert ID to retrieve the details of
+    outputs:
+    - contextPath: Fidelis.Endpoint.Alert
+    description: Retrieves the details of an alert
+  - name: fidelis-edr-get-script-questions
+    arguments:
+    - name: scriptId
+      description: Script ID to retrieve the questions for
+    outputs:
+    - contextPath: Fidelis.Endpoint.Script.Questions
+      description: Questions required for the script
+    description: Retrieves a list of questions that need answering for a Fidelis script
   dockerimage: demisto/python3:3.7.3.221
   isfetch: true
   runonce: false
