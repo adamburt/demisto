@@ -1209,7 +1209,7 @@ script:
             demisto.results(fileResult(collectedFiles["name"],fileStream))
             exit(0)
 
-        def executeTask(self, hostname, taskName, inputQuestions, timeoutInSeconds, waitAndHandle):
+        def executeTask(self, hostname, taskName, inputQuestions, timeoutInSeconds, waitAndHandle, contextUpdate):
 
             #Set the timeout to integer, just in case
             timeoutInSeconds = int(timeoutInSeconds)
@@ -1285,8 +1285,6 @@ script:
             results = self.fep.fileSearchJobStatus(jobId, jobResultsId)
             while counter < timeoutInSeconds:
                 counter += 1
-                if count == halway:
-                    demisto.results("I'm about half way waiting for the job to complete, but, it's taking some time!")
                 results = self.fep.fileSearchJobStatus(jobId, jobResultsId)
                 if results["data"]["status"] == "Completed":
                     break
@@ -1313,17 +1311,26 @@ script:
                         entry[k] = ""
                 entries.append(entry)
             demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': entries})
-            demisto.results(
-                    {'Type': entryTypes["note"],
-                    'ContentsFormat': formats["text"],
-                    'Contents': "Endpoint task context updated",
-                    'ReadableContentsFormat': None,
-                    'HumanReadable': None,
-                    'EntryContext': {'Fidelis.Endpoint.Alert.Endpoint.Task.{}'.format(taskName): entries}})
+
+            if contextUpdate is True:
+                demisto.results(
+                        {'Type': entryTypes["note"],
+                        'ContentsFormat': formats["text"],
+                        'Contents': "Endpoint task context updated",
+                        'ReadableContentsFormat': None,
+                        'HumanReadable': None,
+                        'EntryContext': {'Fidelis.Endpoint.Alert.Endpoint.Scripts.{1}-{0}'.format(taskName, datetime.now().strftime("%Y-%m-%d %H:%M:%S")): entries}})
             exit(0)
 
         def getRunningProcesses(self):
 
+            #Whether to update the context
+            updateContext = False
+            try:
+                updateContext = bool(self.args["updateContext"])
+            except:
+                updateContext = False
+
             #Get the timeout
             timeoutInSeconds = self.args["timeout"]
 
@@ -1354,10 +1361,17 @@ script:
             options = None
             if thisFilter is not None:
                 options = {"last": thisFilter}
-            data = self.executeTask(hostname, "Process List", options, timeoutInSeconds, True)
+            data = self.executeTask(hostname, "Process List", options, timeoutInSeconds, True, updateContext)
 
         def getServices(self):
 
+            #Whether to update the context
+            updateContext = False
+            try:
+                updateContext = bool(self.args["updateContext"])
+            except:
+                updateContext = False
+
             #Get the timeout
             timeoutInSeconds = self.args["timeout"]
 
@@ -1388,9 +1402,16 @@ script:
             options = None
             if thisFilter is not None:
                 options = {"last": thisFilter}
-            data = self.executeTask(hostname, "Services", options, timeoutInSeconds, True)
+            data = self.executeTask(hostname, "Services", options, timeoutInSeconds, True, updateContext)
 
         def isolateEndpoint(self):
+
+            #Whether to update the context
+            updateContext = False
+            try:
+                updateContext = bool(self.args["updateContext"])
+            except:
+                updateContext = False
 
             #Ensure we have at least the hostname to work with
             hostname = None
@@ -1450,10 +1471,17 @@ script:
             template["data"]["questions"]["1"] = ",".join(completeIPs)
 
             #Execute the task
-            result = self.executeTask(hostname, "Network Isolation", {"1": ",".join(completeIPs)}, timeoutInSeconds, True)
+            result = self.executeTask(hostname, "Network Isolation", {"1": ",".join(completeIPs)}, timeoutInSeconds, True, updateContext)
             exit(0)
 
         def removeIsolation(self):
+
+            #Whether to update the context
+            updateContext = False
+            try:
+                updateContext = bool(self.args["updateContext"])
+            except:
+                updateContext = False
 
             #Ensure we have at least the hostname to work with
             hostname = None
@@ -1479,7 +1507,7 @@ script:
                 timeoutInSeconds = 30
 
             #Execute the task
-            data = self.executeTask(hostname, "Network Isolation Remove", None, timeoutInSeconds, True)
+            data = self.executeTask(hostname, "Network Isolation Remove", None, timeoutInSeconds, True, updateContext)
             exit(0)
 
         def getEvents(self, searchCriteria, duration, limit, removeduplicates, hostname):
@@ -1885,6 +1913,13 @@ script:
     - name: timeout
       description: Timeout to wait for the job to complete (default is 120 seconds)
       defaultValue: "120"
+    - name: updateContext
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Whether to update the incident context with the results
+      defaultValue: "False"
     description: Attempts to obtain a list of currently running processes from the
       endpoint.
   - name: fidelis-edr-kill-process
@@ -1897,6 +1932,13 @@ script:
     - name: timeout
       description: Timeout to wait for the job to complete (default is 30 seconds)
       defaultValue: "30"
+    - name: updateContext
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Whether to update the incident context with the results
+      defaultValue: "False"
     description: Kills a process on the endpoint
     execution: true
   - name: fidelis-edr-isolate-endpoint
@@ -1910,6 +1952,13 @@ script:
     - name: timeout
       description: Time to wait for the task to complete in seconds (default is 120)
       defaultValue: "120"
+    - name: updateContext
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Whether to update the incident context with the results
+      defaultValue: "False"
     description: Isolates an endpoint from the network whilst maintaining access to
       the Fidelis Elevate Endpoint Platform
     execution: true
@@ -1920,6 +1969,13 @@ script:
     - name: timeout
       description: Time to wait for the task to complete in seconds (default is 120)
       defaultValue: "120"
+    - name: updateContext
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Whether to update the incident context with the results
+      defaultValue: "False"
     description: Removes the endpoint isolation applied using the "Isolate" task.
   - name: fidelis-edr-USB-activity
     arguments:
@@ -1950,6 +2006,13 @@ script:
     - name: timeout
       description: Timeout to wait for the job to complete (default is 60 seconds)
       defaultValue: "60"
+    - name: updateContext
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Whether to update the incident context with the results
+      defaultValue: "False"
     description: Attempts to obtain a list of services from the endpoint.
   - name: fidelis-edr-get-scripts
     arguments: []
