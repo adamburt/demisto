@@ -1280,6 +1280,8 @@ script:
             #Get our job ID
             jobId = results["data"]["jobId"]
 
+
+
             #Monitor our job until it has complete
             counter = 0
             results = self.fep.fileSearchJobStatus(jobId, jobResultsId)
@@ -1327,7 +1329,8 @@ script:
             #Whether to update the context
             updateContext = False
             try:
-                updateContext = bool(self.args["updateContext"])
+                if self.args["updateContext"].lower() == "true":
+                    updateContext = True
             except:
                 updateContext = False
 
