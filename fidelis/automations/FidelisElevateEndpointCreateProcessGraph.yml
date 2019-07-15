@@ -1,0 +1,74 @@
+commonfields:
+  id: b5cf7092-e5e0-4d28-831c-3e62fd537b84
+  version: 26
+name: FidelisElevateEndpointCreateProcessGraph
+script: |-
+  ########################################################################
+  # Creates a network graph using the eventID of an alert in the incident
+  ########################################################################
+
+  # Import the matplotlib library
+  import matplotlib.plot as plt
+
+  # Import the networkx library
+  import networkx as nx
+
+
+  demisto.results("This feature is not yet implemented")
+  exit(0)
+
+
+  #Test event
+  event0 = {"name": "explorer.exe", "pid": 1234}
+  event1 = {"name": "chrome.exe", "pid": 3264}
+  event2 = {"name": "opera.exe", "pid": 5253}
+  events = [event0, event1, event2]
+
+  # Create the graph object
+  g = nx.Graph()
+
+  # Create the base node from the event ID
+  node1 = "{0} ({1})".format(event0["name"], event0["pid"])
+  node2 = "{0} ({1})".format(event1["name"], event1["pid"])
+  node3 = "{0} ({1})".format(event2["name"], event2["pid"])
+
+  # Add the edges
+  G.add_node(node1)
+  G.add_node(node2)
+  G.add_node(node3)
+  G.add_edge(node1, node2)
+  G.add_edge(node1, node3)
+
+
+  # Create all parent process nodes (only process, not file or registry etc)
+
+  # Create all sub nodes of the originating process (file, regsitry etc)
+
+  # Draw the graph
+  nx.draw(g)
+  plt.show()
+
+  exit(0)
+
+
+
+
+
+  demisto.results("OK")
+  exit(0)
+type: python
+tags: []
+comment: Populates the Fidelis Elevate Endpoint Incident type fields with the relevant
+  values.
+enabled: true
+args:
+- name: eventId
+  description: Event ID to use as the ending verticie
+- name: eventDate
+- name: maxEdges
+  description: Maximum number of edges to go back (default 100)
+  defaultValue: "100"
+scripttarget: 0
+runonce: false
+dockerimage: adamburt/graph
+runas: DBotWeakRole

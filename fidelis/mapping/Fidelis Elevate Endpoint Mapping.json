@@ -1,0 +1,46 @@
+{
+	"id": "a57ce4d0-2c9a-42e4-8ca0-14d9734681a2",
+	"version": 5,
+	"modified": "2019-07-12T18:06:21.958689411-04:00",
+	"commitMessage": "",
+	"shouldPublish": false,
+	"shouldCommit": false,
+	"shouldPush": false,
+	"defaultIncidentType": "Fidelis Elevate Endpoint",
+	"instanceId": "db6f0407-8060-4dca-8907-fc453257029c",
+	"mapping": {
+		"Fidelis Elevate Endpoint": {
+			"internalMapping": {
+				"Alert Type": {
+					"simple": "Source",
+					"complex": null
+				},
+				"Endpoint Name": {
+					"simple": "Target",
+					"complex": null
+				},
+				"Fidelis Endpoint Alert ID": {
+					"simple": "Id",
+					"complex": null
+				}
+			},
+			"dontMapEventToLabels": false
+		}
+	},
+	"unclassifiedCases": {},
+	"incidentSamples": [],
+	"custom": true,
+	"isDefault": false,
+	"transformer": {
+		"simple": "Source",
+		"complex": null
+	},
+	"keyTypeMap": {
+		"Behavior Rules": "Fidelis Elevate Endpoint",
+		"Fidelis Antivirus": "Fidelis Elevate Endpoint",
+		"Fidelis Process Blocking": "Fidelis Elevate Endpoint",
+		"Intelligence Feed": "Fidelis Elevate Endpoint"
+	},
+	"brandName": "Fidelis Elevate Endpoint",
+	"instanceName": "Fidelis Elevate Endpoint_instance_203"
+}

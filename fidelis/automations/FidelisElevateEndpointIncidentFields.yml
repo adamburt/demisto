@@ -1,0 +1,202 @@
+commonfields:
+  id: ff39e7d0-eb97-4906-8c76-b4ad35c9b470
+  version: 61
+name: FidelisElevateEndpointIncidentFields
+script: |+
+  ##############################################################
+  # Get the process event data and populate the relevant fields
+  ##############################################################
+
+  processIDs = [0,1,30,31,32]
+  fileIDs = [2,4,5,6,7,8]
+  networkIDs = [3]
+  registryIDs = [9,10,11,12]
+  windowsEventIDs = [13]
+  usbIDs = [14,15,16]
+  dnsIDs = [17]
+  antiMalwareIDs = [18,19,20,21,22,23,24,25,26,27,28,29]
+  scriptIDs = [34]
+
+  processEventFields = {
+  "commandline": "Fidelis.Endpoint.Alert.Event.Parameters",
+  "processname": "Fidelis.Endpoint.Alert.Event.Name",
+  "processpath": "Fidelis.Endpoint.Alert.Event.Path",
+  "pid": "Fidelis.Endpoint.Alert.Event.Pid",
+  "processmd5": "Fidelis.Endpoint.Alert.Event.Hash",
+  "processsha1": "Fidelis.Endpoint.Alert.Event.Hash SHA1",
+  "processsha256": "Fidelis.Endpoint.Alert.Event.Hash SHA256",
+  "parentprocessname":"Fidelis.Endpoint.Alert.Event.Parent Name",
+  "parentprocessmd5": "Fidelis.Endpoint.Alert.Event.Parent Hash",
+  "parentprocesssha1": "Fidelis.Endpoint.Alert.Event.Parent Hash SHA1",
+  "parentprocesspath": "Fidelis.Endpoint.Alert.Event.Parent Path",
+  "ppid": "Fidelis.Endpoint.Alert.Event.Ppid"
+  }
+
+  fileEventFields = {
+  "commandline": "Fidelis.Endpoint.Alert.Event.Parameters",
+  "processname": "Fidelis.Endpoint.Alert.Event.Parent Name",
+  "processpath": "Fidelis.Endpoint.Alert.Event.Parent Path",
+  "pid": "Fidelis.Endpoint.Alert.Event.Ppid",
+  "processmd5": "Fidelis.Endpoint.Alert.Event.Parent Hash",
+  "processsha1": "Fidelis.Endpoint.Alert.Event.Parent Hash SHA1",
+  "processsha256": "Fidelis.Endpoint.Alert.Event.Parent Hash SHA256",
+  "filename": "Fidelis.Endpoint.Alert.Event.Name",
+  "filepath": "Fidelis.Endpoint.Alert.Event.Path",
+  "filemd5": "Fidelis.Endpoint.Alert.Event.Hash",
+  "entropy": "Fidelis.Endpoint.Alert.Event.Entropy"
+  }
+
+  networkFields = {
+  "commandline": "Fidelis.Endpoint.Alert.Event.Parameters",
+  "processname": "Fidelis.Endpoint.Alert.Event.Parent Name",
+  "processpath": "Fidelis.Endpoint.Alert.Event.Parent Path",
+  "pid": "Fidelis.Endpoint.Alert.Event.Ppid",
+  "processmd5": "Fidelis.Endpoint.Alert.Event.Parent Hash",
+  "processsha1": "Fidelis.Endpoint.Alert.Event.Parent Hash SHA1",
+  "processsha256": "Fidelis.Endpoint.Alert.Event.Parent Hash SHA256",
+  "sourceip": "Fidelis.Endpoint.Alert.Event.Local IP",
+  "destinatiopnip": "Fidelis.Endpoint.Alert.Event.Remote IP",
+  "sourceport": "Fidelis.Endpoint.Alert.Event.Local Port",
+  "destinationport": "Fidelis.Endpoint.Alert.Event.Remote Port",
+  "protocol": "Fidelis.Endpoint.Alert.Event.Protocol",
+  "networkdirection": "Fidelis.Endpoint.Alert.Event.Network Direction",
+  "url": "Fidelis.Endpoint.Alert.Event.Url"
+  }
+
+  regsitryEventFields = {
+  "commandline": "Fidelis.Endpoint.Alert.Event.Parameters",
+  "processname": "Fidelis.Endpoint.Alert.Event.Parent Name",
+  "processpath": "Fidelis.Endpoint.Alert.Event.Parent Path",
+  "pid": "Fidelis.Endpoint.Alert.Event.Ppid",
+  "processmd5": "Fidelis.Endpoint.Alert.Event.Parent Hash",
+  "processsha1": "Fidelis.Endpoint.Alert.Event.Parent Hash SHA1",
+  "processsha256": "Fidelis.Endpoint.Alert.Event.Parent Hash SHA256",
+  "registryhive": "Fidelis.Endpoint.Alert.Event.Hive",
+  "registrypath": "Fidelis.Endpoint.Alert.Event.Path",
+  "registryname": "Fidelis.Endpoint.Alert.Event.Name",
+  "registryvalue": "Fidelis.Endpoint.Alert.Event.Registry Value"
+  }
+
+  windowsEventFields = {
+  "windowseventid": "Fidelis.Endpoint.Alert.Event.Win Event Id",
+  "windowseventcategory": "Fidelis.Endpoint.Alert.Event.Category",
+  "message": "Fidelis.Endpoint.Alert.Event.Message"
+  }
+
+  usbEventFields = {
+  "usbserialnumber": "Fidelis.Endpoint.Alert.Event.Serial",
+  "usbmodel": "Fidelis.Endpoint.Alert.Event.Model",
+  "usbmedia": "Fidelis.Endpoint.Alert.Event.Media",
+  "usbpath": "Fidelis.Endpoint.Alert.Event.Path"
+  }
+
+  dnsEventFields = {
+  "commandline": "Fidelis.Endpoint.Alert.Event.Parameters",
+  "processname": "Fidelis.Endpoint.Alert.Event.Parent Name",
+  "processpath": "Fidelis.Endpoint.Alert.Event.Parent Path",
+  "pid": "Fidelis.Endpoint.Alert.Event.Ppid",
+  "processmd5": "Fidelis.Endpoint.Alert.Event.Parent Hash",
+  "processsha1": "Fidelis.Endpoint.Alert.Event.Parent Hash SHA1",
+  "processsha256": "Fidelis.Endpoint.Alert.Event.Parent Hash SHA256",
+  "sourceip": "Fidelis.Endpoint.Alert.Event.Local IP",
+  "destinatiopnip": "Fidelis.Endpoint.Alert.Event.Remote IP",
+  "sourceport": "Fidelis.Endpoint.Alert.Event.Local Port",
+  "destinationport": "Fidelis.Endpoint.Alert.Event.Remote Port",
+  "protocol": "Fidelis.Endpoint.Alert.Event.Protocol",
+  "dnsrequest": "Fidelis.Endpoint.Alert.Event.Dns Question",
+  "dnsanswer": "Fidelis.Endpoint.Alert.Event.Dns Answer"
+  }
+
+  antiMalwareEventFields = {
+  "commandline": "Fidelis.Endpoint.Alert.Event.Parameters",
+  "processname": "Fidelis.Endpoint.Alert.Event.Parent Name",
+  "processpath": "Fidelis.Endpoint.Alert.Event.Parent Path",
+  "pid": "Fidelis.Endpoint.Alert.Event.Ppid",
+  "processmd5": "Fidelis.Endpoint.Alert.Event.Parent Hash",
+  "processsha1": "Fidelis.Endpoint.Alert.Event.Parent Hash SHA1",
+  "processsha256": "Fidelis.Endpoint.Alert.Event.Parent Hash SHA256",
+  "filename": "Fidelis.Endpoint.Alert.Event.Name",
+  "filepath": "Fidelis.Endpoint.Alert.Event.Path",
+  "threatname": "Fidelis.Endpoint.Alert.Event.Threat Name",
+  "entropy": "Fidelis.Endpoint.Alert.Event.Entropy"
+  }
+
+  scriptEventFields = {
+
+  }
+
+  endpointFields = {
+      "endpointname": "Fidelis.Endpoint.Alert.Endpoint.Host Name",
+      "endpointos": "Fidelis.Endpoint.Alert.Endpoint.Os",
+      "endpointipaddress": "Fidelis.Endpoint.Alert.Endpoint.Ip Address",
+      "endpointmacaddress": "Fidelis.Endpoint.Alert.Endpoint.Mac Address",
+      "endpointagentid": "Fidelis.Endpoint.Alert.Endpoint.Agent Id",
+      "endpointisisolated": "Fidelis.Endpoint.Alert.Endpoint.Isolated",
+      "endpointdescription": "Fidelis.Endpoint.Alert.Endpoint.Description",
+      "endpointagenttag": "Fidelis.Endpoint.Alert.Endpoint.Agent Tag"
+  }
+
+  commonFields = {
+      "fidelisendpointalertid": "Fidelis.Endpoint.Alert.Id",
+      "user": "Fidelis.Endpoint.Alert.Event.User",
+      "eventtime": "Fidelis.Endpoint.Alert.Event Time"
+  }
+
+  # Choose a list based on the event type
+  chosenList = None
+  if demisto.get(demisto.context(), "Fidelis.Endpoint.Alert.Event.Event Type") in processIDs :
+      chosenList = processEventFields
+  if demisto.get(demisto.context(), "Fidelis.Endpoint.Alert.Event.Event Type") in fileIDs :
+      chosenList = fileEventFields
+  if demisto.get(demisto.context(), "Fidelis.Endpoint.Alert.Event.Event Type") in networkIDs :
+      chosenList = networkFields
+  if demisto.get(demisto.context(), "Fidelis.Endpoint.Alert.Event.Event Type") in registryIDs :
+      chosenList = regsitryEventFields
+  if demisto.get(demisto.context(), "Fidelis.Endpoint.Alert.Event.Event Type") in windowsEventIDs :
+      chosenList = windowsEventFields
+  if demisto.get(demisto.context(), "Fidelis.Endpoint.Alert.Event.Event Type") in usbIDs :
+      chosenList = usbEventFields
+  if demisto.get(demisto.context(), "Fidelis.Endpoint.Alert.Event.Event Type") in dnsIDs :
+      chosenList = dnsEventFields
+  if demisto.get(demisto.context(), "Fidelis.Endpoint.Alert.Event.Event Type") in antiMalwareIDs :
+      chosenList = antiMalwareEventFields
+  if demisto.get(demisto.context(), "Fidelis.Endpoint.Alert.Event.Event Type") in scriptIDs :
+      chosenList = scriptEventFields
+
+  # Parse through the chosen list and populate the fields
+  for item in chosenList:
+      demisto.executeCommand("setIncident", {item: demisto.get(demisto.context(), chosenList[item]) })
+
+
+  ##############################################################
+  # Get the endpoint details and populate the relevant fields
+  ##############################################################
+  for item in endpointFields:
+      demisto.executeCommand("setIncident", {item: demisto.get(demisto.context(), endpointFields[item]) })
+
+  ##############################################################
+  # Populate any commonly used fields across all incidents
+  ##############################################################
+  for item in commonFields:
+      demisto.executeCommand("setIncident", {item: demisto.get(demisto.context(), commonFields[item]) })
+
+  ################################
+  # Create any required indicators
+  ################################
+
+
+
+
+
+
+
+
+
+type: python
+tags: []
+comment: Populates the Fidelis Elevate Endpoint Incident type fields with the relevant
+  values.
+enabled: true
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole

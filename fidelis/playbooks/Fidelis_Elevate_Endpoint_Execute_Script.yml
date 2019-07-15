@@ -1,0 +1,129 @@
+id: e16a2c2e-09bf-4607-82c2-f249f9dcf5fe
+version: 60
+name: Fidelis Elevate Endpoint Execute Script
+description: This script will obtain a list of available scripts and their options.
+  It will then present the user with an option of which script can be executed and
+  the answers that are required.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6365e806-3f7a-4013-8c1e-d71b3bb03547
+    type: start
+    task:
+      id: 6365e806-3f7a-4013-8c1e-d71b3bb03547
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 3629ada9-9411-40c8-835a-3810139d6562
+    type: regular
+    task:
+      id: 3629ada9-9411-40c8-835a-3810139d6562
+      version: -1
+      name: Get a list of tasks that are available
+      script: Fidelis Elevate Endpoint|||fidelis-edr-get-scripts
+      type: regular
+      iscommand: true
+      brand: Fidelis Elevate Endpoint
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: e6a5f930-ad33-4e28-864a-8640e7ced2cb
+    type: collection
+    task:
+      id: e6a5f930-ad33-4e28-864a-8640e7ced2cb
+      version: -1
+      name: Select Task
+      type: collection
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Analyst
+      subject: null
+      body:
+        simple: Select Task to run
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Please enter the task ID to run
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options:
+        - "Yes"
+        - "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+      title: Select Task to Run
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 455,
+        "width": 380,
+        "x": 450,
+        "y": -240
+      }
+    }
+  }
+inputs: []
+outputs: []

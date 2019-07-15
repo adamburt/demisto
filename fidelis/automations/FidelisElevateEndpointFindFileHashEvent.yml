@@ -1,0 +1,86 @@
+commonfields:
+  id: cc70c320-f143-45a4-8d2b-0ba4366bcf16
+  version: 8
+name: FidelisElevateEndpointFindFileHashEvent
+script: |
+  #####################
+  # Get the hostname
+  #####################
+  hostname = None
+  try:
+      hostname = demisto.args()["hostname"]
+  except:
+      hostname = None
+  if hostname is None:
+      hostname = demisto.get(demisto.context(), "Fidelis.Endpoint.Alert.Target")
+  if hostname == "*":
+      hostname = None
+
+  #####################
+  # Get the hash
+  #####################
+  thisHash = None
+  try:
+      thisHash = demisto.args()["hash"]
+  except:
+      thisHash = None
+
+  #####################
+  # Get the duration
+  #####################
+  duration = None
+  try:
+      duration = demisto.args()["duration"]
+  except:
+      duration = None
+
+  #####################
+  # Get the limit
+  #####################
+  limit = None
+  try:
+      limit = demisto.args()["limit"]
+  except:
+      limit = None
+
+  ###########################
+  # Get the removeduplicates
+  ###########################
+  removeduplicates = None
+  try:
+      removeduplicates = demisto.args()["removeduplicates"]
+  except:
+      removeduplicates = None
+
+
+
+  #####################
+  # Execute the script
+  #####################
+  demisto.results(demisto.executeCommand("fidelis-edr-find-file-hash-event", {"hostname": hostname, "hash": thisHash, "duration": duration, "limit": limit, "removeduplicates": removeduplicates}))
+type: python
+tags: []
+comment: Searches file events on the FIdelis Elevate Endpoint Plaform that matches
+  the hash provided.
+enabled: true
+args:
+- name: hostname
+  description: Host Name to target
+- name: hash
+  description: MD5 Hash
+- name: duration
+  description: How many hours to look back (default is 24 hours)
+  defaultValue: "24"
+- name: limit
+  description: Maximum number of events to bring back
+  defaultValue: "100"
+- name: removeduplicates
+  auto: PREDEFINED
+  predefined:
+  - "True"
+  - "False"
+  description: Only return 1 event per endpoint
+  defaultValue: "False"
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole

@@ -1,0 +1,53 @@
+commonfields:
+  id: 72f17a31-2d7f-464b-8a57-4b184cc2fe1a
+  version: 3
+name: FidelisElevateEndpointKillProcess
+script: |
+  #####################
+  # Get hostname
+  #####################
+  hostname = None
+  try:
+      hostname = demisto.args()["hostname"]
+  except:
+      hostname = None
+  if hostname is None:
+      hostname = demisto.get(demisto.context(), "Fidelis.Endpoint.Alert.Target")
+
+  ##########
+  # Get pid
+  ##########
+  pid = None
+  try:
+      pid = demisto.args()["pid"]
+  except:
+      pass
+
+  ##############
+  # Get timeout
+  ##############
+  timeout = None
+  try:
+      timeout = demisto.args()["timeout"]
+  except:
+      pass
+
+  #####################
+  # Execute the script
+  #####################
+  demisto.results(demisto.executeCommand("fidelis-edr-kill-process", {"hostname": hostname, "pid": pid, "timeout": timeout }))
+type: python
+tags: []
+comment: Kills a process on the endpoint
+enabled: true
+args:
+- name: hostname
+  description: Host Name to target
+- name: pid
+  description: PID to kill
+- name: timeout
+  description: Timeout to wait for the job to complete (default is 30 seconds)
+  defaultValue: "30"
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole

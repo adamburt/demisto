@@ -1,0 +1,22 @@
+commonfields:
+  id: 66db7fa5-06c4-4f99-8676-4227bc95beae
+  version: 16
+name: FidelisElevateEndpointRemoveIsolation
+script: |-
+  #####################
+  # Execute the script
+  #####################
+  demisto.executeCommand("fidelis-edr-remove-isolation", {"hostname": demisto.get(demisto.context(), "Fidelis.Endpoint.Alert.Target")})
+
+  #######################
+  # Refresh the endpoint
+  #######################
+  demisto.results(demisto.executeCommand("FidelisElevateEndpointRefreshEndpointDetails", {"hostname": demisto.get(demisto.context(), "Fidelis.Endpoint.Alert.Target") }))
+type: python
+tags: []
+comment: Attempts to remove the isolation applied to the endpoint using the Fidelis
+  Endpoint Remove Isolation script
+enabled: true
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole

@@ -1,5 +1,5 @@
 id: e7ac9021-96ee-451c-88fa-a2a027f5f20b
-version: 258
+version: 312
 name: Fidelis Elevate Endpoint Enrichment
 description: This playbook will attempt to gather event data for the alert (if it
   exists and the alert does not already have event data). It will also assign an incident
@@ -18,13 +18,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "65"
+      - "6"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1565,
-          "y": -1040
+          "x": 1880,
+          "y": 100
         }
       }
     note: false
@@ -32,20 +32,20 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: a9971284-2d57-4ff6-8f63-87d8adfb5432
+    taskid: 36e92861-f80d-4fd1-879f-13b7bb0233fe
     type: condition
     task:
-      id: a9971284-2d57-4ff6-8f63-87d8adfb5432
+      id: 36e92861-f80d-4fd1-879f-13b7bb0233fe
       version: -1
       name: Is there an alert ID?
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      "no":
-      - "52"
+      '#default#':
+      - "84"
       "yes":
-      - "67"
+      - "66"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -53,409 +53,24 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: Alert ID
-            iscontext: true
-    - label: "no"
-      condition:
-      - - operator: isNotExists
-          left:
-            value:
-              simple: Alert ID
+              complex:
+                root: incident
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: incident.sourceBrand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Fidelis Elevate Endpoint
+                accessor: labels.Id
             iscontext: true
     view: |-
       {
         "position": {
-          "x": 1565,
-          "y": -630
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "7":
-    id: "7"
-    taskid: eaf3369c-1229-4bb0-803a-c3f56d34af4c
-    type: condition
-    task:
-      id: eaf3369c-1229-4bb0-803a-c3f56d34af4c
-      version: -1
-      name: Is this a vulnerable software alert?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "26"
-      "yes":
-      - "8"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: incident.labels.Source
-            iscontext: true
-          right:
-            value:
-              simple: Installed Software CVE
-    view: |-
-      {
-        "position": {
-          "x": 730,
-          "y": 1510
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "8":
-    id: "8"
-    taskid: 707a9766-b74d-4288-8ed4-e462e949cbbe
-    type: regular
-    task:
-      id: 707a9766-b74d-4288-8ed4-e462e949cbbe
-      version: -1
-      name: Classify incident as Vulnerable software
-      description: Change the properties of an incident
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "19"
-    scriptarguments:
-      addLabels: {}
-      app: {}
-      assetid: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      bugtraq: {}
-      closeNotes: {}
-      closeReason: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      deleteEmptyField: {}
-      dest: {}
-      destntdomain: {}
-      details: {}
-      duration: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      eventdate: {}
-      eventid: {}
-      eventtarget: {}
-      eventtype: {}
-      fidelisendpointalertid: {}
-      fidelisendpointalertsource: {}
-      fidelisendpointeventfound: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      id: {}
-      labels: {}
-      malwarefamily: {}
-      name: {}
-      occurred: {}
-      owner: {}
-      phase: {}
-      replacePlaybook: {}
-      roles: {}
-      severity: {}
-      signature: {}
-      sla: {}
-      slaField: {}
-      src: {}
-      srcntdomain: {}
-      srcuser: {}
-      submitter: {}
-      systems: {}
-      type:
-        simple: Vulnerability
-      user: {}
-      vendorid: {}
-      vendorproduct: {}
-      vulnerabilitycategory: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 730,
-          "y": 2605
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "15":
-    id: "15"
-    taskid: 829748a5-c684-4e40-8032-5edb4aef2178
-    type: title
-    task:
-      id: 829748a5-c684-4e40-8032-5edb4aef2178
-      version: -1
-      name: Classify Alert Type
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "18"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1565,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "16":
-    id: "16"
-    taskid: ecae2e71-3ff9-40a4-86e6-f416825be02a
-    type: condition
-    task:
-      id: ecae2e71-3ff9-40a4-86e6-f416825be02a
-      version: -1
-      name: Is this anti-malware related?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "80"
-      "yes":
-      - "17"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: greaterThanOrEqual
-          left:
-            value:
-              simple: Fidelis.Endpoint.Alert.Event.Event Type
-            iscontext: true
-          right:
-            value:
-              simple: "18"
-      - - operator: lessThanOrEqual
-          left:
-            value:
-              simple: Fidelis.Endpoint.Alert.Event.Event Type
-            iscontext: true
-          right:
-            value:
-              simple: "29"
-    view: |-
-      {
-        "position": {
-          "x": -2910,
-          "y": 1510
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "17":
-    id: "17"
-    taskid: fe50a1ce-8ebb-4ccf-83e4-2085e4d55d25
-    type: regular
-    task:
-      id: fe50a1ce-8ebb-4ccf-83e4-2085e4d55d25
-      version: -1
-      name: Classify incident as Malware
-      description: Change the properties of an incident
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "19"
-    scriptarguments:
-      addLabels: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedindividualscontactinformation: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      assetid: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      bugtraq: {}
-      city: {}
-      closeNotes: {}
-      closeReason: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      contactaddress: {}
-      contactname: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      deleteEmptyField: {}
-      dest: {}
-      destntdomain: {}
-      details: {}
-      dpoemailaddress: {}
-      duration: {}
-      emailaddress: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      eventdate: {}
-      eventid: {}
-      eventtarget: {}
-      eventtype: {}
-      fidelisendpointalertid: {}
-      fidelisendpointalertsource: {}
-      fidelisendpointeventfound: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      id: {}
-      isthedatasubjecttodpia: {}
-      labels: {}
-      likelyimpact: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      malwarefamily: {}
-      measurestomitigate: {}
-      name: {}
-      occurred: {}
-      owner: {}
-      phase: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      replacePlaybook: {}
-      roles: {}
-      sectorofaffectedparty: {}
-      severity: {}
-      signature: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      sla: {}
-      slaField: {}
-      src: {}
-      srcntdomain: {}
-      srcuser: {}
-      submitter: {}
-      systems: {}
-      telephoneno: {}
-      type:
-        simple: Malware
-      user: {}
-      vendorid: {}
-      vendorproduct: {}
-      vulnerabilitycategory: {}
-      whereisdatahosted: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -2910,
-          "y": 2605
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "18":
-    id: "18"
-    taskid: e4548e19-b8d8-4546-8b31-4fd56771e901
-    type: condition
-    task:
-      id: e4548e19-b8d8-4546-8b31-4fd56771e901
-      version: -1
-      name: Is this a ThreatBridge alert?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "7"
-      "yes":
-      - "20"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: incident.labels.Source Type
-            iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: incident.labels.Source Type
-            iscontext: true
-          right:
-            value:
-              simple: "16"
-    view: |-
-      {
-        "position": {
-          "x": 1210,
-          "y": 1510
+          "x": 1880,
+          "y": 250
         }
       }
     note: false
@@ -463,1234 +78,24 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: c8fdf969-b324-4f31-853c-62b5f4dd9f78
+    taskid: 6b87887c-ca5c-4d05-85fe-fefdc16b80fe
     type: title
     task:
-      id: c8fdf969-b324-4f31-853c-62b5f4dd9f78
+      id: 6b87887c-ca5c-4d05-85fe-fefdc16b80fe
       version: -1
-      name: Playbook Complete
+      name: Populate incident fields
       type: title
       iscommand: false
       brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 2190,
-          "y": 2960
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "20":
-    id: "20"
-    taskid: 73e594f9-9c05-43d7-85b9-574a30565111
-    type: condition
-    task:
-      id: 73e594f9-9c05-43d7-85b9-574a30565111
-      version: -1
-      name: Is this IP related?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "22"
-      "yes":
-      - "21"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: incident.labels.Event Type
-            iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: incident.labels.Event Type
-            iscontext: true
-          right:
-            value:
-              simple: "3"
-    view: |-
-      {
-        "position": {
-          "x": 1010,
-          "y": 1740
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "21":
-    id: "21"
-    taskid: 475801b1-fa9e-4707-8b87-f3599c4da24c
-    type: regular
-    task:
-      id: 475801b1-fa9e-4707-8b87-f3599c4da24c
-      version: -1
-      name: Classify incident as C2Communication
-      description: Change the properties of an incident
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
     nexttasks:
       '#none#':
-      - "19"
-    scriptarguments:
-      addLabels: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedindividualscontactinformation: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      assetid: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      bugtraq: {}
-      city: {}
-      closeNotes: {}
-      closeReason: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      contactaddress: {}
-      contactname: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      deleteEmptyField: {}
-      dest: {}
-      destntdomain: {}
-      details: {}
-      dpoemailaddress: {}
-      duration: {}
-      emailaddress: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      eventdate: {}
-      eventid: {}
-      eventtarget: {}
-      eventtype: {}
-      fidelisendpointalertid: {}
-      fidelisendpointalertsource: {}
-      fidelisendpointeventfound: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      id: {}
-      isthedatasubjecttodpia: {}
-      labels: {}
-      likelyimpact: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      malwarefamily: {}
-      measurestomitigate: {}
-      name: {}
-      occurred: {}
-      owner: {}
-      phase: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      replacePlaybook: {}
-      roles: {}
-      sectorofaffectedparty: {}
-      severity: {}
-      signature: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      sla: {}
-      slaField: {}
-      src: {}
-      srcntdomain: {}
-      srcuser: {}
-      submitter: {}
-      systems: {}
-      telephoneno: {}
-      type:
-        simple: C2Communication
-      user: {}
-      vendorid: {}
-      vendorproduct: {}
-      vulnerabilitycategory: {}
-      whereisdatahosted: {}
+      - "83"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1010,
-          "y": 2125
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "22":
-    id: "22"
-    taskid: 8ddf18e2-39f8-43f1-88a6-cc51da65c814
-    type: condition
-    task:
-      id: 8ddf18e2-39f8-43f1-88a6-cc51da65c814
-      version: -1
-      name: Is this file related?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "24"
-      "yes":
-      - "23"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: incident.labels.Event Type
-            iscontext: true
-      - - operator: greaterThanOrEqual
-          left:
-            value:
-              simple: incident.labels.Event Type
-            iscontext: true
-          right:
-            value:
-              simple: "4"
-      - - operator: lessThanOrEqual
-          left:
-            value:
-              simple: incident.labels.Event Type
-            iscontext: true
-          right:
-            value:
-              simple: "8"
-    view: |-
-      {
-        "position": {
-          "x": 1445,
-          "y": 1740
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "23":
-    id: "23"
-    taskid: 2f866a07-0aea-4c95-8459-7fdffd2fce56
-    type: regular
-    task:
-      id: 2f866a07-0aea-4c95-8459-7fdffd2fce56
-      version: -1
-      name: Classify incident as Malware
-      description: Change the properties of an incident
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "19"
-    scriptarguments:
-      addLabels: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedindividualscontactinformation: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      assetid: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      bugtraq: {}
-      city: {}
-      closeNotes: {}
-      closeReason: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      contactaddress: {}
-      contactname: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      deleteEmptyField: {}
-      dest: {}
-      destntdomain: {}
-      details: {}
-      dpoemailaddress: {}
-      duration: {}
-      emailaddress: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      eventdate: {}
-      eventid: {}
-      eventtarget: {}
-      eventtype: {}
-      fidelisendpointalertid: {}
-      fidelisendpointalertsource: {}
-      fidelisendpointeventfound: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      id: {}
-      isthedatasubjecttodpia: {}
-      labels: {}
-      likelyimpact: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      malwarefamily: {}
-      measurestomitigate: {}
-      name: {}
-      occurred: {}
-      owner: {}
-      phase: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      replacePlaybook: {}
-      roles: {}
-      sectorofaffectedparty: {}
-      severity: {}
-      signature: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      sla: {}
-      slaField: {}
-      src: {}
-      srcntdomain: {}
-      srcuser: {}
-      submitter: {}
-      systems: {}
-      telephoneno: {}
-      type:
-        simple: Malware
-      user: {}
-      vendorid: {}
-      vendorproduct: {}
-      vulnerabilitycategory: {}
-      whereisdatahosted: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1445,
-          "y": 2125
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "24":
-    id: "24"
-    taskid: 3acc3654-01f7-4950-8f6c-acba252b302a
-    type: condition
-    task:
-      id: 3acc3654-01f7-4950-8f6c-acba252b302a
-      version: -1
-      name: Is this process related?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "19"
-      "yes":
-      - "25"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: incident.labels.Event Type
-            iscontext: true
-      - - operator: greaterThanOrEqual
-          left:
-            value:
-              simple: incident.labels.Event Type
-            iscontext: true
-          right:
-            value:
-              simple: "0"
-      - - operator: lessThanOrEqual
-          left:
-            value:
-              simple: incident.labels.Event Type
-            iscontext: true
-          right:
-            value:
-              simple: "2"
-    view: |-
-      {
-        "position": {
-          "x": 1870,
-          "y": 1740
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "25":
-    id: "25"
-    taskid: 6c990eac-be65-48b6-89c3-7ea3c1290d8f
-    type: regular
-    task:
-      id: 6c990eac-be65-48b6-89c3-7ea3c1290d8f
-      version: -1
-      name: Classify incident as Exploit
-      description: Change the properties of an incident
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "19"
-    scriptarguments:
-      addLabels: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedindividualscontactinformation: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      assetid: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      bugtraq: {}
-      city: {}
-      closeNotes: {}
-      closeReason: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      contactaddress: {}
-      contactname: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      deleteEmptyField: {}
-      dest: {}
-      destntdomain: {}
-      details: {}
-      dpoemailaddress: {}
-      duration: {}
-      emailaddress: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      eventdate: {}
-      eventid: {}
-      eventtarget: {}
-      eventtype: {}
-      fidelisendpointalertid: {}
-      fidelisendpointalertsource: {}
-      fidelisendpointeventfound: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      id: {}
-      isthedatasubjecttodpia: {}
-      labels: {}
-      likelyimpact: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      malwarefamily: {}
-      measurestomitigate: {}
-      name: {}
-      occurred: {}
-      owner: {}
-      phase: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      replacePlaybook: {}
-      roles: {}
-      sectorofaffectedparty: {}
-      severity: {}
-      signature: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      sla: {}
-      slaField: {}
-      src: {}
-      srcntdomain: {}
-      srcuser: {}
-      submitter: {}
-      systems: {}
-      telephoneno: {}
-      type:
-        simple: Exploit
-      user: {}
-      vendorid: {}
-      vendorproduct: {}
-      vulnerabilitycategory: {}
-      whereisdatahosted: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1870,
-          "y": 2125
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "26":
-    id: "26"
-    taskid: 90a59a01-392f-4738-8581-e3e7a6a05d16
-    type: condition
-    task:
-      id: 90a59a01-392f-4738-8581-e3e7a6a05d16
-      version: -1
-      name: Is this process related?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "74"
-      "yes":
-      - "27"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: greaterThanOrEqual
-          left:
-            value:
-              simple: Fidelis.Endpoint.Alert.Event.Event Type
-            iscontext: true
-          right:
-            value:
-              simple: "0"
-        - operator: greaterThanOrEqual
-          left:
-            value:
-              simple: Fidelis.Endpoint.Alert.Event.Event Type
-            iscontext: true
-          right:
-            value:
-              simple: "30"
-      - - operator: lessThanOrEqual
-          left:
-            value:
-              simple: Fidelis.Endpoint.Alert.Event.Event Type
-            iscontext: true
-          right:
-            value:
-              simple: "2"
-        - operator: lessThanOrEqual
-          left:
-            value:
-              simple: Fidelis.Endpoint.Alert.Event.Event Type
-            iscontext: true
-          right:
-            value:
-              simple: "30"
-    view: |-
-      {
-        "position": {
-          "x": 270,
-          "y": 1510
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "27":
-    id: "27"
-    taskid: a0306898-21dd-41c7-8d46-df5ab73a4bb3
-    type: regular
-    task:
-      id: a0306898-21dd-41c7-8d46-df5ab73a4bb3
-      version: -1
-      name: Classify incident as Suspicious Process
-      description: Change the properties of an incident
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "19"
-    scriptarguments:
-      addLabels: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedindividualscontactinformation: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      assetid: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      bugtraq: {}
-      city: {}
-      closeNotes: {}
-      closeReason: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      contactaddress: {}
-      contactname: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      deleteEmptyField: {}
-      dest: {}
-      destntdomain: {}
-      details: {}
-      dpoemailaddress: {}
-      duration: {}
-      emailaddress: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      eventdate: {}
-      eventid: {}
-      eventtarget: {}
-      eventtype: {}
-      fidelisendpointalertid: {}
-      fidelisendpointalertsource: {}
-      fidelisendpointeventfound: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      id: {}
-      isthedatasubjecttodpia: {}
-      labels: {}
-      likelyimpact: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      malwarefamily: {}
-      measurestomitigate: {}
-      name: {}
-      occurred: {}
-      owner: {}
-      phase: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      replacePlaybook: {}
-      roles: {}
-      sectorofaffectedparty: {}
-      severity: {}
-      signature: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      sla: {}
-      slaField: {}
-      src: {}
-      srcntdomain: {}
-      srcuser: {}
-      submitter: {}
-      systems: {}
-      telephoneno: {}
-      type:
-        simple: Suspicious Process
-      user: {}
-      vendorid: {}
-      vendorproduct: {}
-      vulnerabilitycategory: {}
-      whereisdatahosted: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 270,
-          "y": 2605
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "28":
-    id: "28"
-    taskid: 2924aa4c-f667-4928-842e-77df38c93e36
-    type: condition
-    task:
-      id: 2924aa4c-f667-4928-842e-77df38c93e36
-      version: -1
-      name: Is this registry related?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "77"
-      "yes":
-      - "29"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: greaterThanOrEqual
-          left:
-            value:
-              simple: Fidelis.Endpoint.Alert.Event.Event Type
-            iscontext: true
-          right:
-            value:
-              simple: "9"
-      - - operator: lessThanOrEqual
-          left:
-            value:
-              simple: Fidelis.Endpoint.Alert.Event.Event Type
-            iscontext: true
-          right:
-            value:
-              simple: "12"
-    view: |-
-      {
-        "position": {
-          "x": -1090,
-          "y": 1510
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "29":
-    id: "29"
-    taskid: b2b31576-182e-47eb-8adb-1c0c1f9571d7
-    type: regular
-    task:
-      id: b2b31576-182e-47eb-8adb-1c0c1f9571d7
-      version: -1
-      name: Classify incident as Suspicious Registry
-      description: Change the properties of an incident
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "19"
-    scriptarguments:
-      addLabels: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedindividualscontactinformation: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      assetid: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      bugtraq: {}
-      city: {}
-      closeNotes: {}
-      closeReason: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      contactaddress: {}
-      contactname: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      deleteEmptyField: {}
-      dest: {}
-      destntdomain: {}
-      details: {}
-      dpoemailaddress: {}
-      duration: {}
-      emailaddress: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      eventdate: {}
-      eventid: {}
-      eventtarget: {}
-      eventtype: {}
-      fidelisendpointalertid: {}
-      fidelisendpointalertsource: {}
-      fidelisendpointeventfound: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      id: {}
-      isthedatasubjecttodpia: {}
-      labels: {}
-      likelyimpact: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      malwarefamily: {}
-      measurestomitigate: {}
-      name: {}
-      occurred: {}
-      owner: {}
-      phase: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      replacePlaybook: {}
-      roles: {}
-      sectorofaffectedparty: {}
-      severity: {}
-      signature: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      sla: {}
-      slaField: {}
-      src: {}
-      srcntdomain: {}
-      srcuser: {}
-      submitter: {}
-      systems: {}
-      telephoneno: {}
-      type:
-        simple: Suspicious Registry
-      user: {}
-      vendorid: {}
-      vendorproduct: {}
-      vulnerabilitycategory: {}
-      whereisdatahosted: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -1090,
-          "y": 2605
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "30":
-    id: "30"
-    taskid: 6895b197-f0dc-4420-8d5d-07c24dd4b93c
-    type: condition
-    task:
-      id: 6895b197-f0dc-4420-8d5d-07c24dd4b93c
-      version: -1
-      name: Is this file related?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "28"
-      "yes":
-      - "31"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: greaterThanOrEqual
-          left:
-            value:
-              simple: Fidelis.Endpoint.Alert.Event.Event Type
-            iscontext: true
-          right:
-            value:
-              simple: "4"
-      - - operator: lessThanOrEqual
-          left:
-            value:
-              simple: Fidelis.Endpoint.Alert.Event.Event Type
-            iscontext: true
-          right:
-            value:
-              simple: "8"
-    view: |-
-      {
-        "position": {
-          "x": -640,
-          "y": 1510
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "31":
-    id: "31"
-    taskid: be2e4860-b8b8-429c-8457-3714c6738d2e
-    type: regular
-    task:
-      id: be2e4860-b8b8-429c-8457-3714c6738d2e
-      version: -1
-      name: Classify incident as Suspicious File
-      description: Change the properties of an incident
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "19"
-    scriptarguments:
-      addLabels: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedindividualscontactinformation: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      assetid: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      bugtraq: {}
-      city: {}
-      closeNotes: {}
-      closeReason: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      contactaddress: {}
-      contactname: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      deleteEmptyField: {}
-      dest: {}
-      destntdomain: {}
-      details: {}
-      dpoemailaddress: {}
-      duration: {}
-      emailaddress: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      eventdate: {}
-      eventid: {}
-      eventtarget: {}
-      eventtype: {}
-      fidelisendpointalertid: {}
-      fidelisendpointalertsource: {}
-      fidelisendpointeventfound: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      id: {}
-      isthedatasubjecttodpia: {}
-      labels: {}
-      likelyimpact: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      malwarefamily: {}
-      measurestomitigate: {}
-      name: {}
-      occurred: {}
-      owner: {}
-      phase: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      replacePlaybook: {}
-      roles: {}
-      sectorofaffectedparty: {}
-      severity: {}
-      signature: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      sla: {}
-      slaField: {}
-      src: {}
-      srcntdomain: {}
-      srcuser: {}
-      submitter: {}
-      systems: {}
-      telephoneno: {}
-      type:
-        simple: Suspicious File
-      user: {}
-      vendorid: {}
-      vendorproduct: {}
-      vulnerabilitycategory: {}
-      whereisdatahosted: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -640,
-          "y": 2605
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "52":
-    id: "52"
-    taskid: 562dd78b-b500-423a-8791-63ab4f412088
-    type: regular
-    task:
-      id: 562dd78b-b500-423a-8791-63ab4f412088
-      version: -1
-      name: Set alertId context
-      description: Sets a value into the context with the given context key
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "67"
-    scriptarguments:
-      append:
-        simple: "false"
-      key:
-        simple: Alert ID
-      value:
-        simple: ${incident.labels.Id}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 920,
-          "y": -430
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "63":
-    id: "63"
-    taskid: eae30279-d69c-4303-8f92-578a5eac2356
-    type: regular
-    task:
-      id: eae30279-d69c-4303-8f92-578a5eac2356
-      version: -1
-      name: Set endpointName context with Target
-      description: Sets a value into the context with the given context key
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "70"
-    scriptarguments:
-      append:
-        simple: "false"
-      key:
-        simple: Endpoint.Hostname
-      value:
-        simple: ${incident.labels.Target}
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 920,
-          "y": 270
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "65":
-    id: "65"
-    taskid: 9bf5c4af-7cc8-4931-8ece-51ac8b1b6b84
-    type: condition
-    task:
-      id: 9bf5c4af-7cc8-4931-8ece-51ac8b1b6b84
-      version: -1
-      name: Was this incident generated by Fidelis?
-      description: "Gets a value and return it. This is to be used in playbook conditional
-        tasks - get a value from incident field, label or context, and act accordingly.
-        \nIf an array is returned. the first value will be the decision making value."
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "19"
-      "yes":
-      - "6"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: incident.sourceBrand
-            iscontext: true
-          right:
-            value:
-              simple: Fidelis Elevate Endpoint
-    view: |-
-      {
-        "position": {
-          "x": 2190,
-          "y": -850
+          "x": 1720,
+          "y": 705
         }
       }
     note: false
@@ -1698,154 +103,42 @@ tasks:
     ignoreworker: false
   "66":
     id: "66"
-    taskid: 4a3b4205-c0b4-442e-820b-65bdf4aa7ec4
+    taskid: a32dbc64-8a74-4d63-805e-409f7cd97ce7
     type: regular
     task:
-      id: 4a3b4205-c0b4-442e-820b-65bdf4aa7ec4
+      id: a32dbc64-8a74-4d63-805e-409f7cd97ce7
       version: -1
-      name: fidelis-edr-get-alert-data
-      script: '|||fidelis-edr-get-alert-details'
+      name: Get Alert Details
+      description: Retrieves the details of an alert
+      scriptName: FidelisElevateEndpointGetAlertDetails
       type: regular
-      iscommand: true
+      iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "69"
+      - "82"
     scriptarguments:
       alertId:
-        simple: ${Alert ID}
+        complex:
+          root: incident
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: incident.sourceBrand
+                iscontext: true
+              right:
+                value:
+                  simple: Fidelis Elevate Endpoint
+          accessor: labels.Id
+    reputationcalc: 3
+    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 920,
-          "y": -100
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "67":
-    id: "67"
-    taskid: ca4dbdb6-b060-4149-8aec-cbcc6645ec8b
-    type: condition
-    task:
-      id: ca4dbdb6-b060-4149-8aec-cbcc6645ec8b
-      version: -1
-      name: Are there alert details?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "no":
-      - "66"
-      "yes":
-      - "69"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: Fidelis.Endpoint.Alert
-            iscontext: true
-    - label: "no"
-      condition:
-      - - operator: isNotExists
-          left:
-            value:
-              simple: Fidelis.Endpoint.Alert
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 1565,
-          "y": -285
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "68":
-    id: "68"
-    taskid: 2d89aeeb-f858-4f07-8707-7e80382d3341
-    type: condition
-    task:
-      id: 2d89aeeb-f858-4f07-8707-7e80382d3341
-      version: -1
-      name: Are there event details?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "no":
-      - "72"
-      "yes":
-      - "15"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: Fidelis.Endpoint.Alert.Event
-            iscontext: true
-    - label: "no"
-      condition:
-      - - operator: isNotExists
-          left:
-            value:
-              simple: Fidelis.Endpoint.Alert.Event
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 1565,
-          "y": 630
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "69":
-    id: "69"
-    taskid: 04346148-4e0f-4875-895a-25d7f66b1bd2
-    type: condition
-    task:
-      id: 04346148-4e0f-4875-895a-25d7f66b1bd2
-      version: -1
-      name: Are there endpoint details?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "no":
-      - "63"
-      "yes":
-      - "68"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: Fidelis.Endpoint.Alert.Endpoint
-            iscontext: true
-    - label: "no"
-      condition:
-      - - operator: isNotExists
-          left:
-            value:
-              simple: Fidelis.Endpoint.Alert.Endpoint
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 1565,
-          "y": 80
+          "x": 1720,
+          "y": 470
         }
       }
     note: false
@@ -1853,30 +146,39 @@ tasks:
     ignoreworker: false
   "70":
     id: "70"
-    taskid: 1897a2ef-f918-4b68-8397-493f0b67aa95
+    taskid: e8a52fe4-a331-4888-83a0-4621e61cd952
     type: regular
     task:
-      id: 1897a2ef-f918-4b68-8397-493f0b67aa95
+      id: e8a52fe4-a331-4888-83a0-4621e61cd952
       version: -1
-      name: fidelis-edr-get-endpoint-info
-      description: Retrieves information about an endpoint, if there is a Fidelis
-        Endpoint agent installed.
-      script: Fidelis Elevate Endpoint|||fidelis-edr-get-endpoint-info
+      name: Get Endpoint Details
+      description: Attempts to refresh the endpoint details associated with the incident
+      scriptName: FidelisElevateEndpointRefreshEndpointDetails
       type: regular
-      iscommand: true
-      brand: Fidelis Elevate Endpoint
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
-      - "68"
+      - "72"
     scriptarguments:
       hostname:
-        simple: ${incident.labels.Target}
+        complex:
+          root: incident
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: incident.labels.Target
+                iscontext: true
+          accessor: labels.Target
+    reputationcalc: 1
+    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 920,
-          "y": 450
+          "x": 860,
+          "y": 470
         }
       }
     note: false
@@ -1884,10 +186,10 @@ tasks:
     ignoreworker: false
   "71":
     id: "71"
-    taskid: 83b3a72f-63c4-4520-8aba-2936734e27af
+    taskid: 9e8bcef6-1f52-40f2-809d-1ccc4dee1a78
     type: playbook
     task:
-      id: 83b3a72f-63c4-4520-8aba-2936734e27af
+      id: 9e8bcef6-1f52-40f2-809d-1ccc4dee1a78
       version: -1
       name: Fidelis Elevate Endpoint Get Event for Alert
       description: Attempts to look up the event data associated with an alert generated
@@ -1898,10 +200,20 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "15"
+      - "19"
     scriptarguments:
       alertId:
-        simple: ${Alert ID}
+        complex:
+          root: incident
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: incident.labels.Id
+                iscontext: true
+          accessor: labels.Id
+      sleepTime:
+        simple: "5"
     separatecontext: false
     loop:
       iscommand: false
@@ -1932,8 +244,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 950,
-          "y": 920
+          "x": 1290,
+          "y": 690
         }
       }
     note: false
@@ -1941,12 +253,12 @@ tasks:
     ignoreworker: false
   "72":
     id: "72"
-    taskid: 29704627-2aed-4dfa-86c0-8af145b2ca5b
+    taskid: 6f6789ae-3a22-4b3d-8b41-9fbda4f0c83c
     type: regular
     task:
-      id: 29704627-2aed-4dfa-86c0-8af145b2ca5b
+      id: 6f6789ae-3a22-4b3d-8b41-9fbda4f0c83c
       version: -1
-      name: Set the rety count to 0
+      name: Set the event collect retry count to 0
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
@@ -1966,608 +278,86 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 950,
-          "y": 750
+          "x": 860,
+          "y": 690
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "73":
-    id: "73"
-    taskid: 11a04cd0-6f1b-4a67-8c45-4a4fe2b34dce
-    type: condition
-    task:
-      id: 11a04cd0-6f1b-4a67-8c45-4a4fe2b34dce
-      version: -1
-      name: Is this DNS related?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "16"
-      "yes":
-      - "75"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Fidelis.Endpoint.Alert.Event.Event Type
-            iscontext: true
-          right:
-            value:
-              simple: "17"
-    view: |-
-      {
-        "position": {
-          "x": -2440,
-          "y": 1510
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "74":
-    id: "74"
-    taskid: 31eb86c0-63e0-4f70-8e71-f0606d325605
-    type: condition
-    task:
-      id: 31eb86c0-63e0-4f70-8e71-f0606d325605
-      version: -1
-      name: Is network related?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "30"
-      "yes":
-      - "75"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Fidelis.Endpoint.Alert.Event.Event Type
-            iscontext: true
-          right:
-            value:
-              simple: "3"
-    view: |-
-      {
-        "position": {
-          "x": -190,
-          "y": 1510
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "75":
-    id: "75"
-    taskid: 23b4d50a-7cc1-4fe7-8d3b-c152894c0def
+  "82":
+    id: "82"
+    taskid: df14cb41-d115-486e-82e9-0500d52de786
     type: regular
     task:
-      id: 23b4d50a-7cc1-4fe7-8d3b-c152894c0def
+      id: df14cb41-d115-486e-82e9-0500d52de786
       version: -1
-      name: Classify incident as Network
-      description: Change the properties of an incident
-      script: Builtin|||setIncident
+      name: Get Platform Details
+      script: '|||fidelis-edr-get-platform-details'
       type: regular
       iscommand: true
-      brand: Builtin
+      brand: ""
     nexttasks:
       '#none#':
-      - "19"
-    scriptarguments:
-      addLabels: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedindividualscontactinformation: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      assetid: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      bugtraq: {}
-      city: {}
-      closeNotes: {}
-      closeReason: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      contactaddress: {}
-      contactname: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      deleteEmptyField: {}
-      dest: {}
-      destntdomain: {}
-      details: {}
-      dpoemailaddress: {}
-      duration: {}
-      emailaddress: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      eventdate: {}
-      eventid: {}
-      eventtarget: {}
-      eventtype: {}
-      fidelisendpointalertid: {}
-      fidelisendpointalertsource: {}
-      fidelisendpointeventfound: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      hostname: {}
-      id: {}
-      isthedatasubjecttodpia: {}
-      labels: {}
-      likelyimpact: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      malwarefamily: {}
-      measurestomitigate: {}
-      name: {}
-      occurred: {}
-      owner: {}
-      phase: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      replacePlaybook: {}
-      roles: {}
-      sectorofaffectedparty: {}
-      severity: {}
-      signature: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      sla: {}
-      slaField: {}
-      src: {}
-      srcntdomain: {}
-      srcuser: {}
-      submitter: {}
-      systems: {}
-      telephoneno: {}
-      type:
-        simple: Network
-      user: {}
-      vendorid: {}
-      vendorproduct: {}
-      vulnerabilitycategory: {}
-      whereisdatahosted: {}
+      - "70"
+    reputationcalc: 1
+    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -190,
-          "y": 2605
+          "x": 1290,
+          "y": 470
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "76":
-    id: "76"
-    taskid: 5711ed9b-e650-4810-8fc7-5cccc28312b9
+  "83":
+    id: "83"
+    taskid: 48a193ca-35f3-4cd3-8bab-5fed9b48f867
     type: regular
     task:
-      id: 5711ed9b-e650-4810-8fc7-5cccc28312b9
+      id: 48a193ca-35f3-4cd3-8bab-5fed9b48f867
       version: -1
-      name: Classify incident as Windows Event ID
-      description: Change the properties of an incident
-      script: Builtin|||setIncident
+      name: FidelisElevateEndpointPopulateProcessFields
+      scriptName: FidelisElevateEndpointIncidentFields
       type: regular
-      iscommand: true
-      brand: Builtin
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
-      - "19"
-    scriptarguments:
-      addLabels: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedindividualscontactinformation: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      assetid: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      bugtraq: {}
-      city: {}
-      closeNotes: {}
-      closeReason: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      contactaddress: {}
-      contactname: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      deleteEmptyField: {}
-      dest: {}
-      destntdomain: {}
-      details: {}
-      dpoemailaddress: {}
-      duration: {}
-      emailaddress: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      eventdate: {}
-      eventid: {}
-      eventtarget: {}
-      eventtype: {}
-      fidelisendpointalertid: {}
-      fidelisendpointalertsource: {}
-      fidelisendpointeventfound: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      hostname: {}
-      id: {}
-      isthedatasubjecttodpia: {}
-      labels: {}
-      likelyimpact: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      malwarefamily: {}
-      measurestomitigate: {}
-      name: {}
-      occurred: {}
-      owner: {}
-      phase: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      replacePlaybook: {}
-      roles: {}
-      sectorofaffectedparty: {}
-      severity: {}
-      signature: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      sla: {}
-      slaField: {}
-      src: {}
-      srcntdomain: {}
-      srcuser: {}
-      submitter: {}
-      systems: {}
-      telephoneno: {}
-      type:
-        simple: Windows Event ID
-      user: {}
-      vendorid: {}
-      vendorproduct: {}
-      vulnerabilitycategory: {}
-      whereisdatahosted: {}
+      - "84"
+    reputationcalc: 3
+    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -1550,
-          "y": 2605
+          "x": 1720,
+          "y": 870
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "77":
-    id: "77"
-    taskid: 27b735f1-0728-4588-89bc-b64eaf9aa863
-    type: condition
+  "84":
+    id: "84"
+    taskid: 784d3fc5-867f-4d6f-8a22-93efd3b0b277
+    type: title
     task:
-      id: 27b735f1-0728-4588-89bc-b64eaf9aa863
+      id: 784d3fc5-867f-4d6f-8a22-93efd3b0b277
       version: -1
-      name: Is Windows Event ID related?
-      type: condition
+      name: Complete
+      type: title
       iscommand: false
       brand: ""
-    nexttasks:
-      '#default#':
-      - "78"
-      "yes":
-      - "76"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Fidelis.Endpoint.Alert.Event.Event Type
-            iscontext: true
-          right:
-            value:
-              simple: "13"
-    view: |-
-      {
-        "position": {
-          "x": -1550,
-          "y": 1510
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "78":
-    id: "78"
-    taskid: 284d2f68-2722-410a-89bd-5220f5aa8f3d
-    type: condition
-    task:
-      id: 284d2f68-2722-410a-89bd-5220f5aa8f3d
-      version: -1
-      name: Is this USB related?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "73"
-      "yes":
-      - "79"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: greaterThanOrEqual
-          left:
-            value:
-              simple: Fidelis.Endpoint.Alert.Event.Event Type
-            iscontext: true
-          right:
-            value:
-              simple: "14"
-      - - operator: lessThanOrEqual
-          left:
-            value:
-              simple: Fidelis.Endpoint.Alert.Event.Event Type
-            iscontext: true
-          right:
-            value:
-              simple: "16"
-    view: |-
-      {
-        "position": {
-          "x": -1980,
-          "y": 1510
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "79":
-    id: "79"
-    taskid: d7fc73a3-3245-48fa-8e7b-76f0efd3b073
-    type: regular
-    task:
-      id: d7fc73a3-3245-48fa-8e7b-76f0efd3b073
-      version: -1
-      name: Classify incident as USB
-      description: Change the properties of an incident
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    scriptarguments:
-      addLabels: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedindividualscontactinformation: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      assetid: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      bugtraq: {}
-      city: {}
-      closeNotes: {}
-      closeReason: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      contactaddress: {}
-      contactname: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      deleteEmptyField: {}
-      dest: {}
-      destntdomain: {}
-      details: {}
-      dpoemailaddress: {}
-      duration: {}
-      emailaddress: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      eventdate: {}
-      eventid: {}
-      eventtarget: {}
-      eventtype: {}
-      fidelisendpointalertid: {}
-      fidelisendpointalertsource: {}
-      fidelisendpointeventfound: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      hostname: {}
-      id: {}
-      isthedatasubjecttodpia: {}
-      labels: {}
-      likelyimpact: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      malwarefamily: {}
-      measurestomitigate: {}
-      name: {}
-      occurred: {}
-      owner: {}
-      phase: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      replacePlaybook: {}
-      roles: {}
-      sectorofaffectedparty: {}
-      severity: {}
-      signature: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      sla: {}
-      slaField: {}
-      src: {}
-      srcntdomain: {}
-      srcuser: {}
-      submitter: {}
-      systems: {}
-      telephoneno: {}
-      type:
-        simple: USB
-      user: {}
-      vendorid: {}
-      vendorproduct: {}
-      vulnerabilitycategory: {}
-      whereisdatahosted: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -1980,
-          "y": 2605
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "80":
-    id: "80"
-    taskid: fbe2039d-65f5-4dbf-82b0-65956563bf4b
-    type: condition
-    task:
-      id: fbe2039d-65f5-4dbf-82b0-65956563bf4b
-      version: -1
-      name: Is this script related?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "19"
-      "yes":
-      - "27"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Fidelis.Endpoint.Alert.Event.Event Type
-            iscontext: true
-          right:
-            value:
-              simple: "34"
-    view: |-
-      {
-        "position": {
-          "x": -3360,
-          "y": 1510
+          "x": 2350,
+          "y": 740
         }
       }
     note: false
@@ -2575,16 +365,13 @@ tasks:
     ignoreworker: false
 view: |-
   {
-    "linkLabelsPosition": {
-      "20_22_#default#": 0.8,
-      "67_66_no": 0.66
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 4065,
-        "width": 5930,
-        "x": -3360,
-        "y": -1040
+        "height": 865,
+        "width": 1870,
+        "x": 860,
+        "y": 100
       }
     }
   }

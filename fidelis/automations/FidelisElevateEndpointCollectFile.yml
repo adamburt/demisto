@@ -1,0 +1,74 @@
+commonfields:
+  id: d5f621ef-c04e-4d70-8d0b-56dca17107f9
+  version: 19
+name: FidelisElevateEndpointCollectFile
+script: |
+  #####################
+  # Get the filepath
+  #####################
+  filepath = demisto.args()["filepath"]
+
+  #####################
+  # Get the hostname
+  #####################
+  hostname = None
+  try:
+      hostname = demisto.args()["hostname"]
+  except:
+      hostname = None
+  if hostname is None:
+      hostname = demisto.get(demisto.context(), "Fidelis.Endpoint.Alert.Target")
+
+  #####################
+  # Get the timeout
+  #####################
+  timeout = None
+  try:
+      timeout = demisto.args()["timeout"]
+  except:
+      timeout = None
+
+  #####################
+  # Get the jobId
+  #####################
+  jobId = None
+  try:
+      jobId = demisto.args()["jobId"]
+  except:
+      jobId = None
+
+  #########################
+  # Get the Job Results Id
+  #########################
+  jobResultsId = None
+  try:
+      jobResultsId = demisto.args()["jobResultsId"]
+  except:
+      jobResultsId = None
+
+  #####################
+  # Execute the script
+  #####################
+
+  demisto.results(demisto.executeCommand("fidelis-edr-collect-file", {"filepath": filepath, "hostname": hostname, "timeout": timeout, "jobId": jobId, "jobResultsId": jobResultsId }))
+type: python
+tags: []
+comment: Attempts to collect a file from the endpoint
+enabled: true
+args:
+- name: filepath
+  required: true
+  description: Path of the file to collect
+- name: hostname
+  description: Host to target for acquisition
+- name: timeout
+  description: Timeout (default is 300 seconds)
+- name: jobId
+  description: Job ID to collect restuls from (only populate if you've been asked
+    to)
+- name: jobResultsId
+  description: Job Results ID to collect restuls from (only populate if you've been
+    asked to)
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole
