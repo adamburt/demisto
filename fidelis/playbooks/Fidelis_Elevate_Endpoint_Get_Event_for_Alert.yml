@@ -1,0 +1,362 @@
+id: ffcd505b-7a89-40c0-86bb-8b59ab5e0bb8
+version: 99
+name: Fidelis Elevate Endpoint Get Event for Alert
+description: Attempts to look up the event data associated with an alert generated
+  by Fidelis Elevate Endpoint
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: dffac688-5f49-4f56-8edb-2866266e2917
+    type: start
+    task:
+      id: dffac688-5f49-4f56-8edb-2866266e2917
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 4eaa5557-f475-499b-82ce-21ddbf44f105
+    type: regular
+    task:
+      id: 4eaa5557-f475-499b-82ce-21ddbf44f105
+      version: -1
+      name: fidelis-edr-get-event-for-alert
+      description: Attempts to retrieve the event associated with an alert
+      scriptName: FidelisElevateEndpointGetEventForAlert
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      alertId:
+        simple: ${inputs.alertId}
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 493e4074-b3ab-44fd-8733-42ad63e3aa99
+    type: regular
+    task:
+      id: 493e4074-b3ab-44fd-8733-42ad63e3aa99
+      version: -1
+      name: Set the event found context
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: Found Event
+      value:
+        simple: "True"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: bb9aa75f-a00b-4b06-8d80-26da3927b08f
+    type: condition
+    task:
+      id: bb9aa75f-a00b-4b06-8d80-26da3927b08f
+      version: -1
+      name: Was the event found and populated
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "9"
+    scriptarguments:
+      value:
+        simple: ${Fidelis.Endpoint.Alert.Event}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: a3e7f360-3126-4a66-8e19-b468f585233f
+    type: regular
+    task:
+      id: a3e7f360-3126-4a66-8e19-b468f585233f
+      version: -1
+      name: Sleep for sleepTime
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      seconds:
+        simple: ${inputs.sleepTime}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 9e077714-ae12-4fbf-841e-fdab98811f42
+    type: regular
+    task:
+      id: 9e077714-ae12-4fbf-841e-fdab98811f42
+      version: -1
+      name: Increase the event retries by 1
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: Fidelis.Endpoint.Alert.Event Retries
+      value:
+        complex:
+          root: Fidelis
+          accessor: Endpoint.Alert.Event Retries
+          transformers:
+          - operator: addition
+            args:
+              by:
+                value:
+                  simple: "1"
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 594ec99c-7f82-47c9-801a-ad662a4e8f58
+    type: regular
+    task:
+      id: 594ec99c-7f82-47c9-801a-ad662a4e8f58
+      version: -1
+      name: Set the event retries to 1
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: Fidelis.Endpoint.Alert.Event Retries
+      value:
+        simple: "1"
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 4bca0137-df6d-4f5d-8cad-a86e5e9f5046
+    type: title
+    task:
+      id: 4bca0137-df6d-4f5d-8cad-a86e5e9f5046
+      version: -1
+      name: Complete
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 171c8f6b-ffc9-42fd-840c-e85e11d52b1f
+    type: regular
+    task:
+      id: 171c8f6b-ffc9-42fd-840c-e85e11d52b1f
+      version: -1
+      name: Set the event data
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: Fidelis.Endpoint.Alert.Event
+      value:
+        complex:
+          root: Fidelis
+          accessor: Endpoint.Alert.Event
+          transformers:
+          - operator: Stringify
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: c06a8a42-2518-4896-840b-02137448b944
+    type: condition
+    task:
+      id: c06a8a42-2518-4896-840b-02137448b944
+      version: -1
+      name: Does the retry count exist?
+      description: Sets a value into the context with the given context key
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "5"
+    continueonerror: true
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Fidelis.Endpoint.Alert.Event Retries
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1405,
+        "width": 1290,
+        "x": 230,
+        "y": -90
+      }
+    }
+  }
+inputs:
+- key: alertId
+  value: {}
+  required: true
+  description: Alert ID to find event data for
+- key: sleepTime
+  value: {}
+  required: false
+  description: Sleep duration (in minutes)
+outputs:
+- contextPath: Found Event
+  description: Whether the event was found or not
+  type: boolean
+- contextPath: Fidelis.Endpoint.Alert.Event
+  description: Event data
+  type: string
