@@ -1,6 +1,6 @@
 commonfields:
   id: 99efb7ff-6531-4022-84ab-27c1aeaab092
-  version: 23
+  version: 32
 name: SendNetworkData
 script: |-
   ########################################################################
@@ -50,10 +50,14 @@ script: |-
       demisto.debug("Sent {0} bytes to {1}:{2}".format(result, dest, port))
   except socket.error as err:
       demisto.error("Could not send data to {0}:{1} - {2}".format(dest,port,err))
+
+  if s:
+      s.close()
+
   exit(0)
 type: python
 tags: []
-comment: Attempts to send data using Pythong socket library
+comment: Attempts to send data using the Python socket library
 enabled: true
 args:
 - name: host

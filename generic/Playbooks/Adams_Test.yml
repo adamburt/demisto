@@ -1,0 +1,143 @@
+id: 68bb9ab1-a72e-446d-8023-72f73b25d063
+version: 19
+name: Adams Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 019203a5-8f4e-43b1-8883-b3a7bd9fe392
+    type: start
+    task:
+      id: 019203a5-8f4e-43b1-8883-b3a7bd9fe392
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: fd32ea2b-15fd-4e54-8048-93be5c241a9a
+    type: playbook
+    task:
+      id: fd32ea2b-15fd-4e54-8048-93be5c241a9a
+      version: -1
+      name: Fidelis Elevate Endpoint Enrichment
+      description: This playbook will attempt to gather event data for the alert (if
+        it exists and the alert does not already have event data). It will also assign
+        an incident type based on the event data it finds.
+      playbookName: Fidelis Elevate Endpoint Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: ec8249c1-84ba-40db-8088-bd8b4b08ca5f
+    type: playbook
+    task:
+      id: ec8249c1-84ba-40db-8088-bd8b4b08ca5f
+      version: -1
+      name: Fidelis Elevate Endpoint Create CEF Alert
+      description: This playbook maps fields from a Fidelis Endpoint Alert and Event
+        to common CEF fields.
+      playbookName: Fidelis Elevate Endpoint Create CEF Alert
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: a245514e-d0f8-43fd-82da-42afadbbc1fc
+    type: regular
+    task:
+      id: a245514e-d0f8-43fd-82da-42afadbbc1fc
+      version: -1
+      name: Send message
+      description: Attempts to send data using the Python socket library
+      scriptName: SendNetworkData
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      data:
+        simple: <134> ${CEF Alert}
+      header: {}
+      host:
+        simple: 10.0.0.240
+      port:
+        simple: "514"
+      protocol:
+        simple: UDP
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
