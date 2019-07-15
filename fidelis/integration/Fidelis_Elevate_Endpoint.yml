@@ -1,0 +1,2158 @@
+commonfields:
+  id: Fidelis Elevate Endpoint
+  version: -1
+name: Fidelis Elevate Endpoint
+display: Fidelis Elevate Endpoint
+category: Endpoint
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAIAAAAiOjnJAAAGiklEQVR42u3da08TWRyAcb8iM22lnbZzbSkFWqC0xQrlYqu0pQVcdd0VNbsx7gYvEdTNAi4gKPu1dsgazSZ9s+bM7fRJnvea4Ze5nM75z7WU4xAJ7xqHgIBFwCJgEQGLgEXAIgIWAYuARQQsAhYBiwhYBCwCFhGwCFgELCJgEbAIWOSWLdpOzXTqIc2umnrJ0nLAilTF9WznKLZ9Obb9d0jb+qz0TtX2Qbz6IGWULWBFIGPW2jxVQ0tqKLLFn1P6jAWsUFfayERI1dc2DmOFpg6s8LZwV4siLLf+uVJc04EFLE9sheG8BSzZYLl1DmPuAyOwgCU+914eWMDy5Dkx2DUIYMkJy632IAUsYImv/Tau5YEFLNFtnqoBXg2BJS2srcsxu2oCC1jiyzcMYAFLfMVVHVjAAhawgAUsYAELWMACFrCABSxgAQtYwAIWsIAFLGABC1jAAhawgAUsMeUWebsBWOJfe+d9LGB5UO9EDXATGLCkhdXaTwQ4iwZY0sJauKexSwdYghucK8EOnwGWnLCqD7RgjyGwJIR15494dsoGFrCEbic8U5yaGfgxBJZUsHon6sRNIwzHEFhDiuhEv/bbuFMzQnIMgTUko2R1P0RpBqn7v63e19IFOzzHEFjDyzeM2+/i4b/wLT8bn7mT0aftsB3AKMHSco5TNyt3tfWXie6x6sGPa8r668S3H25zjl6yjHJIy0zaYf5jRQaWXTVX964PPik+DGmxF0zO2fLDck9U5W5mcKH4dolZfJRChvywKjuae5Hy895l6ddxZEgOy70z9f+mGFiSwzJnrd5fKrCAJbgbu8lAHuOBJTOsTNH284YdWKMCq9QJ7HcVYMkMq/EkCSxgiW/txXVgAUt87YM4sIAlvtvvgQUsYBGwgDXSsFr7wAKWF0+FezwVAsuLdaynrGMBy4PKXVbegeVB2Wl+KwSWR283PObtBmB58T7WnLV5yvtYwPKg2c3M1iWwgCW8nLNwT9u+BBawPLA1v5Xun/u4S2eXXTojs6/QqZlrLxL+jCxjX+Fo7YR2y9WNxd1k+yDeOVZ7J+Jr7Scmlr7shNYmrnZzWPPBZMxamaINLL8vjtkpWy+JT8t/+SfyDcNF1v+oDC6CafNM7RzF3JN0ZScdwtEMksLyOH3G6hyHaNqMe3WuPUwFOFsbWGKabmVDOFvGtT4Z3CdMgCWgyk5YJ/pdjpU6mVQOWNEszKMiB5+U6XYWWMASn/tIEf4FEWBFD5bb+qvE1wdYYAFL5PDBwrIOLGCJb/nZOLCA5cFd/IUSqjHJwJIElluhqQMLWOKb30oDC1jiqz9MAQtYHsD6CVjAAhYBC1jAAhawgAUsYAFrdGHNDVjHAhYr78RvhcDi7QZgAUvs+1hN3scClujWXvIGKbCEv/N+xjvvwPJgl85Ui1067CsU/SQ420tH4hgCa9hO6HYYd0J3P6iTTXZCR312w1GIZjf0TtQbj5PZqSiNBgHW8Jy62XqTCPwU1Xx+vdzNGGUrcgcwarByVzOryr2Me8Q7hzHh40lb+/GJpW+XG/ck4f5RAynMq+qywTLnrKVfkv2P3s6M7J8rdpWJfqMBS8tdfSK6f+bTGNIbu0lkyA9LyzuLj5J+DuVmavJIwKre93tVCVjyw5puZ/mAALBErydN24GsJwFLcliVnTQfaQKW+Hv27gcVWMASXKGp8yFMYImv9mMKWMAS38pvfGwcWB60/ioBLGCJ7/a7OLCA5QGs98ACFrAIWMACFrCABSwCFrCABSxgAYuABSxgAQtYwCJgAQtYwAIWsAhYwAIWsIAFLGABC1jAAhawgAUsYAELWMACFrCABSxgAQtYwAIWsIAFLGABC1jAAhawgCU/rFuvmY8FLA9a+T2wiX6Np3zyRF5Yi48Cm0FauashQ1pYAX7mNN8wkCEtrHTB9voLckPrHMVgITOsq6vhbgBXw8pOGhaSw7Lmrc0zX09a3WNVn7FgITkst4UffP2mXGkjg4mRgKXlnKY/XxK4HGs8YZVhZGC5ZYr26l7Ch0XRqH/fG1jf84TYeJrc+uzJ/dbgQqk/TLmnRjSMHKx/r4mTK7rwHxBvvUlM3DRSqBpZWF945Z2pW9nm8/HOYWxw/p0nsP5HZePP2PKz8cKyDilg/ffGa9K25k2nZjr1/1nNNOcsbqeARcAiAhYBi4BFBCwCFgGLCFgELAIWAYtDQMAiYBGwiIBFwCJgEQGLgEXAIgIWhb1/AAw8b7myEQMeAAAAAElFTkSuQmCC
+description: Fidelis Elevate Endpoint integration. Can pull alerts from Fidelis Elevate
+  Endpoint Platform and also perform (optional) event enrichment for them.
+detaileddescription: "***Fidelis Endpoint EDR Platform***\n\n**Overview**\nThis integration
+  allows for the retrieval of alerts from the Fidelis Endpoint Platform (with optional
+  event enrichment). It allows the execution of several commands for event and evidence
+  look-ups. "
+configuration:
+- display: Host / IP Address
+  name: host
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Username
+  name: authentication
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Authentication Method
+  name: method
+  defaultvalue: post
+  type: 15
+  required: true
+  options:
+  - post
+  - get
+- display: Do not validate server certificate (insecure)
+  name: ignoressl
+  defaultvalue: "false"
+  type: 8
+  required: true
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Initial number of days to go back to for first import
+  name: lastDays
+  defaultvalue: "5"
+  type: 0
+  required: false
+script:
+  script: |+
+    import requests
+    from urllib.parse import unquote
+    from urllib.parse import quote
+    import pprint
+    from datetime import datetime
+    from datetime import timedelta
+    import time
+    import io
+
+
+
+    class fidelisEndpoint:
+
+        def __init__(self, host, username, password, authMethod, ignoressl):
+            self.host = host
+            self.baseURL = "https://{0}/endpoint/api".format(host)
+            self.username = username
+            self.password = password
+            self.ignoressl = ignoressl
+            if self.ignoressl:
+                self.checkURL = False
+            else:
+                self.checkURL = True
+            self.lastError = None
+            self.authToken = self.getAuthToken(self.username, self.password, authMethod)
+            self.headers = {"Content-Type": "application/json;charset=UTF-8", "Authorization": "bearer {0}".format(self.authToken)}
+
+        def getAuthToken(self, username, password, method):
+
+            #Find out whether get is used rather than post
+            useGet = False
+            url = "{0}/authenticate".format(self.baseURL)
+            if method.lower() == "get":
+                url += "?username={0}&password={1}".format(quote(username), quote(password))
+                useGet = True
+
+            #Ignore SSL errors if specified
+            if self.ignoressl:
+                requests.packages.urllib3.disable_warnings()
+            if useGet:
+                try:
+                    r = requests.get(url, verify=self.checkURL)
+                except Exception as err:
+                    self.lastError = "Error performing get request to URL- {0}".format(err)
+                    return None
+            if not useGet:
+                try:
+                    headers = {"Content-Type": "application/json"}
+                    bodyRequest = {"username": username, "password": password}
+                    r = requests.post(url, data = json.dumps(bodyRequest), headers = headers, verify=self.checkURL)
+                except Exception as err:
+                    self.lastError = "Error performing get request to URL- {0}".format(err)
+                    return None
+            try:
+                if type(r.content) == bytes:
+                    rData = json.loads(r.content.decode("utf-8"))
+                else:
+                    rData = json.loads(r.content)
+            except Exception as err:
+                self.lastError = "Error parsing JSON data returned from authentication URL - {0}".format(err)
+                return None
+            if not rData["success"]:
+                self.lastError = "Error returned from authentication request - {0}".format(rData["error"]["message"])
+                return None
+            try:
+                return rData["data"]["token"]
+            except Exception as err:
+                self.lastError = err
+                return None
+
+        def __genericGetRequest__(self, url):
+            if self.ignoressl:
+                requests.packages.urllib3.disable_warnings()
+            headers = self.headers
+            try:
+                r = requests.get(url, headers = headers, verify=self.checkURL)
+                if type(r.content) == bytes:
+                    rData = json.loads(r.content.decode("utf-8"))
+                else:
+                    rData = json.loads(r.content)
+                return rData
+            except Exception as err:
+                return {"success": False, "error": err}
+
+        def __genericPostRequest__(self, url, data):
+            if self.ignoressl:
+                requests.packages.urllib3.disable_warnings()
+            headers = self.headers
+            try:
+                r = requests.post(url, headers = headers, data = json.dumps(data), verify=self.checkURL)
+                if type(r.content) == bytes:
+                    rData = json.loads(r.content.decode("utf-8"))
+                else:
+                    rData = json.loads(r.content)
+                return rData
+            except Exception as err:
+                return {"success": False, "error": err}
+
+        def __genericDeleteRequest__(self, url, data):
+            if self.ignoressl:
+                requests.packages.urllib3.disable_warnings()
+            headers = self.headers
+            try:
+                if data:
+                    r = requests.delete(url, headers = headers, data = json.dumps(data), verify=self.checkURL)
+                else:
+                    r = requests.delete(url, headers = headers, verify=self.checkURL)
+                if type(r.content) == bytes:
+                    rData = json.loads(r.content.decode("utf-8"))
+                else:
+                    rData = json.loads(r.content)
+                return rData
+            except Exception as err:
+                return {"success": False, "error": err}
+
+        def getAlertRules(self, limit, offset, sort, search):
+            url = "{0}/alertrules".format(self.baseURL)
+
+            if limit:
+                if "?" not in url:
+                    url += "?limit={0}".format(limit)
+                else:
+                    url += "&limit={0}".format(limit)
+            if offset:
+                if "?" not in url:
+                    url += "?offset={0}".format(offset)
+                else:
+                    url += "&offset={0}".format(offset)
+            if sort:
+                if "?" not in url:
+                    url += "?sort={0}".format(sort)
+                else:
+                    url += "&sort={0}".format(sort)
+            if search:
+                if "?" not in url:
+                    url += "?search={0}".format(json.dumps(search))
+                else:
+                    url += "&search={0}".format(json.dumps(search))
+
+            data = self.__genericGetRequest__(url, None, None)
+            return data
+
+        def createAlertRule(self, data):
+            url = "{0}/alertrules".format(self.baseURL)
+            rData = self.__genericPostRequest__(url, data)
+            return rData
+
+        def deleteAlertRules(self, data):
+            url = "{0}/alertrules/delete".format(self.baseURL)
+            rData = self.__genericPostRequest__(url, data)
+            return rData
+
+        def getAlerts(self, skip, take, sort, facetSearch, startDate, endDate):
+
+            url = "{0}/alerts/getalerts".format(self.baseURL)
+            if skip:
+                if "?" not in url:
+                    url += "?skip={0}".format(skip)
+                else:
+                    url += "&skip={0}".format(skip)
+            if take:
+                if "?" not in url:
+                    url += "?take={0}".format(take)
+                else:
+                    url += "&take={0}".format(take)
+            if sort:
+                if "?" not in url:
+                    url += "?sort={0}".format(sort)
+                else:
+                    url += "&sort={0}".format(sort)
+            if facetSearch:
+                if "?" not in url:
+                    url += "?facetSearch={0}".format(quote(facetSearch))
+                else:
+                    url += "&facetSearch={0}".format(quote(facetSearch))
+            if startDate:
+                if "?" not in url:
+                    url += "?startDate={0}".format(quote(startDate.strftime("%Y-%m-%dT%H:%M:%S.000Z")))
+                else:
+                    url += "&startDate={0}".format(quote(startDate.strftime("%Y-%m-%dT%H:%M:%S.000Z")))
+            if endDate:
+                if "?" not in url:
+                    url += "?endDate={0}".format(quote(endDate.strftime("%Y-%m-%dT%H:%M:%S.000Z")))
+                else:
+                    url += "&endDate={0}".format(quote(endDate.strftime("%Y-%m-%dT%H:%M:%S.000Z")))
+            rData = self.__genericGetRequest__(url)
+            return rData
+
+        def getEndpoints(self, startIndex, count, sort):
+            url = "{0}/endpoints".format(self.baseURL)
+            if startIndex:
+                url += "/{0}".format(startIndex)
+            else:
+                url += "/0"
+            if count:
+                url += "/{0}".format(count)
+            else:
+                url += "/10"
+            if sort:
+                url += "/{0}".format(sort)
+            else:
+                url += "/hostName"
+            rData = self.__genericGetRequest__(url)
+            return rData
+
+        def getEndpointIdsbyEndpointNames(self, names):
+            url = "{0}/endpoints/endpointidsbyname".format(self.baseURL)
+            rData = self.__genericPostRequest__(url, names)
+            return rData
+
+        def deleteEndpoint(self, inputId):
+            url = "{0}/endpoints/delete/{1}".format(self.baseURL, inputId)
+            rData = self.__genericDeleteRequest__(url, None)
+            return rData
+
+        def getEvents(self, searchCriteria, pageSize):
+            url = "{0}/v2/events".format(self.baseURL)
+            if pageSize:
+                url += "?pageSize={0}".format(pageSize)
+            rData = self.__genericPostRequest__(url, searchCriteria)
+            return rData
+
+        def getEventCount(self, searchCriteria):
+            url = "{0}/events/count".format(self.baseURL)
+            rData = self.__genericPostRequest__(url, searchCriteria)
+            return rData
+
+        def fileSearch(self, searchCriteria):
+            url = "{0}/files/search".format(self.baseURL)
+            rData = self.__genericPostRequest__(url, searchCriteria)
+            return rData
+
+        def fileSearchJobStatus(self, jobId, jobResultId):
+            url = "{0}/jobs/getjobstatus/{1}/{2}".format(self.baseURL, jobId, jobResultId)
+            rData = self.__genericGetRequest__(url)
+            return rData
+
+        def fileSearchJobResults(self, jobId, jobResultId):
+            url = "{0}/jobs/{1}/jobresults/{2}".format(self.baseURL, jobId, jobResultId)
+            rData = self.__genericGetRequest__(url)
+            return rData
+
+        def fileSearchGetStream(self, fileId):
+            url = "{0}/files/{1}".format(self.baseURL, fileId)
+
+            #Copy our headers and remove the Content-Type
+            headers = {}
+            for k in self.headers:
+                headers[k] = self.headers[k]
+            del headers["Content-Type"]
+
+            #Create a byte stream to copy the data into
+            data = io.BytesIO()
+            try:
+                with requests.get(url, headers = headers, verify=self.checkURL, stream=True) as r:
+                    r.raise_for_status()
+                    for chunk in r.iter_content(chunk_size=1024):
+                        data.write(chunk)
+            except Exception as err:
+                return {"success": False, "error": err}
+            return data.getvalue()
+
+        def deleteJob(self, jobId):
+            url = "{0}/jobs/{1}".format(self.baseURL, jobId)
+            rData = self.__genericDeleteRequest__(url, None)
+            return rData
+
+        def getEndpointByIP(self, ip):
+            url = "{0}/endpoints/search".format(self.baseURL)
+            searchCriteria = {"ip": ip}
+            rData = self.__genericPostRequest__(url, searchCriteria)
+            return rData
+
+        def getProductInfo(self):
+            url = "{0}/product-info".format(self.baseURL)
+            rData = self.__genericGetRequest__(url)
+            return rData
+
+        def getScriptPackages(self):
+            url = "{0}/packages".format(self.baseURL)
+            rData = self.__genericGetRequest__(url)
+            return rData
+
+        def getScriptPackageFile(self, scriptPackageId):
+            url = "{0}/packages/{1}?type=File".format(self.baseURL, scriptPackageId)
+
+            #Copy our headers and remove the Content-Type
+            headers = {}
+            for k in self.headers:
+                headers[k] = self.headers[k]
+            del headers["Content-Type"]
+
+            #Create a byte stream to copy the data into
+            data = io.BytesIO()
+            try:
+                with requests.get(url, headers = headers, verify=self.checkURL, stream=True) as r:
+                    r.raise_for_status()
+                    for chunk in r.iter_content(chunk_size=1024):
+                        data.write(chunk)
+            except Exception as err:
+                return None
+            return data.getvalue()
+
+        def getScriptPackageManifest(self, scriptPackageId):
+            url = "{0}/packages/{1}?type=Manifest".format(self.baseURL, scriptPackageId)
+            rData = self.__genericGetRequest__(url)
+            return rData
+
+        def getScriptPackageMetadata(self, scriptPackageId):
+            url = "{0}/packages/{1}?type=Metadata".format(self.baseURL, scriptPackageId)
+            rData = self.__genericGetRequest__(url)
+            return rData
+
+        def getScriptPackageTemplate(self, scriptPackageId):
+            url = "{0}/packages/{1}?type=Template".format(self.baseURL, scriptPackageId)
+            rData = self.__genericGetRequest__(url)
+            return rData
+
+        def executeScriptPackage(self, scriptCriteria):
+            url = "{0}/packages/{1}/execute".format(self.baseURL, scriptCriteria["scriptPackageId"])
+            rData = self.__genericPostRequest__(url, scriptCriteria)
+            return rData
+
+        def getScriptJobResults(self, jobResultId):
+            url = "{0}/jobresults/scriptjob_{1}".format(self.baseURL, jobResultId)
+            rData = self.__genericPostRequest__(url, None)
+            return rData
+
+        def getScriptJobTargets(self, jobResultId):
+            url = "{0}/jobs/getjobtargets/{1}".format(self.baseURL, jobResultId)
+            rData = self.__genericGetRequest__(url)
+            return rData
+
+        def createScriptPackage(self, scriptOptions):
+            url = "{0}/scriptPackages/createUpdate".format(self.baseURL)
+            rData = self.__genericPostRequest__(url, scriptOptions)
+            return rData
+
+        def uploadScriptPackageFiles(self, scriptPackageId, fileData):
+
+            ##########################################################################################
+            # fileData must be a JSON dictionary containing the files to upload with their names
+            # For example: fileData = {"test.txt": open("C:\\test.txt", "rb")}
+            ##########################################################################################
+
+            url = "{0}/scriptPackages/scriptPackageFileUpload/{1}".format(self.baseURL, scriptPackageId)
+            #Copy our headers and change the Content-Type
+            headers = {}
+            for k in self.headers:
+                headers[k] = self.headers[k]
+            del headers["Content-Type"]# = "multipart/form-data"
+
+            #Ignore SSL errors?
+            if self.ignoressl:
+                requests.packages.urllib3.disable_warnings()
+
+            #Make the request
+            try:
+                r = requests.post(url, headers = headers, files = fileData, data = None, verify=self.checkURL)
+                if type(r.content) == bytes:
+                    rData = json.loads(r.content.decode("utf-8"))
+                else:
+                    rData = json.loads(r.content)
+                return rData
+            except Exception as err:
+                return {"success": False, "error": err}
+
+        def finalizeScriptPackage(self, scriptPackageId):
+            url = "{0}/scriptPackages/PackageChangeComplete/{1}/false".format(self.baseURL, scriptPackageId)
+            rData = self.__genericPostRequest__(url, [])
+            return rData
+
+    class functions:
+        def __init__(self, args, params):
+            self.args = args
+            self.params = params
+            self.ignoressl = False
+            self.checkURL = True
+            if self.params["ignoressl"]:
+                self.ignoressl = True
+                self.checkURL = False
+            self.fep = fidelisEndpoint(self.params["host"], self.params["authentication"]["identifier"], self.params["authentication"]["password"], self.params["method"], self.ignoressl)
+
+        def __findTaskForEndpoint__(self, hostname, taskName):
+
+            #Get the host data
+            endpoints = self.fep.getEndpoints(0, 1000000, None)
+            if not endpoints["success"] and len(endpoints["data"]["endpoints"]) < 1:
+                demisto.results("Could not get a list of endpoints = {0".format(endpoints["error"]))
+                exit(0)
+            endpoint = None
+            for x in endpoints["data"]["endpoints"]:
+                if x["hostName"] == hostname:
+                    endpoint = x
+            if endpoint is None:
+                demisto.results("Could not find a Fidelis Endpoint agent installed for hostname '{0}'".format(hostname))
+                exit(0)
+
+            #Get the list of available scripts
+            scripts = self.fep.getScriptPackages()
+            if not scripts["success"]:
+                demisto.results("Could not obtain a list of scripts - {0}".format(scripts["error"]))
+                exit(0)
+
+            #Find the correct script
+            potentialscripts = []
+            script = None
+            manifest = None
+            for x in scripts["data"]["scripts"]:
+                if x["name"] == taskName:
+                    potentialscripts.append(x)
+            if len(potentialscripts) < 1:
+                demisto.results("Could not find a task to list processes")
+                exit(0)
+
+            #For each of our potential scripts, get the metadata to match against the endpoint type
+            for x in potentialscripts:
+                thisManifest = self.fep.getScriptPackageManifest(x["id"])
+                try:
+                    if not thisManifest["success"]:
+                        continue
+                    platforms = thisManifest["data"]["platforms"]
+
+                    #If the endpoint is windows 64-bit
+                    if endpoint["osType"] == 1 and endpoint["osArch"] == 2 and platforms["windows64"]:
+                        processTask = x
+                        manifest = thisManifest
+                        break
+                    #If the endpoint is windows 32-bit
+                    if endpoint["osType"] == 1 and endpoint["osArch"] == 1 and platforms["windows32"]:
+                        processTask = x
+                        manifest = thisManifest
+                        break
+                    #If the endpoint is Linux 64-bit
+                    if endpoint["osType"] == 2 and endpoint["osArch"] == 2 and platforms["linux64"]:
+                        processTask = x
+                        manifest = thisManifest
+                        break
+                    #If the endpoint is Linux 32-bit
+                    if endpoint["osType"] == 2 and endpoint["osArch"] == 1 and platforms["linux32"]:
+                        processTask = x
+                        manifest = thisManifest
+                        break
+                    #If the endpoint is Mac 64-bit
+                    #There is no Mac Version yet
+
+                except:
+                    pass
+            if processTask is None:
+                demisto.results("Could not find a task to list processes")
+                exit(0)
+            return processTask
+
+        def testModule(self):
+            if self.fep.authToken != None:
+                demisto.results('ok')
+                sys.exit(0)
+            if self.fep.authToken == None:
+                demisto.results('Failed connecting to {0} - {1}'.format(self.fep.host, self.fep.lastError))
+                sys.exit(-1)
+
+        def fetchIncidents(self):
+
+            #Get the last run time dict
+            lastRun = demisto.getLastRun()
+
+            #Initialise startDate and endDate to be None - the Fidelis API can handle None dates
+            startDate = None
+            endDate = None
+
+            #Try and assign the date from the lastRun dict to the start date - We always want to end date to be now
+            try:
+                startDate = lastRun["date"]
+                startDate = datetime.strptime(startDate, "%Y-%m-%dT%H:%M:%SZ")
+                demisto.debug("Last run date was {0}".format(lastRun["date"]))
+
+            #If there is no start date form the last run variable, try and use the provided "last X" number of days for the first ever call
+            except:
+                startDate = None
+
+            if startDate is None:
+                demisto.debug("No last run date found")
+                startDate = (datetime.now() - timedelta(days=int(self.params["lastDays"])))
+                demisto.debug("Using start date of {0}".format(startDate))
+
+            #Create a marker for the alert ID
+            latestAlertId = 0
+
+            #Try and assign the latest alert ID from the lastRun dict
+            try:
+                latestAlertId = lastRun["id"]
+                demisto.debug("Last alert ID found was {0}".format(latestAlertId))
+            except:
+                demisto.debug("There is no latest alert ID")
+                latestAlertId = 0
+
+            #Create our incident list
+            incidents = []
+
+            #Gather all the alerts - 500 at a time and sort by their insertion date
+            allAlerts = self.fep.getAlerts(None, 500, "insertionDate+Ascending", None, startDate, endDate)
+
+            #Create a marker for the latest alert insertion date
+            latestInsertionDate = None
+            try:
+                if not allAlerts["success"] or len(allAlerts["data"]["entities"]) < 1:
+                    demisto.debug("No new alerts found")
+                    sys.exit(0)
+            except Exception as err:
+                demisto.error("Error - {0}".format(err))
+                sys.exit(-1)
+
+            allAlerts = allAlerts["data"]["entities"]
+            if allAlerts is None:
+                demisto.debug("No new alerts found")
+                sys.exit(0)
+            for alert in allAlerts:
+                if alert["id"] > latestAlertId:
+                    latestAlertId = alert["id"]
+                    incident = {}
+                    if alert["assessment"] is None or len(alert["assessment"] < 1):
+                        incident["name"] = alert["artifactName"]
+                    else:
+                        incident["name"] = alert["assessment"]
+                    if alert["severity"] == 0:
+                        incident["severity"] = 0
+                    if alert["severity"] == 1:
+                        incident["severity"] = 4
+                    if alert["severity"] == 2:
+                        incident["severity"] = 3
+                    if alert["severity"] == 3:
+                        incident["severity"] = 2
+                    if alert["severity"] == 4:
+                        incident["severity"] = 1
+                    if alert["severity"] == 5:
+                        incident["severity"] = 5
+
+                    incident["details"] = alert["description"]
+                    incident["occurred"] = alert["eventTime"]
+                    combined = {}
+
+                    #Create an ignore list for alert details that the user will not find relevant
+                    alertIgnoreList = ["createDate", "reportId", "insertionDate", "viewed", "parentEventId", "eventTime", "userFlagged", "validatedDate", "alertTargetId", "status", "respondedDate", "eventIndex", "eventId"]
+                    for key in alert:
+
+                        #For each field in the alert (except those in the ignore list) create an entry with the details
+                        if key not in alertIgnoreList:
+                            field = pascalToSpace(key)
+                            combined[field] = alert[key]
+
+                    incident["rawJSON"] = json.dumps(combined)
+                    incidents.append(incident)
+
+                    #Update the latest insertion date for the last run variable
+                    try:
+                        latestInsertionDate = (datetime.strptime(alert["insertionDate"],"%Y-%m-%dT%H:%M:%S.%fZ")).strftime("%Y-%m-%dT%H:%M:%SZ")
+                    except:
+                        pass
+
+            # Store the last run time...
+            demisto.setLastRun({'date': latestInsertionDate, "id": latestAlertId})
+
+            # Create our incidents
+            demisto.debug("Found {0} new alerts".format(len(incidents)))
+            if len(incidents) < 1:
+                sys.exit(0)
+            demisto.incidents(incidents)
+            sys.exit(0)
+
+        def getScripts(self):
+
+            #This function will add to conext and not overwrite any context
+
+            allScripts = self.fep.getScriptPackages()
+            if not allScripts["success"]:
+                demisto.results("Error obtaining list of scripts - {0}".format(allScripts["error"]))
+                exit(0)
+
+            scriptResults = []
+            duplicates = []
+            entries = {}
+            for script in allScripts["data"]["scripts"]:
+
+                #Create an entry
+                output = {"ID": script["id"], "Name": script["name"], "Description": script["description"]}
+
+                #Get the manifest
+                manifest = self.fep.getScriptPackageManifest(script["id"])
+                if not manifest["success"]:
+                    continue
+
+                output["Platforms"] = []
+                for p in manifest["data"]["platforms"]:
+                    if manifest["data"]["platforms"][p]:
+                        output["Platforms"].append(p)
+
+                platformString = ",".join(output["Platforms"])
+
+                entryName = "{0} ({1})".format(script["name"], platformString)
+                entries[entryName] = output
+
+            demisto.results({
+                "Type": entryTypes["note"],
+                "ContentsFormat": formats["json"],
+                "Contents": entries,
+                "ReadableContentsFormat": None,
+                "HumanReadable": None,
+                "EntryContext": {"Fidelis.Endpoint.Scripts" : entries}
+                }
+            )
+            exit(0)
+
+        def getScriptQuestions(self):
+
+            scriptId = None
+
+            #Try and get the script ID from the input
+            try:
+                scriptId = self.args["scriptId"]
+            except:
+                scriptId = None
+
+            #If there is none, exit
+            if scriptId is None:
+                demisto.results("No script ID provided")
+                exit(0)
+
+            manifest = self.fep.getScriptPackageManifest(scriptId)
+
+            if not manifest["success"]:
+                demisto.results("No script found with ID {0}".format(scriptId))
+                exit(0)
+
+            questions = manifest["data"]["questions"]
+            demisto.results({
+                "Type": entryTypes["note"],
+                "ContentsFormat": formats["json"],
+                "Contents": questions,
+                "ReadableContentsFormat": None,
+                "HumanReadable": None,
+                "EntryContext": {"Fidelis.Endpoint.Script.Questions" : questions}
+                }
+            )
+            exit(0)
+
+        def getAlertDetails(self):
+
+            #See if we have an alert ID to work with
+            alertId = None
+            try:
+                alertId = int(self.args["alertId"])
+            except:
+                alertId = None
+
+            if alertId is None:
+                try:
+                    alertId = int(demisto.get(demisto.context(), "incident.labels.Id"))
+                except:
+                    alertId = None
+
+            if alertId is None:
+                demisto.results("No alert ID provided and could not find an Fidelis Endpoint Alert ID in this incident")
+                exit(-1)
+
+            #####################
+            #Retrieve the alert
+            #####################
+            facetSearch = {"searchFields":[{"fieldName":"Id","values":[{"value":alertId,"operator":0}]}]}
+
+            alerts = self.fep.getAlerts(0, 1000, None, json.dumps(facetSearch), None, None)
+
+            #If we cannot find any alerts, there's no point looking for the event anymore
+            try:
+                if not alerts["success"] and len(alerts["data"]["entities"]) < 1:
+                    demisto.results("Could not retrieve any alerts - {0}".format(alerts["error"]))
+                    exit(-1)
+            except Exception as err:
+                demisto.error({"Error": "Error looking through alerts - {0}".format(err)})
+
+                exit(-1)
+
+            #Find our specific alert by the id
+            alert = None
+            for thisAlert in alerts["data"]["entities"]:
+                if thisAlert["id"] == alertId:
+                    alert = thisAlert
+                    break
+
+            #Only continue if we have found the alert information
+            if alert is None:
+                demisto.results("Could not locate alert with ID {0}".format(alertId))
+                exit(0)
+
+            #If we have alert details then add them to the context
+            if alert:
+                alertIgnoreList = ["eventType", "validatedDate", "viewed", "alertTargtId", "reportId", "eventIndex", "status", "intelSourceType", "parentEventId", "respondedDate", "sourceType"]
+                alertDetails = {}
+                for field in alert:
+                    if field not in alertIgnoreList:
+                        newField = pascalToSpace(field)
+                        alertDetails[newField] = alert[field]
+                demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': alertDetails, 'EntryContext': {'Fidelis.Endpoint.Alert': alertDetails}})
+
+        def getEventForAlert(self):
+
+            #See if we have an alert ID to work with
+            alertId = None
+            try:
+                alertId = int(self.args["alertId"])
+            except:
+                alertId = None
+
+            if alertId is None:
+                try:
+                    alertId = int(demisto.get(demisto.context(), "incident.labels.Id"))
+                except:
+                    alertId = None
+
+            if alertId is None:
+                demisto.results("No alert ID provided and could not find an Alert ID in this incident")
+                exit(0)
+
+            #####################
+            #Retrieve the alert
+            #####################
+            facetSearch = {"searchFields":[{"fieldName":"Id","values":[{"value":alertId,"operator":0}]}]}
+
+            alerts = self.fep.getAlerts(0, 1000, None, json.dumps(facetSearch), None, None)
+
+            #If we cannot find any alerts, there's no point looking for the event anymore
+            try:
+                if not alerts["success"] and len(alerts["data"]["entities"]) < 1:
+                    demisto.results("Could not retrieve any alerts - {0}".format(alerts["error"]))
+                    exit(-1)
+            except Exception as err:
+                demisto.results("Error looking for alerts - {0}".format(err))
+                exit(-1)
+
+            #Find our specific alert by the id
+            alert = None
+            for thisAlert in alerts["data"]["entities"]:
+                if thisAlert["id"] == alertId:
+                    alert = thisAlert
+                    break
+
+            #Only continue if we have found the alert information
+            if alert is None:
+                demisto.results("Could not locate alert with ID {0}".format(alertId))
+                exit(0)
+
+            #Only continue if the alert has a related event
+            try:
+                if not alert["eventId"] or not alert["eventTime"] or not alert["target"]:
+                    demisto.results("The alert for ID {0} does not have the required fields to search for the event".format(alert["id"]))
+                    exit(0)
+            except Exception as err:
+                demisto.results("Error getting event information from alert - {0}".format(err))
+                exit(-1)
+
+            #Build our search date / time range
+            if "." in alert["eventTime"]:
+                eventStart = datetime.strptime(alert["eventTime"], '%Y-%m-%dT%H:%M:%S.%fZ') - timedelta(seconds=1)
+                eventEnd = datetime.strptime(alert["eventTime"], '%Y-%m-%dT%H:%M:%S.%fZ') + timedelta(seconds=1)
+                eventStart = datetime.strftime(eventStart, "%Y-%m-%dT%H:%M:%SZ")
+                eventEnd = datetime.strftime(eventEnd, "%Y-%m-%dT%H:%M:%SZ")
+
+            #Detect the short date type
+            else:
+                eventStart = datetime.strptime(alert["eventTime"], '%Y-%m-%dT%H:%M:%SZ') - timedelta(seconds=1)
+                eventEnd = datetime.strptime(alert["eventTime"], '%Y-%m-%dT%H:%M:%SZ') + timedelta(seconds=1)
+                eventStart = datetime.strftime(eventStart, "%Y-%m-%dT%H:%M:%SZ")
+                eventEnd = datetime.strftime(eventEnd, "%Y-%m-%dT%H:%M:%SZ")
+
+
+            #Build our search criteria
+            searchCriteria = {"dateRange": {"start": eventStart, "end": eventEnd}, "criteriaV3": {}}
+
+            #If this is process based
+            if (alert["eventType"] >= 0 and alert["eventType"] <= 1) or (alert["eventType"] >= 30 and alert["eventType"] <= 32):
+                searchCriteria["criteriaV3"]["entityType"] = "process"
+
+            #If this is network based
+            if alert["eventType"] == 3:
+                searchCriteria["criteriaV3"]["entityType"] = "network"
+
+            #If this is file based
+            if alert["eventType"] == 2 or (alert["eventType"] >= 4 and alert["eventType"] <= 8) :
+                searchCriteria["criteriaV3"]["entityType"] = "file"
+
+            #If this is registry based
+            if alert["eventType"] >= 9 and alert["eventType"] <= 12:
+                searchCriteria["criteriaV3"]["entityType"] = "registry"
+
+            #If this is WEV based
+            if alert["eventType"] == 13:
+                searchCriteria["criteriaV3"]["entityType"] = "windowsevent"
+
+            #If this is USB based
+            if alert["eventType"] >= 14 and alert["eventType"] <= 16:
+                searchCriteria["criteriaV3"]["entityType"] = "usb"
+
+            #If this is DNS based
+            if alert["eventType"] == 17:
+                searchCriteria["criteriaV3"]["entityType"] = "dns"
+
+            #If this is Malware based
+            if alert["eventType"] >= 18 and alert["eventType"] <= 29:
+                searchCriteria["criteriaV3"]["entityType"] = "antiMalware"
+
+            #If this is a script execution
+            if alert["eventType"] == 34 :
+                searchCriteria["criteriaV3"]["entityType"] = "script"
+
+            searchCriteria["criteriaV3"]["filter"] = {"filterType": "composite", "logic": "and", "filters": [{"filterType": "criteria", "column": "eventType", "operator": "=", "value": alert["eventType"]}, {"filterType": "criteria", "column": "endpointName", "operator": "=~", "value": alert["target"]}]}
+            events = self.fep.getEvents(searchCriteria, 1000)
+
+            #Check to see if the call was successful or not
+            if not events["success"]:
+                demisto.results("There was an error retrieving events - {0}".format(events["error"]))
+                exit(0)
+
+
+            #Check to see if we have any events
+            if len(events["data"]["events"]) < 1:
+                demisto.results("Could not find any events for the alert ID {0}".format(alertId))
+                exit(0)
+
+            #Assign the events list to "events"
+            try:
+                events = events["data"]["events"]
+            except Exception as err:
+                demisto.error({"Error": err})
+                exit(-1)
+
+            #Check to see if our event is there
+            possibleEvents = []
+            matchedEvent = None
+
+            for event in events:
+                try:
+                    if event["targetId"] == alert["eventId"] and (event["parentId"] == alert["parentEventId"] or alert["parentEventId"] == event["targetId"]) and event["eventIndex"] == alert["eventIndex"]:
+                        possibleEvents.append(event)
+                except:
+                    if event["targetId"] == alert["eventId"] and event["eventIndex"] == alert["eventIndex"]:
+                        possibleEvents.append(event)
+
+
+            if len(possibleEvents) == 1:
+                matchedEvent = possibleEvents[0]
+
+            if not matchedEvent:
+                demisto.results("Could not find an event for alert ID {0} at this time".format(alertId))
+                exit(0)
+
+            if matchedEvent:
+                eventIgnoreList = ["esIndex", "reportId", "targetId", "eventIndex", "esDocumentType", "indexingTime", "parentId", "scanType", "fileType"]
+                newEvent = {}
+                for field in matchedEvent:
+                    if field not in eventIgnoreList:
+                        newField = pascalToSpace(field)
+                        newEvent[newField] = matchedEvent[field]
+                demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': newEvent, 'EntryContext': {'Fidelis.Endpoint.Alert.Event': newEvent}})
+
+        def getEndpointInfo(self):
+
+            #Get the hostname of the endpoint to collect from - if there is not one, try and use the one from the incident context
+            hostname = None
+            try:
+                hostname = self.args["hostname"]
+            except:
+                hostname = None
+
+            if hostname is None:
+                try:
+                    hostname = demisto.get(demisto.context(), "Fidelis.Endpoint.Alert.Endpoint.Host Name")
+                except:
+                    hostname = None
+
+            if hostname is None:
+                try:
+                    hostname = demisto.get(demisto.incidents(), "endpointname")
+                except:
+                    hostname = None
+
+            if hostname is None:
+                demisto.results("No hostname name provided and no hostname name found in the the incident context")
+                exit(-1)
+
+            if is_ip_valid(hostname):
+                ip = hostname
+                hostname = None
+
+            #Use hostname over IP for searching, if possible
+            searchField = ""
+            searchValue = ""
+            if hostname:
+                searchField = "hostName"
+                searchValue = hostname
+            else:
+                searchField = "ipAddress"
+                searchValue = ip
+
+            #Get all endpoints
+            endpoints = self.fep.getEndpoints(0, 1000000, None)
+
+            try:
+                if endpoints["success"]:
+                    endpoints = endpoints["data"]["endpoints"]
+                else:
+                    demisto.results("Could not retrieve endpoints = {0}".format(endpoints["error"]))
+            except Exception as err:
+                demisto.results("Could not retrieve endpoints = {0}".format(err))
+                exit(0)
+
+            thisEndpoint = None
+            for endpoint in endpoints:
+                if endpoint[searchField].lower() == searchValue.lower():
+                    thisEndpoint = endpoint
+                    break
+
+            if thisEndpoint is None:
+                demisto.results("Could not find endpoint with {0} containing {1}".format(searchField, searchValue))
+                exit(0)
+
+            if thisEndpoint is not None:
+                endpoint = {}
+                endpointIgnoreList = ["port", "activeDirectoryId", "agentScoreboardHash", "investigativeModeDuration", "investigativeModeEnabled", "flag", "interfaceIPs", "groups", "createdByType", "investigativeModeStartTime", "eventsVersion"]
+                for x in thisEndpoint:
+                    if x not in endpointIgnoreList:
+                        field = pascalToSpace(x)
+                        endpoint[field] = thisEndpoint[x]
+                demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': endpoint, 'EntryContext': {'Fidelis.Endpoint.Alert.Endpoint': endpoint}})
+
+            else:
+                demisto.results("Could not find a hostname in the input, incident or Fidelis Alert")
+
+        def deleteAlert(self):
+
+            alertId = None
+            try:
+                alertId = int(self.args["alertId"])
+            except:
+                alertId = None
+
+            if alertId is None:
+                demisto.results("No alert ID provided or found trying to find one")
+                exit(0)
+
+            url = "{0}/alerts/deletealerts".format(self.fep.baseURL)
+            if self.fep.ignoressl:
+                requests.packages.urllib3.disable_warnings()
+            headers = self.fep.headers
+            alertList = []
+            alertList.append(alertId)
+            try:
+                r = requests.post(url, headers = headers, data = json.dumps(alertList), verify=self.fep.checkURL)
+                if type(r.content) == bytes:
+                    rData = json.loads(r.content.decode("UTF-8"))
+                else:
+                    rData = json.loads(r.content)
+            except Exception as err:
+                self.lastError = err
+                return {"success": False, "error": err}
+
+            if rData["success"]:
+                demisto.results("Successfully deleted alert ID {0} from Fidelis Endpoint".format(alertId))
+            else:
+                demisto.results("Failed to delete alert ID {0} - {1}}".format(alertId, rData["error"]))
+            exit(0)
+
+        def collectFile(self):
+
+            #Get the timeout value
+            try:
+                timeoutInSeconds = int(self.args["timeout"])
+            except:
+                timeoutInSeconds = None
+            if not timeoutInSeconds:
+                demisto.results("No timeout provided")
+                exit(-1)
+
+            #Check to see if this is a specific jobId and jobResultId to collect data from
+            retryJob = False
+            try:
+                jobId = demisto.args()["jobId"]
+                jobResultsId = demisto.args()["jobResultsId"]
+                retryJob = True
+            except:
+                retryJob = False
+
+
+            #If this is not a retry job, get the script package and execute it
+            if not retryJob:
+
+                #Get the filename to be collected
+                filepath = None
+                try:
+                    filepath = self.args["filepath"]
+                except:
+                    demisto.results("You must provide a filename using the filepath= argument")
+                    exit(-1)
+
+                if filepath is None:
+                    demisto.results("You must provide a filename using the filepath= argument")
+                    exit(-1)
+
+
+                #Get the hostname of the endpoint to collect from - if there is not one, try and use the one from the incident context
+                hostname = None
+                try:
+                    hostname = self.args["hostname"]
+                except:
+                    hostname = None
+
+                if hostname is None:
+                    try:
+                        hostname = demisto.get(demisto.context(), "Fidelis.Endpoint.Alert.Endpoint.Host Name")
+                    except:
+                        hostname = None
+
+                if hostname is None:
+                    try:
+                        hostname = demisto.get(demisto.incidents(), "endpointname")
+                    except:
+                        hostname = None
+
+                if hostname is None:
+                    demisto.results("No hostname name provided and no hostname name found in the the incident context")
+                    exit(-1)
+
+
+                #Find our endpoint data
+                endpoint = None
+                endpoints = self.fep.getEndpoints(0, 1000000, None)
+                if not endpoints["success"] and len(endpoints["data"]["endpoints"] < 1):
+                    demisto.results("Could not obtain a list of endpoints - {0}".format(endpoints["error"]))
+                    exit(0)
+                for x in endpoints["data"]["endpoints"]:
+                    if x["hostName"] == hostname:
+                        endpoint = x
+
+                #Find the script we need to run
+                script = self.__findTaskForEndpoint__(hostname, "Single File Collection by Path")
+
+                if script is None:
+                    demisto.results("Could not located a file collection script suitable for {0}".format(self.args["hostname"]))
+                    exit(0)
+
+                #Get the script manifest
+                manifestData = self.fep.getScriptPackageManifest(script["id"])
+
+                #Get the template to use
+                template = self.fep.getScriptPackageTemplate(script["id"])
+
+                #Get the script metadata
+                metadata = self.fep.getScriptPackageMetadata(script["id"])
+
+                #Populate the script execution details with answers to questions
+                questions = template["data"]["questions"]
+                questions["1"] = filepath
+                scriptPackageId = template["data"]["scriptPackageId"]
+
+                scriptCriteria = {}
+                scriptCriteria["timeoutInSeconds"] = timeoutInSeconds
+                scriptCriteria["scriptPackageId"] = scriptPackageId
+                scriptCriteria["hosts"] = [endpoint["ipAddress"]]
+                scriptCriteria["integrationOutputs"] =  []
+                scriptCriteria["questions"] =  questions
+
+                results = self.fep.executeScriptPackage(scriptCriteria)
+
+                if not results["success"]:
+                    demisto.results("There was an error executing \"{0}\" against \"{1}\" - {2}".format("Single File Collection by Path", hostname, results["error"]))
+                    exit(0)
+
+                #Get our results ID
+                jobResultsId = results["data"]["jobResultId"]
+
+                #Get our job ID
+                jobId = results["data"]["jobId"]
+
+
+            #Monitor our job until it has complete
+            counter = 0
+            results = self.fep.fileSearchJobStatus(jobId, jobResultsId)
+            while counter < timeoutInSeconds:
+                counter += 1
+                results = self.fep.fileSearchJobStatus(jobId, jobResultsId)
+                if results["data"]["status"] == "Completed":
+                    break
+                time.sleep(1)
+
+            time.sleep(5)
+            results = self.fep.fileSearchJobResults(jobId, jobResultsId)
+
+            #If the job has not yet finished
+            if results["success"] and len(results["data"]["jobResultInfos"]) == 0 and results["data"]["jobEndTime"] is None:
+                demisto.results("The job has not yet finished and timeout exceeded.\nPlease execute again providing the following arguments:\njobId=\"{0}\"\njobResultsId=\"{1}\"".format(jobId, jobResultsId))
+                exit(0)
+
+            #If the job has finished but there are no results
+            if results["success"] and len(results["data"]["jobResultInfos"]) == 0 and results["data"]["jobEndTime"] is not None:
+                demisto.results("The job completed, but, no files were returned")
+                exit(0)
+
+            collectedFiles = results["data"]["jobResultInfos"][0]["collectedFiles"][0]
+
+            #Grab the file stream
+            fileStream = self.fep.fileSearchGetStream(collectedFiles["id"])
+            demisto.results(fileResult(collectedFiles["name"],fileStream))
+            exit(0)
+
+        def executeTask(self, hostname, taskName, inputQuestions, timeoutInSeconds, waitAndHandle, contextUpdate):
+
+            #Set the timeout to integer, just in case
+            timeoutInSeconds = int(timeoutInSeconds)
+            halfway = timeoutInSeconds / 2
+
+            #Find our endpoint data
+            endpoint = None
+            endpoints = self.fep.getEndpoints(0, 1000000, None)
+            if not endpoints["success"] and len(endpoints["data"]["endpoints"] < 1):
+                demisto.results("Could not obtain a list of endpoints - {0}".format(endpoints["error"]))
+                exit(0)
+            for x in endpoints["data"]["endpoints"]:
+                if x["hostName"] == hostname:
+                    endpoint = x
+
+            #Find the script we need to run
+            script = self.__findTaskForEndpoint__(hostname, taskName)
+
+            if script is None:
+                demisto.results("Could not located a file collection script suitable for {0}".format(self.args["hostname"]))
+                exit(0)
+
+            #Get the script manifest
+            manifestData = self.fep.getScriptPackageManifest(script["id"])
+
+            #Get the template to use
+            template = self.fep.getScriptPackageTemplate(script["id"])
+
+            #Get the script metadata
+            metadata = self.fep.getScriptPackageMetadata(script["id"])
+
+            if inputQuestions is not None:
+                for key in inputQuestions:
+                    if key == "last":
+                        lastOption = len(manifestData["data"]["questions"])
+                        template["data"]["questions"][str(lastOption)] = inputQuestions[key]
+
+                for key in inputQuestions:
+                    if key != "last" and key != "first":
+                        try:
+                            template["data"]["questions"][key] = inputQuestions[key]
+                        except:
+                            pass
+
+            #Build the criteria
+            scriptCriteria = {}
+            scriptCriteria["timeoutInSeconds"] = timeoutInSeconds
+            scriptCriteria["scriptPackageId"] = template["data"]["scriptPackageId"]
+            scriptCriteria["hosts"] = [endpoint["ipAddress"]]
+            scriptCriteria["integrationOutputs"] =  []
+            scriptCriteria["questions"] =  template["data"]["questions"]
+
+            #Execute the task
+            results = self.fep.executeScriptPackage(scriptCriteria)
+
+            #Return the result if this routine is not handling the output
+            if not waitAndHandle:
+                return results
+
+            #Check the result
+            if not results["success"]:
+                demisto.results("There was an error executing \"{0}\" against \"{1}\" - {2}".format(taskName, hostname, results["error"]))
+                exit(0)
+
+            #Get our results ID
+            jobResultsId = results["data"]["jobResultId"]
+
+            #Get our job ID
+            jobId = results["data"]["jobId"]
+
+
+
+            #Monitor our job until it has complete
+            counter = 0
+            results = self.fep.fileSearchJobStatus(jobId, jobResultsId)
+            while counter < timeoutInSeconds:
+                counter += 1
+                results = self.fep.fileSearchJobStatus(jobId, jobResultsId)
+                if results["data"]["status"] == "Completed":
+                    break
+                time.sleep(1)
+
+            time.sleep(5)
+            results = self.fep.getScriptJobResults(jobResultsId)
+
+            if len(results["data"]["hits"]["hits"]) < 1:
+                demisto.results("Task executed but no results received")
+                exit(0)
+
+            columns = results["data"]["columns"]
+            columns [:] = (x for x in columns if "_" not in x)
+
+            #Parse through the items creating an entry for each
+            entries = []
+            for item in results["data"]["hits"]["hits"]:
+                entry = {}
+                for k in columns:
+                    try:
+                        entry[k] = item["_source"][k]
+                    except:
+                        entry[k] = ""
+                entries.append(entry)
+
+
+
+            if contextUpdate is True:
+                demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': entries, 'EntryContext': {'Fidelis.Endpoint.Alert.Endpoint.Scripts.{1}-{0}'.format(taskName, datetime.now().strftime("%Y-%m-%d %H:%M:%S")): entries}})
+            else:
+                demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': entries})
+
+        def doesFileExist(self):
+
+            #Whether to update the context
+            updateContext = False
+            try:
+                if self.args["updateContext"].lower() == "true":
+                    updateContext = True
+            except:
+                updateContext = False
+
+            #Get the timeout
+            timeoutInSeconds = self.args["timeout"]
+
+            #Get the filePath
+            filePath = None
+            try:
+                filePath = self.args["filepath"]
+            except:
+                filePath = None
+            if filePath is None:
+                demisto.results("Require a filepath")
+                exit(-1)
+
+
+            #Get the hostname of the endpoint to collect from - if there is not one, try and use the one from the incident context
+            hostname = None
+            try:
+                hostname = self.args["hostname"]
+            except:
+                hostname = None
+
+            if hostname is None:
+                try:
+                    hostname = demisto.get(demisto.context(), "Fidelis.Endpoint.Alert.Endpoint.Host Name")
+                except:
+                    hostname = None
+
+            if hostname is None:
+                try:
+                    hostname = demisto.get(demisto.incidents(), "endpointname")
+                except:
+                    hostname = None
+
+            if hostname is None:
+                demisto.results("No hostname name provided and no hostname name found in the the incident context")
+                exit(-1)
+
+            #Execute the task
+            options = None
+            if filePath is not None:
+                options = {"1": filePath}
+            data = self.executeTask(hostname, "File Exists", options, timeoutInSeconds, True, updateContext)
+
+        def getRunningProcesses(self):
+
+            #Whether to update the context
+            updateContext = False
+            try:
+                if self.args["updateContext"].lower() == "true":
+                    updateContext = True
+            except:
+                updateContext = False
+
+            #Get the timeout
+            timeoutInSeconds = self.args["timeout"]
+
+            #Get the filter (if it exists)
+            thisFilter = None
+            try:
+                thisFilter = self.args["filter"]
+            except:
+                pass
+
+            #Get the hostname of the endpoint to collect from - if there is not one, try and use the one from the incident context
+            hostname = None
+            try:
+                hostname = self.args["hostname"]
+            except:
+                hostname = None
+
+            if hostname is None:
+                try:
+                    hostname = demisto.get(demisto.context(), "Fidelis.Endpoint.Alert.Endpoint.Host Name")
+                except:
+                    hostname = None
+
+            if hostname is None:
+                try:
+                    hostname = demisto.get(demisto.incidents(), "endpointname")
+                except:
+                    hostname = None
+
+            if hostname is None:
+                demisto.results("No hostname name provided and no hostname name found in the the incident context")
+                exit(-1)
+
+            #Execute the task
+            options = None
+            if thisFilter is not None:
+                options = {"last": thisFilter}
+            data = self.executeTask(hostname, "Process List", options, timeoutInSeconds, True, updateContext)
+
+        def getServices(self):
+
+            #Whether to update the context
+            updateContext = False
+            try:
+                if self.args["updateContext"].lower() == "true":
+                    updateContext = True
+            except:
+                updateContext = False
+
+            #Get the timeout
+            timeoutInSeconds = self.args["timeout"]
+
+            #Get the filter (if it exists)
+            thisFilter = None
+            try:
+                thisFilter = self.args["filter"]
+            except:
+                pass
+
+            #Get the hostname of the endpoint to collect from - if there is not one, try and use the one from the incident context
+            hostname = None
+            try:
+                hostname = self.args["hostname"]
+            except:
+                hostname = None
+
+            if hostname is None:
+                try:
+                    hostname = demisto.get(demisto.context(), "Fidelis.Endpoint.Alert.Endpoint.Host Name")
+                except:
+                    hostname = None
+
+            if hostname is None:
+                try:
+                    hostname = demisto.get(demisto.incidents(), "endpointname")
+                except:
+                    hostname = None
+
+            if hostname is None:
+                demisto.results("No hostname name provided and no hostname name found in the the incident context")
+                exit(-1)
+
+            #Execute the task
+            options = None
+            if thisFilter is not None:
+                options = {"last": thisFilter}
+            data = self.executeTask(hostname, "Services", options, timeoutInSeconds, True, updateContext)
+
+        def isolateEndpoint(self):
+
+            #Whether to update the context
+            updateContext = False
+            try:
+                if self.args["updateContext"].lower() == "true":
+                    updateContext = True
+            except:
+                updateContext = False
+
+            #Get the hostname of the endpoint to collect from - if there is not one, try and use the one from the incident context
+            hostname = None
+            try:
+                hostname = self.args["hostname"]
+            except:
+                hostname = None
+
+            if hostname is None:
+                try:
+                    hostname = demisto.get(demisto.context(), "Fidelis.Endpoint.Alert.Endpoint.Host Name")
+                except:
+                    hostname = None
+
+            if hostname is None:
+                try:
+                    hostname = demisto.get(demisto.incidents(), "endpointname")
+                except:
+                    hostname = None
+
+            if hostname is None:
+                demisto.results("No hostname name provided and no hostname name found in the the incident context")
+                exit(-1)
+
+            #Parse any additional IPs to use
+            additionalIPs = None
+            try:
+                additionalIPs = self.args["additionalIPs"].split(",")
+            except:
+                additionalIPs = None
+
+            #Get the timeout
+            timeoutInSeconds = 30
+            try:
+                timeoutInSeconds = self.args["timeout"]
+            except:
+                timeoutInSeconds = 30
+
+            #Find the script we need to run
+            script = self.__findTaskForEndpoint__(hostname, "Network Isolation")
+
+            if script is None:
+                demisto.results("Could not find a script named \"{0}\" suitable for {1}".format("Network Isolation", self.args["hostname"]))
+                exit(0)
+
+            #Get the script manifest
+            manifestData = self.fep.getScriptPackageManifest(script["id"])
+
+            #Get the template to use
+            template = self.fep.getScriptPackageTemplate(script["id"])
+
+            #Get the script metadata
+            metadata = self.fep.getScriptPackageMetadata(script["id"])
+
+            #Get the template
+            template = self.fep.getScriptPackageTemplate(script["id"])
+
+            #Populate the template
+            completeIPs = manifestData["data"]["questions"][0]["answer"].split(",")
+            if additionalIPs is not None:
+                completeIPs = list(set(completeIPs + additionalIPs))
+
+            #Populate the template
+            template["data"]["questions"]["1"] = ",".join(completeIPs)
+
+            #Execute the task
+            result = self.executeTask(hostname, "Network Isolation", {"1": ",".join(completeIPs)}, timeoutInSeconds, True, updateContext)
+
+        def removeIsolation(self):
+
+            #Whether to update the context
+            updateContext = False
+            try:
+                if self.args["updateContext"].lower() == "true":
+                    updateContext = True
+            except:
+                updateContext = False
+
+            #Get the hostname of the endpoint to collect from - if there is not one, try and use the one from the incident context
+            hostname = None
+            try:
+                hostname = self.args["hostname"]
+            except:
+                hostname = None
+
+            if hostname is None:
+                try:
+                    hostname = demisto.get(demisto.context(), "Fidelis.Endpoint.Alert.Endpoint.Host Name")
+                except:
+                    hostname = None
+
+            if hostname is None:
+                try:
+                    hostname = demisto.get(demisto.incidents(), "endpointname")
+                except:
+                    hostname = None
+
+            if hostname is None:
+                demisto.results("No hostname name provided and no hostname name found in the the incident context")
+                exit(-1)
+
+            #Get the timeout
+            timeoutInSeconds = 30
+            try:
+                timeoutInSeconds = self.args["timeout"]
+            except:
+                timeoutInSeconds = 30
+
+            #Execute the task
+            data = self.executeTask(hostname, "Network Isolation Remove", None, timeoutInSeconds, True, updateContext)
+
+        def getEvents(self, searchCriteria, duration, limit, removeduplicates, hostname):
+
+            #Build the search criteria
+            now = datetime.now()
+            searchCriteria["dateRange"] = {"start": datetime.strftime(now - timedelta(hours=duration), "%Y-%m-%dT%H:%M:%S.000Z"), "end": datetime.strftime(now, "%Y-%m-%dT%H:%M:%S.000Z")}
+
+            #If we have a hostname, then use it
+            if hostname is not None:
+                searchCriteria["endpointCriteria"] = {"endpointFilter": {"filterType": "composite", "logic": "and", "filters": [{"filterType": "criteria", "column": "endpointName", "operator": "=", "value": hostname}]}}
+                #searchCriteria["filter"]["filters"].append({"filterType": "criteria", "column": "endpointName", "operator": "=", "value": hostname})
+
+            #Get the events
+            events = self.fep.getEvents(searchCriteria, 10000)
+
+            #Ensure there are no errors
+            if not events["success"]:
+                demisto.results("There was an error - {0}".format(events["error"]))
+                exit(-1)
+
+            if events["success"] and len(events["data"]["events"]) < 1:
+                demisto.results("Could not find any events")
+                exit(0)
+
+            #Parse the events
+            endpoints = []
+            counter = 0
+            eventResults = []
+            for event in events["data"]["events"]:
+                if counter >= limit:
+                    break
+                if removeduplicates and event["endpointName"] in endpoints:
+                    continue
+
+                if event["endpointName"] not in endpoints:
+                    endpoints.append(event["endpointName"])
+
+                ignoreList = ["entityType", "esDocumentType", "esIndex", "eventIndex", "fileCategory", "fileType", "indexingTime", "parentId", "reportId", "targetId"]
+
+                entry = {}
+                for x in event:
+                    if x not in ignoreList:
+                        field = pascalToSpace(x)
+                        entry[field] = event[x]
+                eventResults.append(entry)
+                #demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': entry})
+                counter += 1
+            demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': eventResults})
+
+        def findFileEventsByHash(self):
+
+            #Get the duration
+            duration = 24
+            try:
+                duration = int(self.args["duration"])
+            except:
+                pass
+
+            #Get the limit
+            limit = 100
+            try:
+                limit = int(self.args["limit"])
+            except:
+                pass
+
+            #Get the remove duplicates value
+            removeduplicates = False
+            try:
+                removeduplicates = self.args["removeduplicates"]
+            except:
+                pass
+
+            #Get the hostname - but it's not important
+            hostname = None
+            try:
+                hostname = self.args["hostname"]
+            except:
+                hostname = None
+
+            #Check the hash length to ensure it is MD5
+            try:
+                md5 = self.args["hash"]
+            except:
+                demisto.results("No hash provided")
+                exit(-1)
+            if len(md5) != 32:
+                demisto.results("Unknown hash type provided (not MD5)")
+                exit(-1)
+
+
+            #Build the search criteria
+            searchCriteria = {"criteriaV3": {} }
+            searchCriteria["criteriaV3"]["entityType"] = "file"
+            searchCriteria["criteriaV3"]["filter"] = {"filterType": "composite", "logic": "and", "filters": [{"filterType": "criteria", "column": "eventType", "operator": "=", "value": 6}, {"filterType": "criteria", "column": "hash", "operator": "=", "value": md5}]}
+
+            #Carry out the search
+            self.getEvents(searchCriteria, duration, limit, removeduplicates, hostname)
+            exit(0)
+
+        def findProcessEventsByHash(self):
+
+            #Get the duration
+            try:
+                duration = int(self.args["duration"])
+            except:
+                pass
+
+            #Get the limit
+            try:
+                limit = int(self.args["limit"])
+            except:
+                pass
+
+            #Get the remove duplicates value
+            try:
+                removeduplicates = self.args["removeduplicates"]
+            except:
+                pass
+
+            #Get the hash
+            try:
+                md5 = self.args["hash"]
+            except:
+                demisto.results("No hash provided")
+                exit(-1)
+
+            #Get the hostname
+            hostname = None
+            try:
+                hostname = self.args["hostname"]
+            except:
+                hostname = None
+
+            #Check the hash length to ensure it is MD5
+            if len(md5) != 32:
+                demisto.results("Unknown hash type provided (not MD5)")
+                exit(-1)
+
+
+            #Build the search criteria
+            searchCriteria = {"criteriaV3": {} }
+            searchCriteria["criteriaV3"]["entityType"] = "process"
+            searchCriteria["criteriaV3"]["filter"] = {"filterType": "composite", "logic": "and", "filters": [{"filterType": "criteria", "column": "eventType", "operator": "=", "value": 0}, {"filterType": "criteria", "column": "hash", "operator": "=", "value": md5}]}
+
+            #Carry out the search
+            self.getEvents(searchCriteria, duration, limit, removeduplicates, hostname)
+            exit(0)
+
+        def findUSBEvents(self):
+
+            #Get the duration
+            try:
+                duration = int(self.args["duration"])
+            except:
+                pass
+
+            #Get the limit
+            try:
+                limit = int(self.args["limit"])
+            except:
+                pass
+
+            #Get the remove duplicates value
+            try:
+                removeduplicates = self.args["removeduplicates"]
+            except:
+                pass
+
+            #Try and get our hostname
+            hostname = None
+            try:
+                hostname = self.args["hostname"]
+            except:
+                hostname = None
+
+            #Try and get a serial number
+            serial = None
+            try:
+                serial = self.args["serial"]
+            except:
+                serial = None
+
+            #Build the search criteria
+            searchCriteria = {"criteriaV3": {} }
+            searchCriteria["criteriaV3"]["entityType"] = "usb"
+            searchCriteria["criteriaV3"]["filter"] = {"filterType": "composite", "logic": "and", "filters": []}
+
+            #If we have a USB serial number to use then use it
+            if serial is not None:
+                searchCriteria["criteriaV3"]["filter"]["filters"].append({"filterType": "criteria", "column": "serial", "operator": "=", "value": serial})
+
+            #Carry out the search
+            self.getEvents(searchCriteria, duration, limit, removeduplicates, hostname)
+            exit(0)
+
+        def killProcessBySearch(self):
+
+            #Get PID
+            pid = None
+            try:
+                pid = self.args["pid"]
+            except:
+                demisto.results("No PID provided")
+                exit(-1)
+
+            #Get timeout
+            try:
+                timeoutInSeconds = self.args["timeout"]
+            except:
+                timeoutInSeconds = 30
+
+            #Get the hostname of the endpoint to collect from - if there is not one, try and use the one from the incident context
+            hostname = None
+            try:
+                hostname = self.args["hostname"]
+            except:
+                hostname = None
+
+            if hostname is None:
+                try:
+                    hostname = demisto.get(demisto.context(), "Fidelis.Endpoint.Alert.Endpoint.Host Name")
+                except:
+                    hostname = None
+            if hostname is None:
+                demisto.results("No hostname name provided and no hostname name found in the the incident context")
+                exit(-1)
+
+            #Execute the task
+            self.executeTask(hostname, "Process Kill By PID", {"1": pid}, timeoutInSeconds, True, False)
+            exit(0)
+
+        def getPlatformDetails(self):
+
+            #Get the platform details
+            try:
+                info = self.fep.getProductInfo()
+            except Exception as err:
+                demisto.results("Error obtaining platform details - {0}".format(err))
+                exit(-1)
+            if info["success"]:
+                demisto.results({'EntryContext': {'Fidelis.Endpoint.Platform.Version': info["data"]["version"]}})
+            exit(0)
+
+        def executePlaybook(self):
+
+            #Get the hostname of the endpoint to collect from - if there is not one, try and use the one from the incident context
+            hostname = None
+            try:
+                hostname = self.args["hostname"]
+            except:
+                hostname = None
+
+            if hostname is None:
+                try:
+                    hostname = demisto.get(demisto.context(), "Fidelis.Endpoint.Alert.Endpoint.Host Name")
+                except:
+                    hostname = None
+            if hostname is None:
+                demisto.results("No hostname name provided and no hostname name found in the the incident context")
+                exit(-1)
+
+            #Get timeout
+            try:
+                timeoutInSeconds = self.args["timeout"]
+            except:
+                timeoutInSeconds = 30
+
+            #Get the playbook name
+            playbook = None
+            try:
+                playbook = self.args["playbook"]
+            except:
+                playbook = None
+
+            if playbook is None:
+                demisto.results("No playbook specified")
+                exit(-1)
+
+            demisto.results("This function is not yet implemented")
+            exit(0)
+
+
+
+
+    ##########################################################################################
+    # Setup some global variables for use
+    ##########################################################################################
+
+    fidelisEndpointAlertIDField = "fidelisendpointalertid"
+
+
+    ##########################################################################################
+    # Create a new class of the "Function"
+    ##########################################################################################
+    thisFunction = functions(demisto.args(), demisto.params())
+
+    ##########################################################################################
+    # Check that we have an IP and authentication details to use
+    ##########################################################################################
+    if thisFunction.params["host"] and thisFunction.params["authentication"]:
+        pass
+    else:
+        demisto.results('Failed - Not enough parameters (IP, Username, Password) provided')
+        sys.exit(-1)
+
+
+    ##########################################################################################
+    # Check the authentication is working
+    ##########################################################################################
+    if thisFunction.fep.authToken == None:
+        demisto.results('Failed connecting to {0} - {1}'.format(thisFunction.fep.host, thisFunction.fep.lastError))
+        sys.exit(-1)
+
+    ##########################################################################################
+    # FUNCTIONS
+    ##########################################################################################
+    if demisto.command() == 'test-module':
+        thisFunction.testModule()
+    if demisto.command() == 'fetch-incidents':
+        thisFunction.fetchIncidents()
+    if demisto.command() == 'fidelis-edr-get-event-for-alert':
+        thisFunction.getEventForAlert()
+    if demisto.command() == 'fidelis-edr-get-endpoint-info':
+        thisFunction.getEndpointInfo()
+    if demisto.command() == 'fidelis-edr-delete-alert':
+        thisFunction.deleteAlert()
+    if demisto.command() == 'fidelis-edr-collect-file':
+        thisFunction.collectFile()
+    if demisto.command() == 'fidelis-edr-find-file-hash-event':
+        thisFunction.findFileEventsByHash()
+    if demisto.command() == 'fidelis-edr-find-process-hash-event':
+        thisFunction.findProcessEventsByHash()
+    if demisto.command() == 'fidelis-edr-get-scripts':
+        thisFunction.getScripts()
+    if demisto.command() == 'fidelis-edr-get-running-processes':
+        thisFunction.getRunningProcesses()
+    if demisto.command() == 'fidelis-edr-get-services':
+        thisFunction.getServices()
+    if demisto.command() == 'fidelis-edr-kill-process':
+        thisFunction.killProcessBySearch()
+    if demisto.command() == 'fidelis-edr-isolate-endpoint':
+        thisFunction.isolateEndpoint()
+    if demisto.command() == 'fidelis-edr-remove-isolation':
+        thisFunction.removeIsolation()
+    if demisto.command() == 'fidelis-edr-USB-activity':
+        thisFunction.findUSBEvents()
+    if demisto.command() == 'fidelis-edr-populate-tasks':
+        thisFunction.__populateTasks__()
+    if demisto.command() == 'fidelis-edr-get-alert-details':
+        thisFunction.getAlertDetails()
+    if demisto.command() == 'fidelis-edr-get-script-questions':
+        thisFunction.getScriptQuestions()
+    if demisto.command() == 'fidelis-edr-get-platform-details':
+        thisFunction.getPlatformDetails()
+    if demisto.command() == 'fidelis-edr-does-file-exist':
+        thisFunction.doesFileExist()
+    if demisto.command() == 'fidelis-edr-execute-playbook':
+        thisFunction.executePlaybook()
+    ##########################################################################################
+
+
+
+
+
+  type: python
+  commands:
+  - name: fidelis-edr-get-endpoint-info
+    arguments:
+    - name: hostname
+      description: Host Name target
+    outputs:
+    - contextPath: Fidelis.Endpoint.Alert.Endpoint
+    description: Retrieves information about an endpoint, if there is a Fidelis Endpoint
+      agent installed.
+  - name: fidelis-edr-get-event-for-alert
+    arguments:
+    - name: alertId
+      description: The alert ID to get the event for
+    outputs:
+    - contextPath: Fidelis.Endpoint.Alert.Event
+    description: Retrieves the event details for a particular alert generated by Fidelis
+      Endpoint (if the event still exists)
+  - name: fidelis-edr-delete-alert
+    arguments:
+    - name: alertId
+    description: Deletes the alert from the Fidelis Elevate Endpoint Platform
+    execution: true
+  - name: fidelis-edr-collect-file
+    arguments:
+    - name: filepath
+      description: The full file path of the file to collect
+    - name: hostname
+      description: Host Name to target
+    - name: timeout
+      description: Timeout to wait for the job to complete (default is 300 seconds)
+      defaultValue: "300"
+    - name: jobId
+      description: ONLY populate if you are attempting to collect a file from a previous
+        attempt and have been given this value
+    - name: jobResultsId
+      description: ONLY populate if you are attempting to collect a file from a previous
+        attempt and have been given this value
+    description: Attempts to collect a file from an endpoint using the Fidelis Endpoint
+      Agent.
+  - name: fidelis-edr-find-file-hash-event
+    arguments:
+    - name: hostname
+      description: Host Name to target
+    - name: hash
+      description: MD5 Hash
+    - name: duration
+      description: How many hours to look back (default is 24 hours)
+      defaultValue: "24"
+    - name: limit
+      description: Maximum number of events to bring back
+      defaultValue: "100"
+    - name: removeduplicates
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Only return 1 event per endpoint
+      defaultValue: "False"
+    description: Searches file events on the FIdelis Elevate Endpoint Plaform that
+      matches the hash provided.
+  - name: fidelis-edr-find-process-hash-event
+    arguments:
+    - name: hash
+      required: true
+      description: The MD5 hash of the process to find
+    - name: hostname
+      description: Host Name to target
+    - name: duration
+      description: How many hours to look back (default is 24 hours)
+      defaultValue: "24"
+    - name: limit
+      description: Limit how many events are returned (default is 100)
+      defaultValue: "100"
+    - name: removeduplicates
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Only return 1 event per endpoint
+      defaultValue: "False"
+    description: Finds executions of a process that matches an MD5 hash
+  - name: fidelis-edr-get-tasks
+    arguments: []
+    description: Obtains a list of available tasks from the Fidelis Elevate Endpoint
+      Platform
+  - name: fidelis-edr-get-running-processes
+    arguments:
+    - name: hostname
+      description: Host Name to target
+    - name: filter
+      description: Filter the process names for a match
+    - name: timeout
+      description: Timeout to wait for the job to complete (default is 120 seconds)
+      defaultValue: "120"
+    - name: updateContext
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Whether to update the incident context with the results
+      defaultValue: "False"
+    description: Attempts to obtain a list of currently running processes from the
+      endpoint.
+  - name: fidelis-edr-kill-process
+    arguments:
+    - name: hostname
+      description: Host Name to target
+    - name: pid
+      description: PID to kill
+    - name: timeout
+      description: Timeout to wait for the job to complete (default is 30 seconds)
+      defaultValue: "30"
+    - name: updateContext
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Whether to update the incident context with the results
+      defaultValue: "False"
+    description: Kills a process on the endpoint
+    execution: true
+  - name: fidelis-edr-isolate-endpoint
+    arguments:
+    - name: hostname
+      description: Host Name to target
+    - name: additionalIPs
+      description: List of additional IP addresses to allow the endpoint access to
+        (comma separate)
+      isArray: true
+    - name: timeout
+      description: Time to wait for the task to complete in seconds (default is 120)
+      defaultValue: "120"
+    - name: updateContext
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Whether to update the incident context with the results
+      defaultValue: "False"
+    description: Isolates an endpoint from the network whilst maintaining access to
+      the Fidelis Elevate Endpoint Platform
+    execution: true
+  - name: fidelis-edr-remove-isolation
+    arguments:
+    - name: hostname
+      description: Host Name to target
+    - name: timeout
+      description: Time to wait for the task to complete in seconds (default is 120)
+      defaultValue: "120"
+    - name: updateContext
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Whether to update the incident context with the results
+      defaultValue: "False"
+    description: Removes the endpoint isolation applied using the "Isolate" task.
+  - name: fidelis-edr-USB-activity
+    arguments:
+    - name: duration
+      description: How many hours to look back (default is 24 hours)
+      defaultValue: "24"
+    - name: limit
+      description: Limit how many events are returned (default is 100)
+      defaultValue: "100"
+    - name: hostname
+      description: Host Name to target
+    - name: serial
+      description: USB serial number to search for
+    - name: removeduplicates
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Only return 1 event per endpoint
+      defaultValue: "False"
+    description: Obtains browsing history of the endpoint for all users
+  - name: fidelis-edr-get-services
+    arguments:
+    - name: hostname
+      description: Host Name to target
+    - name: filter
+      description: Filter the service names for a match
+    - name: timeout
+      description: Timeout to wait for the job to complete (default is 60 seconds)
+      defaultValue: "60"
+    - name: updateContext
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Whether to update the incident context with the results
+      defaultValue: "False"
+    description: Attempts to obtain a list of services from the endpoint.
+  - name: fidelis-edr-get-scripts
+    arguments: []
+    outputs:
+    - contextPath: Fidelis.Endpoint.Scripts
+      type: unknown
+    description: Retrieves a list of available scripts
+  - name: fidelis-edr-get-alert-details
+    arguments:
+    - name: alertId
+      description: The alert ID to retrieve the details of
+    outputs:
+    - contextPath: Fidelis.Endpoint.Alert
+    description: Retrieves the details of an alert
+  - name: fidelis-edr-get-script-questions
+    arguments:
+    - name: scriptId
+      description: Script ID to retrieve the questions for
+    outputs:
+    - contextPath: Fidelis.Endpoint.Script.Questions
+      description: Questions required for the script
+    description: Retrieves a list of questions that need answering for a Fidelis script
+  - name: fidelis-edr-get-platform-details
+    arguments: []
+    outputs:
+    - contextPath: Fidelis.Endpoint.Platform.Version
+      type: string
+    description: Retrieves the Fidelis Endpoint platform details
+  - name: fidelis-edr-does-file-exist
+    arguments:
+    - name: filepath
+      description: The full file path of the file
+    - name: hostname
+      description: The hostname on which to check
+    - name: timeout
+      description: TImeout
+      defaultValue: "300"
+    description: Check to see if a file exists on an endpoint and return the metadata
+      for it
+  - name: fidelis-edr-execute-playbook
+    arguments:
+    - name: playbook
+      description: Playbook Name
+    - name: hostname
+      description: Host to execute the playbbok on
+    - name: timeout
+      description: Timeout to wait for the execution to be confirmed (default 30 seconds)
+      defaultValue: "30"
+    description: Executes a playbook from Fidelis Elevate Endpoint on an endpoint
+    execution: true
+  dockerimage: demisto/python3:3.7.3.221
+  isfetch: true
+  runonce: false
