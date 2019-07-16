@@ -1,5 +1,5 @@
 id: ffcd505b-7a89-40c0-86bb-8b59ab5e0bb8
-version: 99
+version: 100
 name: Fidelis Elevate Endpoint Get Event for Alert
 description: Attempts to look up the event data associated with an alert generated
   by Fidelis Elevate Endpoint
@@ -31,10 +31,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 4eaa5557-f475-499b-82ce-21ddbf44f105
+    taskid: c726aeee-67ab-417f-8103-25cd33e473e8
     type: regular
     task:
-      id: 4eaa5557-f475-499b-82ce-21ddbf44f105
+      id: c726aeee-67ab-417f-8103-25cd33e473e8
       version: -1
       name: fidelis-edr-get-event-for-alert
       description: Attempts to retrieve the event associated with an alert
@@ -58,6 +58,10 @@ tasks:
         }
       }
     note: false
+    evidencedata:
+      description:
+        simple: Event matching the alert
+      customfields: {}
     timertriggers: []
     ignoreworker: false
   "2":

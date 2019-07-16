@@ -1,17 +1,17 @@
 {
 	"typeId": "Fidelis Elevate Endpoint",
-	"kind": "mobile",
+	"kind": "details",
 	"layout": {
 		"id": "Fidelis Elevate Endpoint",
-		"version": 25,
-		"modified": "2019-07-16T13:54:24.232303823-04:00",
+		"version": 43,
+		"modified": "2019-07-16T19:06:46.166235889-04:00",
 		"commitMessage": "",
 		"shouldPublish": false,
 		"shouldCommit": false,
 		"shouldPush": false,
 		"name": "",
-		"kind": "mobile",
-		"prevKind": "mobile",
+		"kind": "details",
+		"prevKind": "details",
 		"typeId": "Fidelis Elevate Endpoint",
 		"prevTypeId": "Fidelis Elevate Endpoint",
 		"system": false,
@@ -22,7 +22,7 @@
 				"modified": "0001-01-01T00:00:00Z",
 				"name": "Basic Information",
 				"type": "",
-				"isVisible": true,
+				"isVisible": false,
 				"readOnly": false,
 				"fields": [
 					{
@@ -223,7 +223,7 @@
 				"id": "",
 				"version": 0,
 				"modified": "0001-01-01T00:00:00Z",
-				"name": "Event Information",
+				"name": "Fidelis Event",
 				"type": "",
 				"isVisible": true,
 				"readOnly": false,
@@ -486,6 +486,13 @@
 						"modified": "0001-01-01T00:00:00Z",
 						"fieldId": "incident_usbmodel",
 						"isVisible": true
+					},
+					{
+						"id": "",
+						"version": 0,
+						"modified": "0001-01-01T00:00:00Z",
+						"fieldId": "incident_usbserialnumber",
+						"isVisible": true
 					}
 				],
 				"description": "",
@@ -496,9 +503,22 @@
 				"id": "",
 				"version": 0,
 				"modified": "0001-01-01T00:00:00Z",
+				"name": "Work Plan",
+				"type": "workplan",
+				"isVisible": false,
+				"readOnly": true,
+				"fields": [],
+				"description": "",
+				"query": null,
+				"queryType": ""
+			},
+			{
+				"id": "",
+				"version": 0,
+				"modified": "0001-01-01T00:00:00Z",
 				"name": "Timeline Information",
 				"type": "",
-				"isVisible": true,
+				"isVisible": false,
 				"readOnly": false,
 				"fields": [
 					{
@@ -545,44 +565,16 @@
 				"id": "",
 				"version": 0,
 				"modified": "0001-01-01T00:00:00Z",
-				"name": "Custom Fields",
+				"name": "Attachments",
 				"type": "",
-				"isVisible": true,
-				"readOnly": false,
+				"isVisible": false,
+				"readOnly": true,
 				"fields": [
 					{
 						"id": "",
 						"version": 0,
 						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_detectionsla",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_remediationsla",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_submitter",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_timetoassignment",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_userresponse",
+						"fieldId": "incident_attachment",
 						"isVisible": true
 					}
 				],
@@ -594,19 +586,71 @@
 				"id": "",
 				"version": 0,
 				"modified": "0001-01-01T00:00:00Z",
-				"name": "Labels",
-				"type": "labels",
-				"isVisible": true,
+				"name": "Bad or Suspicious Indicators",
+				"type": "indicators",
+				"isVisible": false,
 				"readOnly": true,
-				"fields": [
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_labels",
-						"isVisible": true
-					}
-				],
+				"fields": [],
+				"description": "",
+				"query": "reputation:Bad or reputation:Suspicious",
+				"queryType": "input"
+			},
+			{
+				"id": "",
+				"version": 0,
+				"modified": "0001-01-01T00:00:00Z",
+				"name": "Evidence",
+				"type": "evidence",
+				"isVisible": false,
+				"readOnly": true,
+				"fields": [],
+				"description": "",
+				"query": null,
+				"queryType": ""
+			},
+			{
+				"id": "",
+				"version": 0,
+				"modified": "0001-01-01T00:00:00Z",
+				"name": "Notes",
+				"type": "notes",
+				"isVisible": false,
+				"readOnly": true,
+				"fields": [],
+				"description": "",
+				"query": null,
+				"queryType": ""
+			},
+			{
+				"id": "",
+				"version": 0,
+				"modified": "0001-01-01T00:00:00Z",
+				"name": "Incident Files",
+				"type": "invTimeline",
+				"isVisible": false,
+				"readOnly": true,
+				"fields": [],
+				"description": "",
+				"query": {
+					"categories": [
+						"attachments"
+					],
+					"lastId": "",
+					"pageSize": 100,
+					"tags": [],
+					"users": []
+				},
+				"queryType": "warRoomFilter"
+			},
+			{
+				"id": "",
+				"version": 0,
+				"modified": "0001-01-01T00:00:00Z",
+				"name": "Team",
+				"type": "team",
+				"isVisible": false,
+				"readOnly": true,
+				"fields": [],
 				"description": "",
 				"query": null,
 				"queryType": ""
