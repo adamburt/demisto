@@ -1,6 +1,6 @@
 commonfields:
   id: ff39e7d0-eb97-4906-8c76-b4ad35c9b470
-  version: 61
+  version: 62
 name: FidelisElevateEndpointIncidentFields
 script: |+
   ##############################################################
@@ -133,7 +133,8 @@ script: |+
       "endpointagentid": "Fidelis.Endpoint.Alert.Endpoint.Agent Id",
       "endpointisisolated": "Fidelis.Endpoint.Alert.Endpoint.Isolated",
       "endpointdescription": "Fidelis.Endpoint.Alert.Endpoint.Description",
-      "endpointagenttag": "Fidelis.Endpoint.Alert.Endpoint.Agent Tag"
+      "endpointagenttag": "Fidelis.Endpoint.Alert.Endpoint.Agent Tag",
+      "lastagentcontact": "Fidelis.Endpoint.Alert.Endpoint.Last Contact Date"
   }
 
   commonFields = {
