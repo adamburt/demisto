@@ -1,6 +1,6 @@
 commonfields:
   id: 1638d4a3-7e6e-47ad-83aa-30f7525b46ee
-  version: 27
+  version: 29
 name: FidelisElevateEndpointRefreshEndpointDetails
 script: |
   ##############################################################
@@ -31,7 +31,8 @@ script: |
       "endpointisisolated": "Fidelis.Endpoint.Alert.Endpoint.Isolated",
       "endpointdescription": "Fidelis.Endpoint.Alert.Endpoint.Description",
       "endpointagenttag": "Fidelis.Endpoint.Alert.Endpoint.Agent Tag",
-      "lastagentcontact": "Fidelis.Endpoint.Alert.Endpoint.Last Contact Date"
+      "lastagentcontact": "Fidelis.Endpoint.Alert.Endpoint.Last Contact Date",
+      "grouplist": "Fidelis.Endpoint.Alert.Endpoint.Group List"
   }
 
 
