@@ -1,5 +1,5 @@
 id: 68bb9ab1-a72e-446d-8023-72f73b25d063
-version: 23
+version: 32
 name: Fidelis Elevate Endpoint - Default Playbook
 description: This is the default playbook for Fidelis Elevate Endpoint Incidents
 starttaskid: "0"
@@ -22,7 +22,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 50
+          "y": -240
         }
       }
     note: false
@@ -55,7 +55,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": -135
         }
       }
     note: false
@@ -78,7 +78,6 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
-      - "4"
     separatecontext: false
     loop:
       iscommand: false
@@ -88,7 +87,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 0
         }
       }
     note: false
@@ -107,6 +106,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
     scriptarguments:
       data:
         simple: <134> ${CEF Alert}
@@ -122,90 +124,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -420,
-          "y": 570
+          "x": 50,
+          "y": 140
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "4":
-    id: "4"
-    taskid: f52f904d-7abf-42c9-8f16-b653a521f20f
-    type: collection
-    task:
-      id: f52f904d-7abf-42c9-8f16-b653a521f20f
-      version: -1
-      name: Ask whether aa script needs to be run?
-      type: collection
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 540,
-          "y": 570
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    message:
-      to:
-        simple: Fidelis Analyst
-      subject:
-        simple: Require script execution?
-      body: null
-      methods:
-      - slack
-      format: ""
-      bcc: null
-      cc: null
-      timings:
-        retriescount: 2
-        retriesinterval: 360
-        completeafterreplies: 1
-    form:
-      questions:
-      - id: "0"
-        label: ""
-        labelarg:
-          simple: Does the alert named "${incident.name}" require script execution?
-        required: true
-        gridcolumns: []
-        defaultrows: []
-        type: singleSelect
-        options:
-        - "No"
-        - Isolate Endpoint
-        - Process List
-        - Task List
-        - Service List
-        - Collect File
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
-      - id: "1"
-        label: ""
-        labelarg:
-          simple: Please provide any justification for the selection (if any)
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: shortText
-        options: []
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
-      title: Script Execution
-      description: ""
-      sender: ""
-      expired: false
-      totalanswers: 0
   "5":
     id: "5"
     taskid: 35fc7ac3-33f2-4436-8c64-6c8d2c5be2d1
@@ -221,8 +146,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1160
+          "x": -390,
+          "y": 750
         }
       }
     note: false
@@ -230,10 +155,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 44b96cc3-99e2-4425-8658-03dca06c35a0
+    taskid: 9141e555-233e-429d-89da-63f9ac154c38
     type: condition
     task:
-      id: 44b96cc3-99e2-4425-8658-03dca06c35a0
+      id: 9141e555-233e-429d-89da-63f9ac154c38
       version: -1
       name: Check response
       type: condition
@@ -251,7 +176,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: Script Execution.Answers.0
+              simple: Execute a script?.Answers.0
             iscontext: true
           right:
             value:
@@ -259,8 +184,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 540,
-          "y": 750
+          "x": 50,
+          "y": 550
         }
       }
     note: false
@@ -268,19 +193,21 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: b1dccb3b-9d79-4c07-887e-440a5ebc007a
+    taskid: c1129fab-eed9-48c3-8b3f-0fc87cd96031
     type: playbook
     task:
-      id: b1dccb3b-9d79-4c07-887e-440a5ebc007a
+      id: c1129fab-eed9-48c3-8b3f-0fc87cd96031
       version: -1
       name: Fidelis Elevate Endpoint Script - Isolate Endpoint
+      description: This script will request authorisation to execute an endpoint isolation
+        script using Fidelis Elevate Endpoint
       playbookName: Fidelis Elevate Endpoint Script - Isolate Endpoint
       type: playbook
       iscommand: false
       brand: ""
     scriptarguments:
       justification:
-        simple: ${Script Execution.Answers.1}
+        simple: ${Execute a script?.Answers.1}
     separatecontext: true
     loop:
       iscommand: false
@@ -289,22 +216,147 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 940,
-          "y": 1130
+          "x": 530,
+          "y": 750
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+  "8":
+    id: "8"
+    taskid: b7aca79e-5753-4f8f-82bd-5191aec7aabe
+    type: regular
+    task:
+      id: b7aca79e-5753-4f8f-82bd-5191aec7aabe
+      version: -1
+      name: AssignAnalystToIncident
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      assignBy: {}
+      email: {}
+      roles:
+        simple: Fidelis Analyst
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 275
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 8b20b7bf-634c-4136-8891-dc6989e61192
+    type: collection
+    task:
+      id: 8b20b7bf-634c-4136-8891-dc6989e61192
+      version: -1
+      name: Please select a task
+      description: |-
+        # Select a script
+
+        Please reply with a script to run. Or, if you don't want to execute script, simply reply "no".
+
+        Possible script options are:
+
+        - Isolate Endpoint
+        - Process List
+        - Task List
+        - Service List
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Analyst
+      subject:
+        simple: Script execution for new incident
+      body: {}
+      methods:
+      - slack
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Which script would you like to execute?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - None
+        - Isolate Endpoint
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Please select which script (if any) you would like to execute?
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Please provide a justification for the script (if any selected)
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+      title: Execute a script?
+      description: A new incident may require script execution
+      sender: ""
+      expired: false
+      totalanswers: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1175,
-        "width": 1740,
-        "x": -420,
-        "y": 50
+        "height": 1085,
+        "width": 1300,
+        "x": -390,
+        "y": -240
       }
     }
   }
