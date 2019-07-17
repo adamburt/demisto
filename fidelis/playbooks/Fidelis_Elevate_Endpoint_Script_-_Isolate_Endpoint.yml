@@ -1,0 +1,511 @@
+id: 8cbdf195-4307-4701-810d-3dd58bb73f74
+version: 25
+rolename:
+- Administrator
+- Fidelis Super Analyst
+name: Fidelis Elevate Endpoint Script - Isolate Endpoint
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 391a712a-621a-4f0d-8b4a-fa15b629b41b
+    type: start
+    task:
+      id: 391a712a-621a-4f0d-8b4a-fa15b629b41b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 2226880d-1a08-4187-88f9-a5b7d9edc0c3
+    type: condition
+    task:
+      id: 2226880d-1a08-4187-88f9-a5b7d9edc0c3
+      version: -1
+      name: Is there an owner assigned?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: IncidentOwner.email
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 770e3a73-1a46-48d7-8ebf-1f2315966c78
+    type: collection
+    task:
+      id: 770e3a73-1a46-48d7-8ebf-1f2315966c78
+      version: -1
+      name: Request for more information
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: ${incident.owner}
+      subject:
+        simple: Your request to Isolate an endpoint requires more information
+      body: {}
+      methods:
+      - slack
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Please provide a justification for isolating the endpoint
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options:
+        - Deny
+        - Authorise
+        - Further Information Required
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+      title: More information
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+  "6":
+    id: "6"
+    taskid: 744dc7bf-b3aa-4824-896a-753263426837
+    type: collection
+    task:
+      id: 744dc7bf-b3aa-4824-896a-753263426837
+      version: -1
+      name: Seek verified permission from a senior analyst
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Fidelis Super Analyst
+      subject:
+        simple: Further justification supplied
+      body: {}
+      methods:
+      - slack
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: |-
+            The following justification was supplied by "${More information.Answers.name}":
+
+            ${More information.Answers.0}
+
+
+            Do you authorise the task to be carried out?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - Deny
+        - Authorise
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+      title: Authorisation
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+  "8":
+    id: "8"
+    taskid: 5d1a151a-7c7e-4c51-8464-e20680e192b8
+    type: regular
+    task:
+      id: 5d1a151a-7c7e-4c51-8464-e20680e192b8
+      version: -1
+      name: Fail the playbook
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Permission denied by "${Authorisation.Answers.name}" to Isolate the
+          endpoint
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 5566eb3b-c4a0-45fd-8199-3ed214aad924
+    type: regular
+    task:
+      id: 5566eb3b-c4a0-45fd-8199-3ed214aad924
+      version: -1
+      name: FidelisElevateEndpointIsolateEndpoint
+      script: '|||fidelis-edr-isolate-endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      additionalIPs: {}
+      hostname:
+        simple: ${incident.endpointname}
+      timeout: {}
+      updateContext:
+        simple: "False"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1170,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 88ba3a00-5aa0-4887-8c5c-2b11c23824ba
+    type: regular
+    task:
+      id: 88ba3a00-5aa0-4887-8c5c-2b11c23824ba
+      version: -1
+      name: Add Evidence of Isolation
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      desc:
+        simple: Evidence to isolate endpoint ${incident.endpointname}
+      description: {}
+      entryIDs: {}
+      occurred: {}
+      tags: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 75582e3a-fb24-4921-8481-4adbbdfa5dbe
+    type: regular
+    task:
+      id: 75582e3a-fb24-4921-8481-4adbbdfa5dbe
+      version: -1
+      name: ExposeIncidentOwner
+      description: Expose the incident owner into IncidentOwner context key
+      scriptName: ExposeIncidentOwner
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    reputationcalc: 1
+    results:
+    - IncidentOwner
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 4bf3f0f0-b7e7-4033-80c9-7a3843fe1f28
+    type: regular
+    task:
+      id: 4bf3f0f0-b7e7-4033-80c9-7a3843fe1f28
+      version: -1
+      name: AssignAnalystToIncident
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      assignBy:
+        simple: machine-learning
+      email: {}
+      roles:
+        simple: Analyst
+      username: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": -280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 9fdf6765-d384-4cfa-8728-97d40d3eb2c6
+    type: condition
+    task:
+      id: 9fdf6765-d384-4cfa-8728-97d40d3eb2c6
+      version: -1
+      name: Check response
+      description: "Gets a value and return it. This is to be used in playbook conditional
+        tasks - get a value from incident field, label or context, and act accordingly.
+        \nIf an array is returned. the first value will be the decision making value."
+      scriptName: checkValue
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Authorise:
+      - "11"
+      Deny:
+      - "8"
+    scriptarguments:
+      value:
+        simple: ${Authorisation.Answers.0}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 691c479d-b839-4e0f-8aa6-475951fd32b3
+    type: condition
+    task:
+      id: 691c479d-b839-4e0f-8aa6-475951fd32b3
+      version: -1
+      name: Check response
+      description: "Gets a value and return it. This is to be used in playbook conditional
+        tasks - get a value from incident field, label or context, and act accordingly.
+        \nIf an array is returned. the first value will be the decision making value."
+      scriptName: checkValue
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Authorise:
+      - "11"
+      Deny:
+      - "8"
+      Require further information:
+      - "5"
+    scriptarguments:
+      value:
+        simple: ${Authorisation.Answers.0}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: 73e2c25b-0e51-42bf-82b8-d636c31eb7a7
+    type: collection
+    task:
+      id: 73e2c25b-0e51-42bf-82b8-d636c31eb7a7
+      version: -1
+      name: Seek initial permission from a senior analyst
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": -90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Fidelis Super Analyst
+      subject:
+        simple: Authorise "Endpoint Isolation" on ${incident.endpointname}
+      body: {}
+      methods:
+      - slack
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Please confirm whether you would like to authorise the isolation
+            task on "${incident.endpointname}" for the incident "${incident.name}".
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - Deny
+        - Authorise
+        - Require further information
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+      title: Authorisation
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_21_yes": 0.9
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1845,
+        "width": 1580,
+        "x": -30,
+        "y": -740
+      }
+    }
+  }
+inputs: []
+outputs: []
