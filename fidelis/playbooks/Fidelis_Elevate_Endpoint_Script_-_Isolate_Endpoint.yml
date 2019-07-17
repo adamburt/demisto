@@ -1,9 +1,11 @@
 id: 8cbdf195-4307-4701-810d-3dd58bb73f74
-version: 25
+version: 29
 rolename:
 - Administrator
 - Fidelis Super Analyst
 name: Fidelis Elevate Endpoint Script - Isolate Endpoint
+description: This script will request authorisation to execute an endpoint isolation
+  script using Fidelis Elevate Endpoint
 starttaskid: "0"
 tasks:
   "0":
@@ -431,10 +433,10 @@ tasks:
     ignoreworker: false
   "21":
     id: "21"
-    taskid: 73e2c25b-0e51-42bf-82b8-d636c31eb7a7
+    taskid: 69401a4c-dfa6-4702-8bdd-b61808edd928
     type: collection
     task:
-      id: 73e2c25b-0e51-42bf-82b8-d636c31eb7a7
+      id: 69401a4c-dfa6-4702-8bdd-b61808edd928
       version: -1
       name: Seek initial permission from a senior analyst
       type: collection
@@ -475,8 +477,12 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: Please confirm whether you would like to authorise the isolation
-            task on "${incident.endpointname}" for the incident "${incident.name}".
+          simple: |-
+            Please confirm whether you would like to authorise the isolation task on "${incident.endpointname}" for the incident "${incident.name}".
+
+            If the user provided an initial justification, it is below:
+
+            "${inputs.justification}"
         required: true
         gridcolumns: []
         defaultrows: []
@@ -507,5 +513,9 @@ view: |-
       }
     }
   }
-inputs: []
+inputs:
+- key: justification
+  value: {}
+  required: false
+  description: ""
 outputs: []

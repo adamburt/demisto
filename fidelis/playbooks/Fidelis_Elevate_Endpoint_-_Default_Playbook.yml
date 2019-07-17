@@ -1,0 +1,312 @@
+id: 68bb9ab1-a72e-446d-8023-72f73b25d063
+version: 23
+name: Fidelis Elevate Endpoint - Default Playbook
+description: This is the default playbook for Fidelis Elevate Endpoint Incidents
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 019203a5-8f4e-43b1-8883-b3a7bd9fe392
+    type: start
+    task:
+      id: 019203a5-8f4e-43b1-8883-b3a7bd9fe392
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: fd32ea2b-15fd-4e54-8048-93be5c241a9a
+    type: playbook
+    task:
+      id: fd32ea2b-15fd-4e54-8048-93be5c241a9a
+      version: -1
+      name: Fidelis Elevate Endpoint Enrichment
+      description: This playbook will attempt to gather event data for the alert (if
+        it exists and the alert does not already have event data). It will also assign
+        an incident type based on the event data it finds.
+      playbookName: Fidelis Elevate Endpoint Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: ec8249c1-84ba-40db-8088-bd8b4b08ca5f
+    type: playbook
+    task:
+      id: ec8249c1-84ba-40db-8088-bd8b4b08ca5f
+      version: -1
+      name: Fidelis Elevate Endpoint Create CEF Alert
+      description: This playbook maps fields from a Fidelis Endpoint Alert and Event
+        to common CEF fields.
+      playbookName: Fidelis Elevate Endpoint Create CEF Alert
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+      - "4"
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: a245514e-d0f8-43fd-82da-42afadbbc1fc
+    type: regular
+    task:
+      id: a245514e-d0f8-43fd-82da-42afadbbc1fc
+      version: -1
+      name: Send message
+      description: Attempts to send data using the Python socket library
+      scriptName: SendNetworkData
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      data:
+        simple: <134> ${CEF Alert}
+      header: {}
+      host:
+        simple: 10.0.0.240
+      port:
+        simple: "514"
+      protocol:
+        simple: UDP
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -420,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: f52f904d-7abf-42c9-8f16-b653a521f20f
+    type: collection
+    task:
+      id: f52f904d-7abf-42c9-8f16-b653a521f20f
+      version: -1
+      name: Ask whether aa script needs to be run?
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Fidelis Analyst
+      subject:
+        simple: Require script execution?
+      body: null
+      methods:
+      - slack
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Does the alert named "${incident.name}" require script execution?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - "No"
+        - Isolate Endpoint
+        - Process List
+        - Task List
+        - Service List
+        - Collect File
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Please provide any justification for the selection (if any)
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+      title: Script Execution
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+  "5":
+    id: "5"
+    taskid: 35fc7ac3-33f2-4436-8c64-6c8d2c5be2d1
+    type: title
+    task:
+      id: 35fc7ac3-33f2-4436-8c64-6c8d2c5be2d1
+      version: -1
+      name: Complete
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 44b96cc3-99e2-4425-8658-03dca06c35a0
+    type: condition
+    task:
+      id: 44b96cc3-99e2-4425-8658-03dca06c35a0
+      version: -1
+      name: Check response
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      isolate:
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: isolate
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Script Execution.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Isolate Endpoint
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: b1dccb3b-9d79-4c07-887e-440a5ebc007a
+    type: playbook
+    task:
+      id: b1dccb3b-9d79-4c07-887e-440a5ebc007a
+      version: -1
+      name: Fidelis Elevate Endpoint Script - Isolate Endpoint
+      playbookName: Fidelis Elevate Endpoint Script - Isolate Endpoint
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      justification:
+        simple: ${Script Execution.Answers.1}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1175,
+        "width": 1740,
+        "x": -420,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
