@@ -1,5 +1,5 @@
 id: e7ac9021-96ee-451c-88fa-a2a027f5f20b
-version: 316
+version: 317
 name: Fidelis Elevate Endpoint Enrichment
 description: This playbook will attempt to gather event data for the alert (if it
   exists and the alert does not already have event data). It will also assign an incident
@@ -343,10 +343,77 @@ tasks:
     ignoreworker: false
   "84":
     id: "84"
-    taskid: 784d3fc5-867f-4d6f-8a22-93efd3b0b277
+    taskid: fb3033d4-9191-4ccf-8b1d-15e06759afab
     type: title
     task:
-      id: 784d3fc5-867f-4d6f-8a22-93efd3b0b277
+      id: fb3033d4-9191-4ccf-8b1d-15e06759afab
+      version: -1
+      name: User assignment
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "85"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2030,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "85":
+    id: "85"
+    taskid: 79edffd7-bfcc-49b8-8a26-c1170fdd81c4
+    type: regular
+    task:
+      id: 79edffd7-bfcc-49b8-8a26-c1170fdd81c4
+      version: -1
+      name: AssignAnalystToIncident
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "86"
+    scriptarguments:
+      assignBy:
+        simple: machine-learning
+      email: {}
+      roles:
+        simple: Analyst
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2590,
+          "y": 565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "86":
+    id: "86"
+    taskid: 3b848f50-e181-4ecf-8216-962489fdd7c4
+    type: title
+    task:
+      id: 3b848f50-e181-4ecf-8216-962489fdd7c4
       version: -1
       name: Complete
       type: title
@@ -356,8 +423,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2350,
-          "y": 740
+          "x": 2590,
+          "y": 855
         }
       }
     note: false
@@ -368,8 +435,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 865,
-        "width": 1870,
+        "height": 1005,
+        "width": 2110,
         "x": 860,
         "y": 100
       }
