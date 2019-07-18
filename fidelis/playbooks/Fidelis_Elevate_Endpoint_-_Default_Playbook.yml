@@ -1,5 +1,5 @@
 id: 68bb9ab1-a72e-446d-8023-72f73b25d063
-version: 48
+version: 50
 name: Fidelis Elevate Endpoint - Default Playbook
 description: This is the default playbook for Fidelis Elevate Endpoint Incidents
 starttaskid: "0"
@@ -344,10 +344,10 @@ tasks:
       totalanswers: 0
   "21":
     id: "21"
-    taskid: 9818eeba-6728-440f-8517-ad0571be197b
+    taskid: df42e662-aaec-456a-8c98-3a7dd24a9624
     type: condition
     task:
-      id: 9818eeba-6728-440f-8517-ad0571be197b
+      id: df42e662-aaec-456a-8c98-3a7dd24a9624
       version: -1
       name: Does this incident require script execution?
       type: condition
@@ -377,6 +377,8 @@ tasks:
       body:
         simple: |-
           A new incident named "${incident.name}" was created. It affects the endpoint "${incident.endpointname}".
+
+          The link to the incident is here: ${demistoUrls.investigation}
 
           Would you like to execute a script against this endpoint?
       methods:
