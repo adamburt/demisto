@@ -632,26 +632,15 @@ script:
 
             scriptResults = []
             duplicates = []
-            entries = {}
+            entries = []
             for script in allScripts["data"]["scripts"]:
-
-                #Create an entry
-                output = {"ID": script["id"], "Name": script["name"], "Description": script["description"]}
 
                 #Get the manifest
                 manifest = self.fep.getScriptPackageManifest(script["id"])
                 if not manifest["success"]:
                     continue
-
-                output["Platforms"] = []
-                for p in manifest["data"]["platforms"]:
-                    if manifest["data"]["platforms"][p]:
-                        output["Platforms"].append(p)
-
-                platformString = ",".join(output["Platforms"])
-
-                entryName = "{0} ({1})".format(script["name"], platformString)
-                entries[entryName] = output
+                platforms = [x for x in manifest["data"]["platforms"] if manifest["data"]["platforms"][x]]
+                entries.append("{0} - {1} ({2})".format(script["id"], script["name"], ",".join(platforms)))
 
             demisto.results({
                 "Type": entryTypes["note"],
@@ -662,7 +651,7 @@ script:
                 "EntryContext": {"Fidelis.Endpoint.Scripts" : entries}
                 }
             )
-            exit(0)
+
 
         def getScriptQuestions(self):
 
@@ -2108,7 +2097,7 @@ script:
     arguments: []
     outputs:
     - contextPath: Fidelis.Endpoint.Scripts
-      type: unknown
+      description: Scripts available on the Fidelis Platform
     description: Retrieves a list of available scripts
   - name: fidelis-edr-get-alert-details
     arguments:

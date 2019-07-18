@@ -1,6 +1,6 @@
 commonfields:
   id: 82b241f5-111b-412a-8be6-83d1ac38b648
-  version: 13
+  version: 14
 name: FidelisElevateEndpointGetRunningProcesses
 script: |
   #####################
@@ -13,7 +13,7 @@ script: |
       hostname = None
   if hostname is None:
       try:
-          hostname = demisto.get(demisto.context(), "Fidelis.Endpoint.Alert.Target")
+          hostname = demisto.get(demisto.context(), "incident.endpointname")
       except:
           hostname = None
 

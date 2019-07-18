@@ -1,5 +1,5 @@
 id: e16a2c2e-09bf-4607-82c2-f249f9dcf5fe
-version: 60
+version: 80
 name: Fidelis Elevate Endpoint Execute Script
 description: This script will obtain a list of available scripts and their options.
   It will then present the user with an option of which script can be executed and
@@ -32,15 +32,15 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 3629ada9-9411-40c8-835a-3810139d6562
+    taskid: 18ddeb02-1e94-4cfb-8ba0-546a68737781
     type: regular
     task:
-      id: 3629ada9-9411-40c8-835a-3810139d6562
+      id: 18ddeb02-1e94-4cfb-8ba0-546a68737781
       version: -1
       name: Get a list of tasks that are available
-      script: Fidelis Elevate Endpoint|||fidelis-edr-get-scripts
+      scriptName: FidelisElevateEndpointGetScripts
       type: regular
-      iscommand: true
+      iscommand: false
       brand: Fidelis Elevate Endpoint
     nexttasks:
       '#none#':
@@ -50,7 +50,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -80
+          "y": -100
         }
       }
     note: false
@@ -58,21 +58,24 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: e6a5f930-ad33-4e28-864a-8640e7ced2cb
+    taskid: a1b6d11c-4ad3-418a-8de1-f6c6850607c5
     type: collection
     task:
-      id: e6a5f930-ad33-4e28-864a-8640e7ced2cb
+      id: a1b6d11c-4ad3-418a-8de1-f6c6850607c5
       version: -1
       name: Select Task
       type: collection
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 120
+          "y": 60
         }
       }
     note: false
@@ -80,11 +83,31 @@ tasks:
     ignoreworker: false
     message:
       to:
-        simple: Analyst
-      subject: null
+        simple: Fidelis Analyst
+      subject:
+        simple: Select a task
       body:
-        simple: Select Task to run
-      methods: []
+        complex:
+          root: Fidelis
+          accessor: Endpoint.Scripts
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: |2+
+
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: "Please select the ID from the list below and paste it into
+                    the web form:\n \n \n "
+              suffix:
+                value:
+                  simple: " \n \nUse the web link below to paste the ID:\n \n \n"
+      methods:
+      - email
       format: ""
       bcc: null
       cc: null
@@ -113,12 +136,84 @@ tasks:
       sender: ""
       expired: false
       totalanswers: 0
+  "6":
+    id: "6"
+    taskid: 70b079bf-25e9-46c9-829c-e89b9958101f
+    type: regular
+    task:
+      id: 70b079bf-25e9-46c9-829c-e89b9958101f
+      version: -1
+      name: fidelis-edr-get-script-questions
+      description: Retrieves a list of questions that need answering for a Fidelis
+        script
+      script: Fidelis Elevate Endpoint|||fidelis-edr-get-script-questions
+      type: regular
+      iscommand: true
+      brand: Fidelis Elevate Endpoint
+    scriptarguments:
+      scriptId:
+        complex:
+          root: Select Task to Run
+          accessor: Answers.0
+          transformers:
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: ' '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 5b566b0e-216b-4b49-8fd8-c4412b679ce4
+    type: regular
+    task:
+      id: 5b566b0e-216b-4b49-8fd8-c4412b679ce4
+      version: -1
+      name: Delete Scripts Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: Fidelis.Endpoint.Scripts
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 455,
+        "height": 705,
         "width": 380,
         "x": 450,
         "y": -240
