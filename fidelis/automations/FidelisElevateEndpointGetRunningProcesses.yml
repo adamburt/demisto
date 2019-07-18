@@ -1,8 +1,22 @@
 commonfields:
   id: 82b241f5-111b-412a-8be6-83d1ac38b648
-  version: 12
+  version: 13
 name: FidelisElevateEndpointGetRunningProcesses
 script: |
+  #####################
+  # Get the hostname
+  #####################
+  hostname = None
+  try:
+      hostname = demisto.args()["hostname"]
+  except:
+      hostname = None
+  if hostname is None:
+      try:
+          hostname = demisto.get(demisto.context(), "Fidelis.Endpoint.Alert.Target")
+      except:
+          hostname = None
+
   #####################
   # Get any filters
   #####################
@@ -24,12 +38,13 @@ script: |
   #####################
   # Execute the script
   #####################
-  demisto.results(demisto.executeCommand("fidelis-edr-get-running-processes", {"hostname": demisto.get(demisto.context(), "Fidelis.Endpoint.Alert.Target"), "filter": filters, "updateContext": updateContext }))
+  demisto.results(demisto.executeCommand("fidelis-edr-get-running-processes", {"hostname": hostname, "filter": filters, "updateContext": updateContext }))
 type: python
 tags: []
 comment: Attempts to retrieve the live running processes from an endpoint.
 enabled: true
 args:
+- name: hostname
 - name: filter
   description: Filter based on process name
 - name: updateContext

@@ -1,5 +1,5 @@
 id: 68bb9ab1-a72e-446d-8023-72f73b25d063
-version: 32
+version: 48
 name: Fidelis Elevate Endpoint - Default Playbook
 description: This is the default playbook for Fidelis Elevate Endpoint Incidents
 starttaskid: "0"
@@ -22,7 +22,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": -240
+          "y": 50
         }
       }
     note: false
@@ -45,7 +45,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "21"
     separatecontext: false
     loop:
       iscommand: false
@@ -55,77 +55,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": -135
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: ec8249c1-84ba-40db-8088-bd8b4b08ca5f
-    type: playbook
-    task:
-      id: ec8249c1-84ba-40db-8088-bd8b4b08ca5f
-      version: -1
-      name: Fidelis Elevate Endpoint Create CEF Alert
-      description: This playbook maps fields from a Fidelis Endpoint Alert and Event
-        to common CEF fields.
-      playbookName: Fidelis Elevate Endpoint Create CEF Alert
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    separatecontext: false
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 0
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "3":
-    id: "3"
-    taskid: a245514e-d0f8-43fd-82da-42afadbbc1fc
-    type: regular
-    task:
-      id: a245514e-d0f8-43fd-82da-42afadbbc1fc
-      version: -1
-      name: Send message
-      description: Attempts to send data using the Python socket library
-      scriptName: SendNetworkData
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      data:
-        simple: <134> ${CEF Alert}
-      header: {}
-      host:
-        simple: 10.0.0.240
-      port:
-        simple: "514"
-      protocol:
-        simple: UDP
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 140
+          "y": 195
         }
       }
     note: false
@@ -146,46 +76,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -390,
-          "y": 750
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: 9141e555-233e-429d-89da-63f9ac154c38
-    type: condition
-    task:
-      id: 9141e555-233e-429d-89da-63f9ac154c38
-      version: -1
-      name: Check response
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      isolate:
-      - "7"
-    separatecontext: false
-    conditions:
-    - label: isolate
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Execute a script?.Answers.0
-            iscontext: true
-          right:
-            value:
-              simple: Isolate Endpoint
-    view: |-
-      {
-        "position": {
           "x": 50,
-          "y": 550
+          "y": 2470
         }
       }
     note: false
@@ -193,10 +85,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: c1129fab-eed9-48c3-8b3f-0fc87cd96031
+    taskid: 60fdf69a-4c5b-49f7-828e-15b684e8aae8
     type: playbook
     task:
-      id: c1129fab-eed9-48c3-8b3f-0fc87cd96031
+      id: 60fdf69a-4c5b-49f7-828e-15b684e8aae8
       version: -1
       name: Fidelis Elevate Endpoint Script - Isolate Endpoint
       description: This script will request authorisation to execute an endpoint isolation
@@ -205,9 +97,11 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
     scriptarguments:
-      justification:
-        simple: ${Execute a script?.Answers.1}
+      justification: {}
     separatecontext: true
     loop:
       iscommand: false
@@ -216,85 +110,191 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 530,
-          "y": 750
+          "x": 50,
+          "y": 895
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "8":
-    id: "8"
-    taskid: b7aca79e-5753-4f8f-82bd-5191aec7aabe
+  "12":
+    id: "12"
+    taskid: 95afeafc-81b9-41db-8644-4f6d983ff9a4
     type: regular
     task:
-      id: b7aca79e-5753-4f8f-82bd-5191aec7aabe
+      id: 95afeafc-81b9-41db-8644-4f6d983ff9a4
       version: -1
-      name: AssignAnalystToIncident
-      description: |-
-        Assign analyst to incident.
-        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
-        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
-        machine-learning: DBot will calculated and decide who is the best analyst for the job.
-        top-user: The user that is most commonly owns this type of incident
-        less-busy-user: The less busy analyst will be picked to be the incident owner.
-        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
-        current: The user that executed the command
-      scriptName: AssignAnalystToIncident
+      name: Run Process List Script
+      description: Attempts to retrieve the live running processes from an endpoint.
+      scriptName: FidelisElevateEndpointGetRunningProcesses
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "25"
     scriptarguments:
-      assignBy: {}
-      email: {}
-      roles:
-        simple: Fidelis Analyst
-      username: {}
+      filter:
+        simple: ${lastCompletedTaskEntries.[0]}
+      hostname:
+        simple: ${incident.endpointname}
+      updateContext: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 275
+          "y": 1245
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "9":
-    id: "9"
-    taskid: 8b20b7bf-634c-4136-8891-dc6989e61192
-    type: collection
+  "13":
+    id: "13"
+    taskid: c03ea329-e256-49fe-85d2-144b210b5f90
+    type: condition
     task:
-      id: 8b20b7bf-634c-4136-8891-dc6989e61192
+      id: c03ea329-e256-49fe-85d2-144b210b5f90
       version: -1
-      name: Please select a task
+      name: Investigate
       description: |-
-        # Select a script
+        # Investigate
 
-        Please reply with a script to run. Or, if you don't want to execute script, simply reply "no".
+        All tasks as part of this incidents playbook have been completed.
 
-        Possible script options are:
-
-        - Isolate Endpoint
-        - Process List
-        - Task List
-        - Service List
-      type: collection
+        When this task is completed the incident will close.
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
-      - "6"
+      Complete:
+      - "15"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 405
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: e10c55bb-feec-47e3-87c0-cc30685f7df6
+    type: regular
+    task:
+      id: e10c55bb-feec-47e3-87c0-cc30685f7df6
+      version: -1
+      name: Close Incident
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      id:
+        simple: ${incident.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: a1cf3e20-1db1-4980-82b9-6a49d0e7440a
+    type: condition
+    task:
+      id: a1cf3e20-1db1-4980-82b9-6a49d0e7440a
+      version: -1
+      name: Delete Fidelis Alert?
+      description: |-
+        # Delete Fidelis Alert
+
+        Please select whether you would like to delete the alert from the FIdelis Elevate Endpoint Platform.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      DO NOT delete:
+      - "14"
+      Delete:
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 87125a20-b1f9-4390-8c1f-61511dd79d62
+    type: regular
+    task:
+      id: 87125a20-b1f9-4390-8c1f-61511dd79d62
+      version: -1
+      name: FidelisElevateEndpointDeleteAlert
+      description: Attempts to delete an alert from the Fidelis Endpoint Platform
+      scriptName: FidelisElevateEndpointDeleteAlert
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      alertId:
+        simple: ${incident.fidelisendpointalertid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 987cbeb0-81f2-4188-8c16-0c56987fecdd
+    type: collection
+    task:
+      id: 987cbeb0-81f2-4188-8c16-0c56987fecdd
+      version: -1
+      name: Select a script to execute
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
         }
       }
     note: false
@@ -302,12 +302,13 @@ tasks:
     ignoreworker: false
     message:
       to:
-        simple: Analyst
+        simple: Fidelis Analyst
       subject:
-        simple: Script execution for new incident
-      body: {}
+        simple: Select script to execute
+      body:
+        simple: Use the link below to select the script to execute against ${incident.endpointname}
       methods:
-      - slack
+      - email
       format: ""
       bcc: null
       cc: null
@@ -315,48 +316,234 @@ tasks:
         retriescount: 2
         retriesinterval: 360
         completeafterreplies: 1
+      replyOptions:
+      - "Yes"
+      - "No"
     form:
       questions:
       - id: "0"
         label: ""
         labelarg:
-          simple: Which script would you like to execute?
+          simple: Select the script to execute against "${incident.endpointname}"
         required: true
         gridcolumns: []
         defaultrows: []
-        type: singleSelect
+        type: multiSelect
         options:
-        - None
+        - ""
+        - Process List
+        - Service List
         - Isolate Endpoint
         fieldassociated: ""
         placeholder: ""
-        tooltip: Please select which script (if any) you would like to execute?
-      - id: "1"
-        label: ""
-        labelarg:
-          simple: Please provide a justification for the script (if any selected)
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: shortText
-        options: []
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
-      title: Execute a script?
-      description: A new incident may require script execution
+        tooltip: Select 1 more tasks to execute
+      title: Script Selection
+      description: Which script should be executed?
       sender: ""
       expired: false
       totalanswers: 0
+  "21":
+    id: "21"
+    taskid: 9818eeba-6728-440f-8517-ad0571be197b
+    type: condition
+    task:
+      id: 9818eeba-6728-440f-8517-ad0571be197b
+      version: -1
+      name: Does this incident require script execution?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "13"
+      "Yes":
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -160,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Fidelis Analyst
+      subject:
+        simple: Does incident ID ${incident.id} require script execution?
+      body:
+        simple: |-
+          A new incident named "${incident.name}" was created. It affects the endpoint "${incident.endpointname}".
+
+          Would you like to execute a script against this endpoint?
+      methods:
+      - email
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - "Yes"
+      - "No"
+  "22":
+    id: "22"
+    taskid: 5c194225-fb74-4201-8953-78423a43d008
+    type: regular
+    task:
+      id: 5c194225-fb74-4201-8953-78423a43d008
+      version: -1
+      name: Run Service List Script
+      description: Attempts to retrieve the live running processes from an endpoint.
+      scriptName: FidelisElevateEndpointGetServices
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      filter: {}
+      updateContext: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: 7502d911-44c8-4ee1-8e0d-c4883ce39a34
+    type: condition
+    task:
+      id: 7502d911-44c8-4ee1-8e0d-c4883ce39a34
+      version: -1
+      name: Process List?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "25"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Script Selection.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Process List
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: 707e8473-93b3-412f-8c1f-ad6fe3bb23e3
+    type: condition
+    task:
+      id: 707e8473-93b3-412f-8c1f-ad6fe3bb23e3
+      version: -1
+      name: Isolate?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Script Selection.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Isolate Endpoint
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: 20c98017-9af4-4e6b-87d2-4883bc31e13d
+    type: condition
+    task:
+      id: 20c98017-9af4-4e6b-87d2-4883bc31e13d
+      version: -1
+      name: Service List?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Script Selection.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Process List
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1085,
-        "width": 1300,
-        "x": -390,
-        "y": -240
+        "height": 2485,
+        "width": 702.5,
+        "x": -160,
+        "y": 50
       }
     }
   }

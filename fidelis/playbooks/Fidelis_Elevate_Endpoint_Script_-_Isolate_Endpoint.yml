@@ -1,5 +1,5 @@
 id: 8cbdf195-4307-4701-810d-3dd58bb73f74
-version: 29
+version: 37
 rolename:
 - Administrator
 - Fidelis Super Analyst
@@ -69,12 +69,16 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 770e3a73-1a46-48d7-8ebf-1f2315966c78
+    taskid: f75ad23f-007f-470a-8fe2-defb685ffee1
     type: collection
     task:
-      id: 770e3a73-1a46-48d7-8ebf-1f2315966c78
+      id: f75ad23f-007f-470a-8fe2-defb685ffee1
       version: -1
       name: Request for more information
+      description: |-
+        # Justification
+
+        Please enter your justification comments in the comments and select "Submit"
       type: collection
       iscommand: false
       brand: ""
@@ -85,8 +89,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 30,
-          "y": 210
+          "x": 130,
+          "y": 130
         }
       }
     note: false
@@ -96,10 +100,10 @@ tasks:
       to:
         simple: ${incident.owner}
       subject:
-        simple: Your request to Isolate an endpoint requires more information
-      body: {}
+        simple: Justification
+      body: null
       methods:
-      - slack
+      - email
       format: ""
       bcc: null
       cc: null
@@ -112,91 +116,49 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: Please provide a justification for isolating the endpoint
+          simple: Justification
         required: true
         gridcolumns: []
         defaultrows: []
         type: shortText
-        options:
-        - Deny
-        - Authorise
-        - Further Information Required
+        options: []
         fieldassociated: ""
         placeholder: ""
         tooltip: ""
-      title: More information
+      title: Justification
       description: ""
       sender: ""
       expired: false
       totalanswers: 0
   "6":
     id: "6"
-    taskid: 744dc7bf-b3aa-4824-896a-753263426837
-    type: collection
+    taskid: c9f4de7a-1212-4331-8adb-d0c4f391f5ec
+    type: condition
     task:
-      id: 744dc7bf-b3aa-4824-896a-753263426837
+      id: c9f4de7a-1212-4331-8adb-d0c4f391f5ec
       version: -1
-      name: Seek verified permission from a senior analyst
-      type: collection
+      name: Provide a justification
+      description: Please provide a justification for the isolation
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
-      - "19"
-      - "13"
+      Deny:
+      - "8"
     separatecontext: false
+    defaultassigneecomplex:
+      simple: ${incident.owner}
+    restrictedcompletion: true
     view: |-
       {
         "position": {
-          "x": 30,
-          "y": 370
+          "x": 130,
+          "y": 360
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    message:
-      to:
-        simple: Fidelis Super Analyst
-      subject:
-        simple: Further justification supplied
-      body: {}
-      methods:
-      - slack
-      format: ""
-      bcc: null
-      cc: null
-      timings:
-        retriescount: 2
-        retriesinterval: 360
-        completeafterreplies: 1
-    form:
-      questions:
-      - id: "0"
-        label: ""
-        labelarg:
-          simple: |-
-            The following justification was supplied by "${More information.Answers.name}":
-
-            ${More information.Answers.0}
-
-
-            Do you authorise the task to be carried out?
-        required: true
-        gridcolumns: []
-        defaultrows: []
-        type: singleSelect
-        options:
-        - Deny
-        - Authorise
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
-      title: Authorisation
-      description: ""
-      sender: ""
-      expired: false
-      totalanswers: 0
   "8":
     id: "8"
     taskid: 5d1a151a-7c7e-4c51-8464-e20680e192b8
@@ -251,38 +213,6 @@ tasks:
         "position": {
           "x": 1170,
           "y": 1010
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "13":
-    id: "13"
-    taskid: 88ba3a00-5aa0-4887-8c5c-2b11c23824ba
-    type: regular
-    task:
-      id: 88ba3a00-5aa0-4887-8c5c-2b11c23824ba
-      version: -1
-      name: Add Evidence of Isolation
-      description: |
-        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
-      scriptName: AddEvidence
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      desc:
-        simple: Evidence to isolate endpoint ${incident.endpointname}
-      description: {}
-      entryIDs: {}
-      occurred: {}
-      tags: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 530,
-          "y": 540
         }
       }
     note: false
@@ -354,59 +284,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -30,
+          "x": -20,
           "y": -280
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "19":
-    id: "19"
-    taskid: 9fdf6765-d384-4cfa-8728-97d40d3eb2c6
+  "21":
+    id: "21"
+    taskid: 356f47e7-bb2d-468e-8bed-a475afaeb28b
     type: condition
     task:
-      id: 9fdf6765-d384-4cfa-8728-97d40d3eb2c6
+      id: 356f47e7-bb2d-468e-8bed-a475afaeb28b
       version: -1
-      name: Check response
-      description: "Gets a value and return it. This is to be used in playbook conditional
-        tasks - get a value from incident field, label or context, and act accordingly.
-        \nIf an array is returned. the first value will be the decision making value."
-      scriptName: checkValue
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      Authorise:
-      - "11"
-      Deny:
-      - "8"
-    scriptarguments:
-      value:
-        simple: ${Authorisation.Answers.0}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 30,
-          "y": 540
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "20":
-    id: "20"
-    taskid: 691c479d-b839-4e0f-8aa6-475951fd32b3
-    type: condition
-    task:
-      id: 691c479d-b839-4e0f-8aa6-475951fd32b3
-      version: -1
-      name: Check response
-      description: "Gets a value and return it. This is to be used in playbook conditional
-        tasks - get a value from incident field, label or context, and act accordingly.
-        \nIf an array is returned. the first value will be the decision making value."
-      scriptName: checkValue
+      name: Authorise Isolate Endpoint Script
       type: condition
       iscommand: false
       brand: ""
@@ -417,41 +309,20 @@ tasks:
       - "8"
       Require further information:
       - "5"
-    scriptarguments:
-      value:
-        simple: ${Authorisation.Answers.0}
     separatecontext: false
+    sla:
+      hours: 0
+      days: 1
+      weeks: 0
+    slareminder:
+      hours: 2
+      days: 0
+      weeks: 0
     view: |-
       {
         "position": {
-          "x": 810,
-          "y": 40
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "21":
-    id: "21"
-    taskid: 69401a4c-dfa6-4702-8bdd-b61808edd928
-    type: collection
-    task:
-      id: 69401a4c-dfa6-4702-8bdd-b61808edd928
-      version: -1
-      name: Seek initial permission from a senior analyst
-      type: collection
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "20"
-      - "13"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 270,
-          "y": -90
+          "x": 450,
+          "y": -120
         }
       }
     note: false
@@ -461,9 +332,11 @@ tasks:
       to:
         simple: Fidelis Super Analyst
       subject:
-        simple: Authorise "Endpoint Isolation" on ${incident.endpointname}
-      body: {}
+        simple: Authorise Isolate Endpoint Script
+      body:
+        simple: Authorise "Isolate Endpoint" script on ${incident.endpointname}
       methods:
+      - email
       - slack
       format: ""
       bcc: null
@@ -472,33 +345,10 @@ tasks:
         retriescount: 2
         retriesinterval: 360
         completeafterreplies: 1
-    form:
-      questions:
-      - id: "0"
-        label: ""
-        labelarg:
-          simple: |-
-            Please confirm whether you would like to authorise the isolation task on "${incident.endpointname}" for the incident "${incident.name}".
-
-            If the user provided an initial justification, it is below:
-
-            "${inputs.justification}"
-        required: true
-        gridcolumns: []
-        defaultrows: []
-        type: singleSelect
-        options:
-        - Deny
-        - Authorise
-        - Require further information
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
-      title: Authorisation
-      description: ""
-      sender: ""
-      expired: false
-      totalanswers: 0
+      replyOptions:
+      - Authorise
+      - Deny
+      - Require further information
 view: |-
   {
     "linkLabelsPosition": {
@@ -507,8 +357,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1845,
-        "width": 1580,
-        "x": -30,
+        "width": 1570,
+        "x": -20,
         "y": -740
       }
     }

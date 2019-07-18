@@ -1,5 +1,5 @@
 id: e7ac9021-96ee-451c-88fa-a2a027f5f20b
-version: 317
+version: 323
 name: Fidelis Elevate Endpoint Enrichment
 description: This playbook will attempt to gather event data for the alert (if it
   exists and the alert does not already have event data). It will also assign an incident
@@ -32,10 +32,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 36e92861-f80d-4fd1-879f-13b7bb0233fe
+    taskid: b54c1113-593d-4315-8942-8a92fedd461c
     type: condition
     task:
-      id: 36e92861-f80d-4fd1-879f-13b7bb0233fe
+      id: b54c1113-593d-4315-8942-8a92fedd461c
       version: -1
       name: Is there an alert ID?
       type: condition
@@ -53,18 +53,7 @@ tasks:
       - - operator: isExists
           left:
             value:
-              complex:
-                root: incident
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: incident.sourceBrand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Fidelis Elevate Endpoint
-                accessor: labels.Id
+              simple: incident.fidelisendpointalertid
             iscontext: true
     view: |-
       {
@@ -103,10 +92,10 @@ tasks:
     ignoreworker: false
   "66":
     id: "66"
-    taskid: a32dbc64-8a74-4d63-805e-409f7cd97ce7
+    taskid: 9f7947f1-c12b-4fa8-86df-ffff157ef26b
     type: regular
     task:
-      id: a32dbc64-8a74-4d63-805e-409f7cd97ce7
+      id: 9f7947f1-c12b-4fa8-86df-ffff157ef26b
       version: -1
       name: Get Alert Details
       description: Retrieves the details of an alert
@@ -119,19 +108,7 @@ tasks:
       - "82"
     scriptarguments:
       alertId:
-        complex:
-          root: incident
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: incident.sourceBrand
-                iscontext: true
-              right:
-                value:
-                  simple: Fidelis Elevate Endpoint
-          accessor: labels.Id
-    reputationcalc: 3
+        simple: ${incident.fidelisendpointalertid}
     continueonerror: true
     separatecontext: false
     view: |-
@@ -146,10 +123,10 @@ tasks:
     ignoreworker: false
   "70":
     id: "70"
-    taskid: e8a52fe4-a331-4888-83a0-4621e61cd952
+    taskid: 868b7560-12c2-44d7-8ac1-84930532ed4b
     type: regular
     task:
-      id: e8a52fe4-a331-4888-83a0-4621e61cd952
+      id: 868b7560-12c2-44d7-8ac1-84930532ed4b
       version: -1
       name: Get Endpoint Details
       description: Attempts to refresh the endpoint details associated with the incident
@@ -162,16 +139,7 @@ tasks:
       - "72"
     scriptarguments:
       hostname:
-        complex:
-          root: incident
-          filters:
-          - - operator: isExists
-              left:
-                value:
-                  simple: incident.labels.Target
-                iscontext: true
-          accessor: labels.Target
-    reputationcalc: 1
+        simple: ${incident.endpointname}
     continueonerror: true
     separatecontext: false
     view: |-
@@ -186,10 +154,10 @@ tasks:
     ignoreworker: false
   "71":
     id: "71"
-    taskid: 9e8bcef6-1f52-40f2-809d-1ccc4dee1a78
+    taskid: 4dca30ec-a821-42f2-8f1e-a23124a97966
     type: playbook
     task:
-      id: 9e8bcef6-1f52-40f2-809d-1ccc4dee1a78
+      id: 4dca30ec-a821-42f2-8f1e-a23124a97966
       version: -1
       name: Fidelis Elevate Endpoint Get Event for Alert
       description: Attempts to look up the event data associated with an alert generated
@@ -203,15 +171,7 @@ tasks:
       - "19"
     scriptarguments:
       alertId:
-        complex:
-          root: incident
-          filters:
-          - - operator: isExists
-              left:
-                value:
-                  simple: incident.labels.Id
-                iscontext: true
-          accessor: labels.Id
+        simple: ${incident.fidelisendpointalertid}
       sleepTime:
         simple: "5"
     separatecontext: false
@@ -253,10 +213,10 @@ tasks:
     ignoreworker: false
   "72":
     id: "72"
-    taskid: 6f6789ae-3a22-4b3d-8b41-9fbda4f0c83c
+    taskid: c59742c4-7c21-4484-8445-a4f4ce677030
     type: regular
     task:
-      id: 6f6789ae-3a22-4b3d-8b41-9fbda4f0c83c
+      id: c59742c4-7c21-4484-8445-a4f4ce677030
       version: -1
       name: Set the event collect retry count to 0
       description: Sets a value into the context with the given context key
@@ -274,6 +234,7 @@ tasks:
         simple: Fidelis.Endpoint.Alert.Event Retries
       value:
         simple: "0"
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
@@ -287,10 +248,10 @@ tasks:
     ignoreworker: false
   "82":
     id: "82"
-    taskid: df14cb41-d115-486e-82e9-0500d52de786
+    taskid: facb4c2f-90d9-4678-8981-21489caea783
     type: regular
     task:
-      id: df14cb41-d115-486e-82e9-0500d52de786
+      id: facb4c2f-90d9-4678-8981-21489caea783
       version: -1
       name: Get Platform Details
       script: '|||fidelis-edr-get-platform-details'
@@ -315,12 +276,12 @@ tasks:
     ignoreworker: false
   "83":
     id: "83"
-    taskid: 48a193ca-35f3-4cd3-8bab-5fed9b48f867
+    taskid: 191cbe89-f572-4d32-8c48-3620e2a95e0b
     type: regular
     task:
-      id: 48a193ca-35f3-4cd3-8bab-5fed9b48f867
+      id: 191cbe89-f572-4d32-8c48-3620e2a95e0b
       version: -1
-      name: FidelisElevateEndpointPopulateProcessFields
+      name: Populate incident fields
       scriptName: FidelisElevateEndpointIncidentFields
       type: regular
       iscommand: false
@@ -328,7 +289,6 @@ tasks:
     nexttasks:
       '#none#':
       - "84"
-    reputationcalc: 3
     continueonerror: true
     separatecontext: false
     view: |-
@@ -368,10 +328,10 @@ tasks:
     ignoreworker: false
   "85":
     id: "85"
-    taskid: 79edffd7-bfcc-49b8-8a26-c1170fdd81c4
+    taskid: 7c3ad851-3573-443a-80a8-40f54ab6fb82
     type: regular
     task:
-      id: 79edffd7-bfcc-49b8-8a26-c1170fdd81c4
+      id: 7c3ad851-3573-443a-80a8-40f54ab6fb82
       version: -1
       name: AssignAnalystToIncident
       description: |-
