@@ -1,5 +1,5 @@
 id: e16a2c2e-09bf-4607-82c2-f249f9dcf5fe
-version: 80
+version: 94
 name: Fidelis Elevate Endpoint Execute Script
 description: This script will obtain a list of available scripts and their options.
   It will then present the user with an option of which script can be executed and
@@ -23,8 +23,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": -240
+          "x": 265,
+          "y": 50
         }
       }
     note: false
@@ -49,8 +49,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": -100
+          "x": 265,
+          "y": 195
         }
       }
     note: false
@@ -58,24 +58,24 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: a1b6d11c-4ad3-418a-8de1-f6c6850607c5
+    taskid: cea61fec-c9d1-49ff-8ee9-a256893ce1b7
     type: collection
     task:
-      id: a1b6d11c-4ad3-418a-8de1-f6c6850607c5
+      id: cea61fec-c9d1-49ff-8ee9-a256893ce1b7
       version: -1
-      name: Select Task
+      name: Select Script
       type: collection
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "10"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 60
+          "x": 265,
+          "y": 370
         }
       }
     note: false
@@ -101,11 +101,11 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: "Please select the ID from the list below and paste it into
-                    the web form:\n \n \n "
+                  simple: "Please use the name of one of the scripts below to execute:\n
+                    \n "
               suffix:
                 value:
-                  simple: " \n \nUse the web link below to paste the ID:\n \n \n"
+                  simple: " \n \nYou will need to paste the value using the link below.."
       methods:
       - email
       format: ""
@@ -120,7 +120,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: Please enter the task ID to run
+          simple: Please enter the script name to run or "None" to stop running scripts
         required: true
         gridcolumns: []
         defaultrows: []
@@ -130,45 +130,36 @@ tasks:
         - "No"
         fieldassociated: ""
         placeholder: ""
-        tooltip: ""
-      title: Select Task to Run
+        tooltip: Use "None" to stop executing scripts
+      title: Select Script to Run
       description: ""
       sender: ""
       expired: false
       totalanswers: 0
   "6":
     id: "6"
-    taskid: 70b079bf-25e9-46c9-829c-e89b9958101f
+    taskid: 6c3565ed-bcc7-4f28-8bae-2d48ce15e142
     type: regular
     task:
-      id: 70b079bf-25e9-46c9-829c-e89b9958101f
+      id: 6c3565ed-bcc7-4f28-8bae-2d48ce15e142
       version: -1
-      name: fidelis-edr-get-script-questions
-      description: Retrieves a list of questions that need answering for a Fidelis
-        script
-      script: Fidelis Elevate Endpoint|||fidelis-edr-get-script-questions
+      name: FidelisElevateEndpointExecuteScript
+      scriptName: FidelisElevateEndpointExecuteScript
       type: regular
-      iscommand: true
-      brand: Fidelis Elevate Endpoint
+      iscommand: false
+      brand: ""
     scriptarguments:
-      scriptId:
-        complex:
-          root: Select Task to Run
-          accessor: Answers.0
-          transformers:
-          - operator: replace
-            args:
-              limit: {}
-              replaceWith: {}
-              toReplace:
-                value:
-                  simple: ' '
+      hostname:
+        simple: ${incident.endpointname}
+      scriptname:
+        simple: ${Select Script to Run.Answers.0}
+    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 370
+          "x": 480,
+          "y": 895
         }
       }
     note: false
@@ -176,33 +167,102 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 5b566b0e-216b-4b49-8fd8-c4412b679ce4
+    taskid: 29c5d38c-d3e5-4a29-82e6-1d99146e465d
     type: regular
     task:
-      id: 5b566b0e-216b-4b49-8fd8-c4412b679ce4
+      id: 29c5d38c-d3e5-4a29-82e6-1d99146e465d
       version: -1
-      name: Delete Scripts Context
-      description: Delete field from context
-      scriptName: DeleteContext
+      name: Set no more scripts flag
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: Fidelis.Endpoint.Alert.ScriptsComplete
+      value:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 4709e2d6-41a3-42e3-8001-ed54e36a7a7b
+    type: condition
+    task:
+      id: 4709e2d6-41a3-42e3-8001-ed54e36a7a7b
+      version: -1
+      name: Check no more scripts
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      None:
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: None
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Fidelis.Endpoint.Alert.ScriptsCurrent
+            iscontext: true
+          right:
+            value:
+              simple: None
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: df3c9a57-1ad6-4b06-8ea5-92fcef2fcb79
+    type: regular
+    task:
+      id: df3c9a57-1ad6-4b06-8ea5-92fcef2fcb79
+      version: -1
+      name: Set script name
+      description: Sets a value into the context with the given context key
+      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "8"
     scriptarguments:
-      all: {}
-      index: {}
+      append:
+        simple: "false"
       key:
-        simple: Fidelis.Endpoint.Scripts
-      keysToKeep: {}
-      subplaybook: {}
+        simple: Fidelis.Endpoint.Alert.ScriptsCurrent
+      value:
+        simple: ${Select Script to Run.Answers.0}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 215
+          "x": 265,
+          "y": 545
         }
       }
     note: false
@@ -213,12 +273,14 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 705,
-        "width": 380,
-        "x": 450,
-        "y": -240
+        "height": 940,
+        "width": 810,
+        "x": 50,
+        "y": 50
       }
     }
   }
 inputs: []
-outputs: []
+outputs:
+- contextPath: Fidelis.Endpoint.Alert.ScriptsComplete
+  type: unknown

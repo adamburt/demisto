@@ -1,5 +1,5 @@
 id: 68bb9ab1-a72e-446d-8023-72f73b25d063
-version: 50
+version: 54
 name: Fidelis Elevate Endpoint - Default Playbook
 description: This is the default playbook for Fidelis Elevate Endpoint Incidents
 starttaskid: "0"
@@ -77,74 +77,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "7":
-    id: "7"
-    taskid: 60fdf69a-4c5b-49f7-828e-15b684e8aae8
-    type: playbook
-    task:
-      id: 60fdf69a-4c5b-49f7-828e-15b684e8aae8
-      version: -1
-      name: Fidelis Elevate Endpoint Script - Isolate Endpoint
-      description: This script will request authorisation to execute an endpoint isolation
-        script using Fidelis Elevate Endpoint
-      playbookName: Fidelis Elevate Endpoint Script - Isolate Endpoint
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "23"
-    scriptarguments:
-      justification: {}
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "12":
-    id: "12"
-    taskid: 95afeafc-81b9-41db-8644-4f6d983ff9a4
-    type: regular
-    task:
-      id: 95afeafc-81b9-41db-8644-4f6d983ff9a4
-      version: -1
-      name: Run Process List Script
-      description: Attempts to retrieve the live running processes from an endpoint.
-      scriptName: FidelisElevateEndpointGetRunningProcesses
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "25"
-    scriptarguments:
-      filter:
-        simple: ${lastCompletedTaskEntries.[0]}
-      hostname:
-        simple: ${incident.endpointname}
-      updateContext: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
+          "y": 1945
         }
       }
     note: false
@@ -175,7 +108,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 1245
         }
       }
     note: false
@@ -208,7 +141,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 1770
         }
       }
     note: false
@@ -239,7 +172,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 1420
         }
       }
     note: false
@@ -269,85 +202,18 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 2120
+          "y": 1595
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "19":
-    id: "19"
-    taskid: 987cbeb0-81f2-4188-8c16-0c56987fecdd
-    type: collection
-    task:
-      id: 987cbeb0-81f2-4188-8c16-0c56987fecdd
-      version: -1
-      name: Select a script to execute
-      type: collection
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "24"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    message:
-      to:
-        simple: Fidelis Analyst
-      subject:
-        simple: Select script to execute
-      body:
-        simple: Use the link below to select the script to execute against ${incident.endpointname}
-      methods:
-      - email
-      format: ""
-      bcc: null
-      cc: null
-      timings:
-        retriescount: 2
-        retriesinterval: 360
-        completeafterreplies: 1
-      replyOptions:
-      - "Yes"
-      - "No"
-    form:
-      questions:
-      - id: "0"
-        label: ""
-        labelarg:
-          simple: Select the script to execute against "${incident.endpointname}"
-        required: true
-        gridcolumns: []
-        defaultrows: []
-        type: multiSelect
-        options:
-        - ""
-        - Process List
-        - Service List
-        - Isolate Endpoint
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: Select 1 more tasks to execute
-      title: Script Selection
-      description: Which script should be executed?
-      sender: ""
-      expired: false
-      totalanswers: 0
   "21":
     id: "21"
-    taskid: df42e662-aaec-456a-8c98-3a7dd24a9624
+    taskid: 8b7a8bf5-c4d9-470c-8574-451f7b9e44a2
     type: condition
     task:
-      id: df42e662-aaec-456a-8c98-3a7dd24a9624
+      id: 8b7a8bf5-c4d9-470c-8574-451f7b9e44a2
       version: -1
       name: Does this incident require script execution?
       type: condition
@@ -357,13 +223,14 @@ tasks:
       "No":
       - "13"
       "Yes":
-      - "19"
+      - "23"
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -160,
-          "y": 350
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -395,100 +262,36 @@ tasks:
       - "No"
   "22":
     id: "22"
-    taskid: 5c194225-fb74-4201-8953-78423a43d008
-    type: regular
+    taskid: 828165ea-5059-45e2-88ef-4af1f55cf81f
+    type: playbook
     task:
-      id: 5c194225-fb74-4201-8953-78423a43d008
+      id: 828165ea-5059-45e2-88ef-4af1f55cf81f
       version: -1
-      name: Run Service List Script
-      description: Attempts to retrieve the live running processes from an endpoint.
-      scriptName: FidelisElevateEndpointGetServices
-      type: regular
+      name: Fidelis Elevate Endpoint Execute Script
+      description: This script will obtain a list of available scripts and their options.
+        It will then present the user with an option of which script can be executed
+        and the answers that are required.
+      playbookName: Fidelis Elevate Endpoint Execute Script
+      type: playbook
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
-    scriptarguments:
-      filter: {}
-      updateContext: {}
+      - "24"
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "23":
-    id: "23"
-    taskid: 7502d911-44c8-4ee1-8e0d-c4883ce39a34
-    type: condition
-    task:
-      id: 7502d911-44c8-4ee1-8e0d-c4883ce39a34
-      version: -1
-      name: Process List?
-      type: condition
+    loop:
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "25"
-      "yes":
-      - "12"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
+      builtincondition:
+      - - operator: isEqualString
           left:
             value:
-              simple: Script Selection.Answers.0
+              simple: Fidelis.Endpoint.Alert.ScriptsComplete
             iscontext: true
           right:
             value:
-              simple: Process List
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "24":
-    id: "24"
-    taskid: 707e8473-93b3-412f-8c1f-ad6fe3bb23e3
-    type: condition
-    task:
-      id: 707e8473-93b3-412f-8c1f-ad6fe3bb23e3
-      version: -1
-      name: Isolate?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "23"
-      "yes":
-      - "7"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: Script Selection.Answers.0
-            iscontext: true
-          right:
-            value:
-              simple: Isolate Endpoint
+              simple: "true"
+      exitCondition: ""
+      wait: 1
     view: |-
       {
         "position": {
@@ -499,39 +302,103 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "25":
-    id: "25"
-    taskid: 20c98017-9af4-4e6b-87d2-4883bc31e13d
-    type: condition
+  "23":
+    id: "23"
+    taskid: 03025cac-9746-46b0-825a-062fb67b57cc
+    type: regular
     task:
-      id: 20c98017-9af4-4e6b-87d2-4883bc31e13d
+      id: 03025cac-9746-46b0-825a-062fb67b57cc
       version: -1
-      name: Service List?
-      type: condition
+      name: Set continuation flag
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "13"
-      "yes":
+      '#none#':
       - "22"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: Fidelis.Endpoint.Alert.ScriptsComplete
+      value:
+        simple: "false"
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: Script Selection.Answers.0
-            iscontext: true
-          right:
-            value:
-              simple: Process List
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 1420
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: 071fc3a6-ea3e-417f-873b-a631558cc966
+    type: regular
+    task:
+      id: 071fc3a6-ea3e-417f-873b-a631558cc966
+      version: -1
+      name: Delete script data
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: Fidelis.Endpoint.Alert.ScriptsComplete
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: 08215795-8c46-415d-828f-097f45b6790b
+    type: regular
+    task:
+      id: 08215795-8c46-415d-828f-097f45b6790b
+      version: -1
+      name: Delete script data
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: Fidelis.Endpoint.Alert.ScriptsCurrent
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
         }
       }
     note: false
@@ -539,12 +406,14 @@ tasks:
     ignoreworker: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "21_23_Yes": 0.9
+    },
     "paper": {
       "dimensions": {
-        "height": 2485,
-        "width": 702.5,
-        "x": -160,
+        "height": 1960,
+        "width": 492.5,
+        "x": 50,
         "y": 50
       }
     }

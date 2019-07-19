@@ -1,0 +1,21 @@
+commonfields:
+  id: 57dd2ccf-5583-4ded-858f-f8c22290dddd
+  version: 4
+name: FidelisElevateEndpointExecuteScript
+script: |-
+  #######################
+  # Execute the script
+  #######################
+  demisto.results(demisto.executeCommand("fidelis-edr-execute-script", {"hostname": demisto.args()["hostname"], "scriptname": demisto.args()["scriptname"]}))
+type: python
+tags: []
+enabled: true
+args:
+- name: hostname
+  description: Host name
+- name: scriptname
+  required: true
+  description: Script name
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole

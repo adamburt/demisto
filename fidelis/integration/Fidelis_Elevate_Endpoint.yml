@@ -623,24 +623,18 @@ script:
 
         def getScripts(self):
 
-            #This function will add to conext and not overwrite any context
+            #This function will overwrite any context in Fidelis.Endpoint.Scripts
 
             allScripts = self.fep.getScriptPackages()
             if not allScripts["success"]:
                 demisto.results("Error obtaining list of scripts - {0}".format(allScripts["error"]))
                 exit(0)
 
-            scriptResults = []
-            duplicates = []
             entries = []
             for script in allScripts["data"]["scripts"]:
 
-                #Get the manifest
-                manifest = self.fep.getScriptPackageManifest(script["id"])
-                if not manifest["success"]:
-                    continue
-                platforms = [x for x in manifest["data"]["platforms"] if manifest["data"]["platforms"][x]]
-                entries.append("{0} - {1} ({2})".format(script["id"], script["name"], ",".join(platforms)))
+                if script["name"] not in entries:
+                    entries.append(script["name"])
 
             demisto.results({
                 "Type": entryTypes["note"],
@@ -1815,6 +1809,46 @@ script:
             demisto.results("This function is not yet implemented")
             exit(0)
 
+        def executeScript(self):
+
+            # Try and get the hostname
+            hostname = None
+            try:
+                hostname = demisto.args()["hostname"]
+            except:
+                hostname = None
+            if hostname is None:
+                try:
+                    hostname = demisto.get(demisto.context(), "Fidelis.Endpoint.Alert.Endpoint.Host Name")
+                except:
+                    hostname = None
+            if hostname is None:
+                try:
+                    hostname = demisto.get(demisto.context(), "Fidelis.Endpoint.Alert.Target")
+                except:
+                    hostname = None
+            if hostname is None:
+                demisto.results("No hostname provided and could not find one in the incident")
+                exit(0)
+
+            # Try and get the script name
+            scriptName = None
+            try:
+                scriptName = demisto.args()["scriptname"]
+            except:
+                scriptName = None
+
+            if scriptName is None:
+                demisto.results("No name provided")
+                exit(0)
+
+            # Execute the task
+            self.executeTask(hostname, scriptName, {}, 300, True, False)
+            exit(0)
+
+
+
+
 
 
 
@@ -1892,6 +1926,8 @@ script:
         thisFunction.doesFileExist()
     if demisto.command() == 'fidelis-edr-execute-playbook':
         thisFunction.executePlaybook()
+    if demisto.command() == 'fidelis-edr-execute-script':
+        thisFunction.executeScript()
     ##########################################################################################
 
 
@@ -2142,6 +2178,12 @@ script:
       defaultValue: "30"
     description: Executes a playbook from Fidelis Elevate Endpoint on an endpoint
     execution: true
+  - name: fidelis-edr-execute-script
+    arguments:
+    - name: scriptname
+      description: Script name
+    - name: hostname
+      description: Host name to execute against
   dockerimage: demisto/python3:3.7.3.221
   isfetch: true
   runonce: false
