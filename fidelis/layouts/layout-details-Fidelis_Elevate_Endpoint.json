@@ -3,8 +3,8 @@
 	"kind": "details",
 	"layout": {
 		"id": "Fidelis Elevate Endpoint",
-		"version": 43,
-		"modified": "2019-07-16T19:06:46.166235889-04:00",
+		"version": 45,
+		"modified": "2019-07-19T05:00:34.171750035-04:00",
 		"commitMessage": "",
 		"shouldPublish": false,
 		"shouldCommit": false,
@@ -86,6 +86,13 @@
 						"version": 0,
 						"modified": "0001-01-01T00:00:00Z",
 						"fieldId": "incident_roles",
+						"isVisible": true
+					},
+					{
+						"id": "",
+						"version": 0,
+						"modified": "0001-01-01T00:00:00Z",
+						"fieldId": "incident_linkedcount",
 						"isVisible": true
 					}
 				],
@@ -648,6 +655,19 @@
 				"modified": "0001-01-01T00:00:00Z",
 				"name": "Team",
 				"type": "team",
+				"isVisible": false,
+				"readOnly": true,
+				"fields": [],
+				"description": "",
+				"query": null,
+				"queryType": ""
+			},
+			{
+				"id": "",
+				"version": 0,
+				"modified": "0001-01-01T00:00:00Z",
+				"name": "Linked Incidents",
+				"type": "linkedIncidents",
 				"isVisible": false,
 				"readOnly": true,
 				"fields": [],
