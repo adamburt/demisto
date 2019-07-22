@@ -1,0 +1,19 @@
+commonfields:
+  id: 975d2082-f5ca-4a0f-8def-50880d1d7fc9
+  version: 3
+name: FidelisElevateEndpointGetPlatformDetails
+script: |+
+  ###############################
+  # Execute the platform details
+  ###############################
+
+  demisto.results(demisto.executeCommand("fidelis-edr-get-platform-details", {}))
+
+type: python
+tags: []
+enabled: true
+outputs:
+- contextPath: Fidelis.Endpoint.Platform.Version
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole
