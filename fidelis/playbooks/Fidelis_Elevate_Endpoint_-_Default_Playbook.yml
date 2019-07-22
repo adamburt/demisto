@@ -1,5 +1,5 @@
 id: 68bb9ab1-a72e-446d-8023-72f73b25d063
-version: 54
+version: 92
 name: Fidelis Elevate Endpoint - Default Playbook
 description: This is the default playbook for Fidelis Elevate Endpoint Incidents
 starttaskid: "0"
@@ -21,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 50
         }
       }
@@ -45,7 +45,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "21"
+      - "26"
     separatecontext: false
     loop:
       iscommand: false
@@ -54,7 +54,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 195
         }
       }
@@ -76,8 +76,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1945
+          "x": 162.5,
+          "y": 2295
         }
       }
     note: false
@@ -85,12 +85,12 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: c03ea329-e256-49fe-85d2-144b210b5f90
+    taskid: dff5635d-37ee-4dc4-8c13-1fbf50f35d7b
     type: condition
     task:
-      id: c03ea329-e256-49fe-85d2-144b210b5f90
+      id: dff5635d-37ee-4dc4-8c13-1fbf50f35d7b
       version: -1
-      name: Investigate
+      name: Manually Investigate
       description: |-
         # Investigate
 
@@ -107,8 +107,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1245
+          "x": 162.5,
+          "y": 1595
         }
       }
     note: false
@@ -140,8 +140,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1770
+          "x": 162.5,
+          "y": 2120
         }
       }
     note: false
@@ -171,8 +171,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1420
+          "x": 162.5,
+          "y": 1770
         }
       }
     note: false
@@ -201,102 +201,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "21":
-    id: "21"
-    taskid: 8b7a8bf5-c4d9-470c-8574-451f7b9e44a2
-    type: condition
-    task:
-      id: 8b7a8bf5-c4d9-470c-8574-451f7b9e44a2
-      version: -1
-      name: Does this incident require script execution?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "No":
-      - "13"
-      "Yes":
-      - "23"
-    reputationcalc: 1
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    message:
-      to:
-        simple: Fidelis Analyst
-      subject:
-        simple: Does incident ID ${incident.id} require script execution?
-      body:
-        simple: |-
-          A new incident named "${incident.name}" was created. It affects the endpoint "${incident.endpointname}".
-
-          The link to the incident is here: ${demistoUrls.investigation}
-
-          Would you like to execute a script against this endpoint?
-      methods:
-      - email
-      format: ""
-      bcc: null
-      cc: null
-      timings:
-        retriescount: 2
-        retriesinterval: 360
-        completeafterreplies: 1
-      replyOptions:
-      - "Yes"
-      - "No"
-  "22":
-    id: "22"
-    taskid: 828165ea-5059-45e2-88ef-4af1f55cf81f
-    type: playbook
-    task:
-      id: 828165ea-5059-45e2-88ef-4af1f55cf81f
-      version: -1
-      name: Fidelis Elevate Endpoint Execute Script
-      description: This script will obtain a list of available scripts and their options.
-        It will then present the user with an option of which script can be executed
-        and the answers that are required.
-      playbookName: Fidelis Elevate Endpoint Execute Script
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "24"
-    separatecontext: false
-    loop:
-      iscommand: false
-      builtincondition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Fidelis.Endpoint.Alert.ScriptsComplete
-            iscontext: true
-          right:
-            value:
-              simple: "true"
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 720
+          "x": 275,
+          "y": 1945
         }
       }
     note: false
@@ -317,7 +223,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+      - "28"
     scriptarguments:
       append:
         simple: "false"
@@ -329,8 +235,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 545
+          "x": 50,
+          "y": 895
         }
       }
     note: false
@@ -363,8 +269,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 895
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
@@ -397,8 +303,169 @@ tasks:
     view: |-
       {
         "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: c08837a6-4f7a-4720-8e76-bdfd0e507a04
+    type: regular
+    task:
+      id: c08837a6-4f7a-4720-8e76-bdfd0e507a04
+      version: -1
+      name: Ask user via email
+      description: Ask a user a question via email and process the reply directly
+        into the investigation.
+      scriptName: EmailAskUser
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      additionalOptions: {}
+      attachIds: {}
+      bcc: {}
+      bodyType:
+        simple: text
+      cc: {}
+      email: {}
+      message:
+        simple: "A new incident named \"${incident.name}\" was created with ID ${incident.id}.\n\nYou
+          can view the incident here: ${demistoUrls.investigation}.\n\nDoes this incident
+          require script execution against \n\"${incident.endpointname}\"?"
+      option1:
+        simple: "Yes"
+      option2:
+        simple: "No"
+      persistent:
+        simple: "false"
+      playbookTaskID: {}
+      replyAddress:
+        simple: demisto@dfir.co.uk
+      replyEntriesTag:
+        simple: userResponse
+      retries: {}
+      roles:
+        simple: Fidelis Analyst
+      subject:
+        simple: Script execution for incident${incident.id}
+      task:
+        simple: "27"
+      using:
+        simple: Demisto Sender
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
           "x": 162.5,
-          "y": 1070
+          "y": 370
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: f6a82899-b550-46fd-8b82-ee0555dde8da
+    type: condition
+    task:
+      id: f6a82899-b550-46fd-8b82-ee0555dde8da
+      version: -1
+      name: Execute a script?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "13"
+      "yes":
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: 433a30d2-4f70-47b1-81da-3d52b4fa7bbe
+    type: playbook
+    task:
+      id: 433a30d2-4f70-47b1-81da-3d52b4fa7bbe
+      version: -1
+      name: Fidelis Elevate Endpoint Execute Script
+      description: This script will obtain a list of available scripts and their options.
+        It will then present the user with an option of which script can be executed
+        and the answers that are required.
+      playbookName: Fidelis Elevate Endpoint Execute Script
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      emailResults:
+        simple: "True"
+      requester:
+        simple: ${incident.submitter}
+    separatecontext: false
+    loop:
+      iscommand: false
+      builtincondition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Fidelis.Endpoint.Alert.ScriptsComplete
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: b75b31fc-eece-4caf-86c8-380b31cdb060
+    type: regular
+    task:
+      id: b75b31fc-eece-4caf-86c8-380b31cdb060
+      version: -1
+      name: FidelisElevateEndpointGetScripts
+      scriptName: FidelisElevateEndpointGetScripts
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -60,
+          "y": 730
         }
       }
     note: false
@@ -407,13 +474,13 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "21_23_Yes": 0.9
+      "27_29_yes": 0.87
     },
     "paper": {
       "dimensions": {
-        "height": 1960,
-        "width": 492.5,
-        "x": 50,
+        "height": 2310,
+        "width": 715,
+        "x": -60,
         "y": 50
       }
     }
