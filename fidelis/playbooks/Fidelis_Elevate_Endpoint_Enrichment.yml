@@ -1,5 +1,5 @@
 id: e7ac9021-96ee-451c-88fa-a2a027f5f20b
-version: 323
+version: 324
 name: Fidelis Elevate Endpoint Enrichment
 description: This playbook will attempt to gather event data for the alert (if it
   exists and the alert does not already have event data). It will also assign an incident
@@ -248,15 +248,15 @@ tasks:
     ignoreworker: false
   "82":
     id: "82"
-    taskid: facb4c2f-90d9-4678-8981-21489caea783
+    taskid: 1a39e517-1d2d-40ce-8cfa-d3d91c390c05
     type: regular
     task:
-      id: facb4c2f-90d9-4678-8981-21489caea783
+      id: 1a39e517-1d2d-40ce-8cfa-d3d91c390c05
       version: -1
       name: Get Platform Details
-      script: '|||fidelis-edr-get-platform-details'
+      scriptName: FidelisElevateEndpointGetPlatformDetails
       type: regular
-      iscommand: true
+      iscommand: false
       brand: ""
     nexttasks:
       '#none#':
