@@ -1,5 +1,5 @@
 id: e7ac9021-96ee-451c-88fa-a2a027f5f20b
-version: 325
+version: 2
 name: Fidelis Elevate Endpoint Enrichment
 description: This playbook will attempt to gather event data for the alert (if it
   exists and the alert does not already have event data). It will also assign an incident
@@ -8,10 +8,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 9be60df9-5ff1-4c8a-86fe-824530ba4d8d
+    taskid: 112a7fbb-5815-4097-8c40-9e3ee37c7d44
     type: start
     task:
-      id: 9be60df9-5ff1-4c8a-86fe-824530ba4d8d
+      id: 112a7fbb-5815-4097-8c40-9e3ee37c7d44
       version: -1
       name: ""
       iscommand: false
@@ -32,10 +32,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: b54c1113-593d-4315-8942-8a92fedd461c
+    taskid: 0c7dd363-77a0-44f9-8c62-d26301ddce0d
     type: condition
     task:
-      id: b54c1113-593d-4315-8942-8a92fedd461c
+      id: 0c7dd363-77a0-44f9-8c62-d26301ddce0d
       version: -1
       name: Is there an alert ID?
       type: condition
@@ -67,10 +67,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: 6b87887c-ca5c-4d05-85fe-fefdc16b80fe
+    taskid: d93433c3-631a-40a3-854d-d24c85410e3a
     type: title
     task:
-      id: 6b87887c-ca5c-4d05-85fe-fefdc16b80fe
+      id: d93433c3-631a-40a3-854d-d24c85410e3a
       version: -1
       name: Populate incident fields
       type: title
@@ -83,8 +83,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1720,
-          "y": 705
+          "x": 1070,
+          "y": 900
         }
       }
     note: false
@@ -92,10 +92,10 @@ tasks:
     ignoreworker: false
   "66":
     id: "66"
-    taskid: 9f7947f1-c12b-4fa8-86df-ffff157ef26b
+    taskid: 29436b9b-37b9-44f7-81e6-618378b5eb9e
     type: regular
     task:
-      id: 9f7947f1-c12b-4fa8-86df-ffff157ef26b
+      id: 29436b9b-37b9-44f7-81e6-618378b5eb9e
       version: -1
       name: Get Alert Details
       description: Retrieves the details of an alert
@@ -123,10 +123,10 @@ tasks:
     ignoreworker: false
   "70":
     id: "70"
-    taskid: 868b7560-12c2-44d7-8ac1-84930532ed4b
+    taskid: 762a121b-8672-4d1e-8403-4f6c22bc42ad
     type: regular
     task:
-      id: 868b7560-12c2-44d7-8ac1-84930532ed4b
+      id: 762a121b-8672-4d1e-8403-4f6c22bc42ad
       version: -1
       name: Get Endpoint Details
       description: Attempts to refresh the endpoint details associated with the incident
@@ -136,7 +136,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "72"
+      - "87"
     scriptarguments:
       hostname:
         simple: ${incident.endpointname}
@@ -154,10 +154,10 @@ tasks:
     ignoreworker: false
   "71":
     id: "71"
-    taskid: 4dca30ec-a821-42f2-8f1e-a23124a97966
+    taskid: a0d3231f-973f-4800-84e1-178c643b1212
     type: playbook
     task:
-      id: 4dca30ec-a821-42f2-8f1e-a23124a97966
+      id: a0d3231f-973f-4800-84e1-178c643b1212
       version: -1
       name: Fidelis Elevate Endpoint Get Event for Alert
       description: Attempts to look up the event data associated with an alert generated
@@ -213,10 +213,10 @@ tasks:
     ignoreworker: false
   "72":
     id: "72"
-    taskid: c59742c4-7c21-4484-8445-a4f4ce677030
+    taskid: 4abd76b5-2b18-43fe-83f1-9f3fa2f18924
     type: regular
     task:
-      id: c59742c4-7c21-4484-8445-a4f4ce677030
+      id: 4abd76b5-2b18-43fe-83f1-9f3fa2f18924
       version: -1
       name: Set the event collect retry count to 0
       description: Sets a value into the context with the given context key
@@ -248,10 +248,10 @@ tasks:
     ignoreworker: false
   "82":
     id: "82"
-    taskid: 1a39e517-1d2d-40ce-8cfa-d3d91c390c05
+    taskid: a92f1ed3-bbc5-4c19-8354-f3f45cfb6aff
     type: regular
     task:
-      id: 1a39e517-1d2d-40ce-8cfa-d3d91c390c05
+      id: a92f1ed3-bbc5-4c19-8354-f3f45cfb6aff
       version: -1
       name: Get Platform Details
       scriptName: FidelisElevateEndpointGetPlatformDetails
@@ -276,10 +276,10 @@ tasks:
     ignoreworker: false
   "83":
     id: "83"
-    taskid: 191cbe89-f572-4d32-8c48-3620e2a95e0b
+    taskid: fc7923e7-0000-4d68-886f-9d452eecaf5f
     type: regular
     task:
-      id: 191cbe89-f572-4d32-8c48-3620e2a95e0b
+      id: fc7923e7-0000-4d68-886f-9d452eecaf5f
       version: -1
       name: Populate incident fields
       scriptName: FidelisElevateEndpointIncidentFields
@@ -294,8 +294,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1720,
-          "y": 870
+          "x": 1070,
+          "y": 1030
         }
       }
     note: false
@@ -303,10 +303,10 @@ tasks:
     ignoreworker: false
   "86":
     id: "86"
-    taskid: 3b848f50-e181-4ecf-8216-962489fdd7c4
+    taskid: 836dc8a2-283a-47ff-885f-961cf8b550f8
     type: title
     task:
-      id: 3b848f50-e181-4ecf-8216-962489fdd7c4
+      id: 836dc8a2-283a-47ff-885f-961cf8b550f8
       version: -1
       name: Complete
       type: title
@@ -316,8 +316,56 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1720,
-          "y": 1095
+          "x": 1740,
+          "y": 1370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "87":
+    id: "87"
+    taskid: 3697b104-4245-4049-8a36-5d7a979fe31a
+    type: condition
+    task:
+      id: 3697b104-4245-4049-8a36-5d7a979fe31a
+      version: -1
+      name: Is the alert from vulnerable software alert?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "72"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.labels.Source
+            iscontext: true
+          right:
+            value:
+              simple: Installed Software CVE
+    - label: "no"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: incident.labels.Source
+            iscontext: true
+          right:
+            value:
+              simple: Installed Software CVE
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 580
         }
       }
     note: false
@@ -328,9 +376,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1060,
-        "width": 1400,
-        "x": 860,
+        "height": 1335,
+        "width": 1830,
+        "x": 430,
         "y": 100
       }
     }
