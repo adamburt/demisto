@@ -1,0 +1,71 @@
+commonfields:
+  id: 299ad433-601d-4c0c-8f3e-95d13bb0035a
+  version: 113
+name: FidelisElevateEndpointPopulateIndicators
+script: |
+  processes = [
+      {"name": "processname", "value": "processmd5", "path": "processpath", "md5": "processmd5", "sha1": "processsha1", "sha256": "processsha256"},
+      {"name": "parentprocessname", "value": "parentprocessmd5", "path": "parentprocesspath", "md5": "parentprocessmd5", "sha1": "parentprocesssha1"}
+      ]
+  eventTypeProcess = [0, 1, 2, 30]
+
+
+  #Attempt to create indicators for all hashes in the incident
+  for x in processes:
+
+      try:
+          name = demisto.incidents()[0]["CustomFields"][x["name"]]
+      except:
+          name = None
+      try:
+          value = demisto.incidents()[0]["CustomFields"][x["md5"]]
+      except:
+          None
+      try:
+          path = demisto.incidents()[0]["CustomFields"][x["path"]]
+      except:
+          path = None
+      try:
+          md5 = demisto.incidents()[0]["CustomFields"][x["md5"]]
+      except:
+          md5 = None
+      try:
+          sha1 = demisto.incidents()[0]["CustomFields"][x["sha1"]]
+      except:
+          sha1 = None
+      try:
+          sha256 = demisto.incidents()[0]["CustomFields"][x["sha256"]]
+      except:
+          sha256 = None
+
+      #If this is a process based event, populate the entropy too
+      entropy = None
+      if int(demisto.get(demisto.context(), "Fidelis.Endpoint.Alert.Event.Event Type")) in eventTypeProcess:
+          try:
+              entropy = demisto.get(demisto.context(), "Fidelis.Endpoint.Alert.Event.Entropy")
+          except:
+              entropy = None
+
+
+      demisto.executeCommand("createNewIndicator", {
+          "value": value,
+          "type": "Process",
+          "name": value,
+          "processname": name,
+          "associatedfilepaths": path,
+          "md5": md5,
+          "sha1": sha1,
+          "sha256": sha256,
+          "entropy": entropy,
+          "relatedIncidents": demisto.incidents()[0]["id"],
+          "seenNow": True,
+          "merge": True
+      })
+type: python
+tags: []
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.7.4.977
+runas: DBotWeakRole
