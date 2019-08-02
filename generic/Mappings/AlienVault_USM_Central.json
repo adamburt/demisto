@@ -1,0 +1,251 @@
+{
+	"id": "5f98cacf-1a9f-4101-8eb6-b4e95632277b",
+	"version": 2,
+	"modified": "2019-08-02T09:09:53.499354972-04:00",
+	"commitMessage": "",
+	"shouldPublish": false,
+	"shouldCommit": false,
+	"shouldPush": false,
+	"defaultIncidentType": "",
+	"instanceId": "fd1dc04b-1ae6-4cde-8e92-d54d4e37fb90",
+	"mapping": {
+		"Network": {
+			"internalMapping": {
+				"Asset Name": {
+					"simple": "alarm.source_name",
+					"complex": null
+				},
+				"Attack Techique": {
+					"simple": "alarm.rule_attack_technique",
+					"complex": null
+				},
+				"MITRE ATT\u0026CK Reference": {
+					"simple": "",
+					"complex": {
+						"root": "alarm",
+						"filters": [
+							[
+								{
+									"operator": "isExists",
+									"left": {
+										"value": {
+											"simple": "alarm.rule_attack_id",
+											"complex": null
+										},
+										"isContext": true
+									},
+									"right": null,
+									"ignoreCase": false
+								}
+							]
+						],
+						"accessor": "rule_attack_id",
+						"transformers": [
+							{
+								"operator": "concat",
+								"args": {
+									"prefix": {
+										"value": {
+											"simple": "https://attack.mitre.org/techniques/",
+											"complex": null
+										},
+										"isContext": false
+									},
+									"suffix": {
+										"value": {
+											"simple": "/",
+											"complex": null
+										},
+										"isContext": false
+									}
+								}
+							}
+						]
+					}
+				},
+				"Rule Name": {
+					"simple": "alarm.rule_strategy",
+					"complex": null
+				},
+				"Src User": {
+					"simple": "alarm.source_username",
+					"complex": null
+				},
+				"details": {
+					"simple": "alarm.rule_id",
+					"complex": null
+				},
+				"occurred": {
+					"simple": "alarm.timestamp_occured_iso8601",
+					"complex": null
+				}
+			},
+			"dontMapEventToLabels": false
+		},
+		"Phishing": {
+			"internalMapping": {
+				"Asset Name": {
+					"simple": "alarm.source_name",
+					"complex": null
+				},
+				"Attack Techique": {
+					"simple": "alarm.rule_attack_technique",
+					"complex": null
+				},
+				"MITRE ATT\u0026CK Reference": {
+					"simple": "",
+					"complex": {
+						"root": "alarm",
+						"filters": [
+							[
+								{
+									"operator": "isExists",
+									"left": {
+										"value": {
+											"simple": "alarm.rule_attack_id",
+											"complex": null
+										},
+										"isContext": true
+									},
+									"right": null,
+									"ignoreCase": false
+								}
+							]
+						],
+						"accessor": "rule_attack_id",
+						"transformers": [
+							{
+								"operator": "concat",
+								"args": {
+									"prefix": {
+										"value": {
+											"simple": "https://attack.mitre.org/techniques/",
+											"complex": null
+										},
+										"isContext": false
+									},
+									"suffix": {
+										"value": {
+											"simple": "/",
+											"complex": null
+										},
+										"isContext": false
+									}
+								}
+							}
+						]
+					}
+				},
+				"Rule Name": {
+					"simple": "alarm.rule_strategy",
+					"complex": null
+				},
+				"Src User": {
+					"simple": "alarm.source_username",
+					"complex": null
+				},
+				"details": {
+					"simple": "alarm.rule_id",
+					"complex": null
+				},
+				"occurred": {
+					"simple": "alarm.timestamp_occured_iso8601",
+					"complex": null
+				}
+			},
+			"dontMapEventToLabels": false
+		},
+		"Policy Violation": {
+			"internalMapping": {
+				"Asset Name": {
+					"simple": "alarm.source_name",
+					"complex": null
+				},
+				"Attack Techique": {
+					"simple": "alarm.rule_attack_technique",
+					"complex": null
+				},
+				"MITRE ATT\u0026CK Reference": {
+					"simple": "",
+					"complex": {
+						"root": "alarm",
+						"filters": [
+							[
+								{
+									"operator": "isExists",
+									"left": {
+										"value": {
+											"simple": "alarm.rule_attack_id",
+											"complex": null
+										},
+										"isContext": true
+									},
+									"right": null,
+									"ignoreCase": false
+								}
+							]
+						],
+						"accessor": "rule_attack_id",
+						"transformers": [
+							{
+								"operator": "concat",
+								"args": {
+									"prefix": {
+										"value": {
+											"simple": "https://attack.mitre.org/techniques/",
+											"complex": null
+										},
+										"isContext": false
+									},
+									"suffix": {
+										"value": {
+											"simple": "/",
+											"complex": null
+										},
+										"isContext": false
+									}
+								}
+							}
+						]
+					}
+				},
+				"Rule Name": {
+					"simple": "alarm.rule_strategy",
+					"complex": null
+				},
+				"Src User": {
+					"simple": "alarm.source_username",
+					"complex": null
+				},
+				"details": {
+					"simple": "alarm.rule_id",
+					"complex": null
+				},
+				"occurred": {
+					"simple": "alarm.timestamp_occured_iso8601",
+					"complex": null
+				}
+			},
+			"dontMapEventToLabels": false
+		}
+	},
+	"unclassifiedCases": {},
+	"incidentSamples": [],
+	"custom": true,
+	"isDefault": false,
+	"transformer": {
+		"simple": "alarm.rule_method",
+		"complex": null
+	},
+	"keyTypeMap": {
+		"Azure Security Center Alert": "Network",
+		"Configuration Changed by Administrator": "Policy Violation",
+		"Critical IPS Event": "Network",
+		"HTTP": "Network",
+		"Nmap": "Vulnerability",
+		"Phishing activity": "Phishing",
+		"Windows Audit Policy Changed": "Policy Violation"
+	},
+	"brandName": "AlienVault USM Central",
+	"instanceName": "FinalTest1"
+}
