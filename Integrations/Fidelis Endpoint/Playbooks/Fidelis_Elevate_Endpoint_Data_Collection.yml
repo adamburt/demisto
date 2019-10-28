@@ -1,0 +1,161 @@
+id: 78691133-d826-4a8c-8574-3ae2f29fb1c5
+version: 1
+name: Fidelis Elevate Endpoint Data Collection
+description: This playbook will attempt to collect essential information from the
+  endpoint using the Fidelis Endpoint Agent scripts.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 597af12d-d91b-4f48-8683-488274e556cf
+    type: start
+    task:
+      id: 597af12d-d91b-4f48-8683-488274e556cf
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": -50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 6dfdf4a6-381e-45ea-8d19-52bab31619a7
+    type: condition
+    task:
+      id: 6dfdf4a6-381e-45ea-8d19-52bab31619a7
+      version: -1
+      name: Does an endpoint name exist?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Endpoint.Hostname
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 8dc80e4d-d6cc-451d-82c5-aacc2842d1de
+    type: condition
+    task:
+      id: 8dc80e4d-d6cc-451d-82c5-aacc2842d1de
+      version: -1
+      name: Is there a provided input hostname?
+      type: condition
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.Hostname
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: d71bc1c3-16d1-4d20-8e16-ba9355089e2f
+    type: title
+    task:
+      id: d71bc1c3-16d1-4d20-8e16-ba9355089e2f
+      version: -1
+      name: Perform data collection
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 50705ec0-905a-4fde-8bf3-272a6dc5fc99
+    type: regular
+    task:
+      id: 50705ec0-905a-4fde-8bf3-272a6dc5fc99
+      version: -1
+      name: Collect running processes
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 785,
+        "width": 730,
+        "x": 60,
+        "y": -50
+      }
+    }
+  }
+inputs:
+- key: Hostname
+  value: {}
+  required: false
+  description: ""
+outputs: []

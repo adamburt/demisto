@@ -1,0 +1,371 @@
+id: 8cbdf195-4307-4701-810d-3dd58bb73f74
+version: 6
+rolename:
+- Administrator
+- Fidelis Super Analyst
+name: Fidelis Elevate Endpoint Script - Isolate Endpoint
+description: This script will request authorisation to execute an endpoint isolation
+  script using Fidelis Elevate Endpoint
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 57e804a0-3a1f-4684-8037-04b407490ebc
+    type: start
+    task:
+      id: 57e804a0-3a1f-4684-8037-04b407490ebc
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 41a13334-0f60-4b86-8f0f-e1ce386ddedf
+    type: condition
+    task:
+      id: 41a13334-0f60-4b86-8f0f-e1ce386ddedf
+      version: -1
+      name: Is there an owner assigned?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: IncidentOwner.email
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: e14bfeac-7b31-49d7-885f-08747cf1e0b4
+    type: collection
+    task:
+      id: e14bfeac-7b31-49d7-885f-08747cf1e0b4
+      version: -1
+      name: Request for more information
+      description: |-
+        # Justification
+
+        Please enter your justification comments in the comments and select "Submit"
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: ${incident.owner}
+      subject:
+        simple: Justification
+      body: null
+      methods:
+      - email
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Justification
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+      title: Justification
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+  "6":
+    id: "6"
+    taskid: 35c0375c-9c6b-4d20-8b60-a22667383316
+    type: condition
+    task:
+      id: 35c0375c-9c6b-4d20-8b60-a22667383316
+      version: -1
+      name: Provide a justification
+      description: Please provide a justification for the isolation
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Deny:
+      - "8"
+    separatecontext: false
+    defaultassigneecomplex:
+      simple: ${incident.owner}
+    restrictedcompletion: true
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: b5337656-fa22-4a12-8aa7-99adafe724c9
+    type: regular
+    task:
+      id: b5337656-fa22-4a12-8aa7-99adafe724c9
+      version: -1
+      name: Fail the playbook
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Permission denied by "${Authorisation.Answers.name}" to Isolate the
+          endpoint
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 88d24a82-974f-497c-8f3c-5c976b5c5896
+    type: regular
+    task:
+      id: 88d24a82-974f-497c-8f3c-5c976b5c5896
+      version: -1
+      name: FidelisElevateEndpointIsolateEndpoint
+      script: '|||fidelis-edr-isolate-endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      additionalIPs: {}
+      hostname:
+        simple: ${incident.endpointname}
+      timeout: {}
+      updateContext:
+        simple: "False"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1170,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 5aee33c4-67ce-44ea-833b-13fc87dd0e81
+    type: regular
+    task:
+      id: 5aee33c4-67ce-44ea-833b-13fc87dd0e81
+      version: -1
+      name: ExposeIncidentOwner
+      description: Expose the incident owner into IncidentOwner context key
+      scriptName: ExposeIncidentOwner
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    reputationcalc: 1
+    results:
+    - IncidentOwner
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: ff7c6b15-90ad-4101-8797-b45b29c69838
+    type: regular
+    task:
+      id: ff7c6b15-90ad-4101-8797-b45b29c69838
+      version: -1
+      name: AssignAnalystToIncident
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      assignBy:
+        simple: machine-learning
+      email: {}
+      roles:
+        simple: Analyst
+      username: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": -280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: 1d502060-67c0-4606-88b4-50a1c836a6ba
+    type: condition
+    task:
+      id: 1d502060-67c0-4606-88b4-50a1c836a6ba
+      version: -1
+      name: Authorise Isolate Endpoint Script
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Authorise:
+      - "11"
+      Deny:
+      - "8"
+      Require further information:
+      - "5"
+    separatecontext: false
+    sla:
+      hours: 0
+      days: 1
+      weeks: 0
+    slareminder:
+      hours: 2
+      days: 0
+      weeks: 0
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Fidelis Super Analyst
+      subject:
+        simple: Authorise Isolate Endpoint Script
+      body:
+        simple: Authorise "Isolate Endpoint" script on ${incident.endpointname}
+      methods:
+      - email
+      - slack
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - Authorise
+      - Deny
+      - Require further information
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_21_yes": 0.9
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1845,
+        "width": 1570,
+        "x": -20,
+        "y": -740
+      }
+    }
+  }
+inputs:
+- key: justification
+  value: {}
+  required: false
+  description: ""
+outputs: []

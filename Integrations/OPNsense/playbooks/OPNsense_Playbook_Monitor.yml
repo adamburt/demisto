@@ -1,0 +1,464 @@
+id: 0e2ede53-48ee-46a1-8d28-2634f10793a1
+version: 28
+name: OPNsense Playbook Monitor
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b618bf86-34cb-45c0-86d1-ff0998900f3d
+    type: start
+    task:
+      id: b618bf86-34cb-45c0-86d1-ff0998900f3d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "64"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": -150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 5e7c3c31-64c1-46d1-8a0d-548d8e3f4b7c
+    type: regular
+    task:
+      id: 5e7c3c31-64c1-46d1-8a0d-548d8e3f4b7c
+      version: -1
+      name: Close Investigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: ${reasontoclose}
+      closeReason:
+        simple: Resolved
+      id:
+        simple: ${incident.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: 7feddcad-8c44-44a8-8eae-6a26ab10eb25
+    type: regular
+    task:
+      id: 7feddcad-8c44-44a8-8eae-6a26ab10eb25
+      version: -1
+      name: Add the source IP to the list
+      description: Add data to a list
+      script: Builtin|||addToList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      listData:
+        simple: ${incident.sourceip}
+      listName:
+        simple: IPsToBlock
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "39":
+    id: "39"
+    taskid: ad420cbc-ca20-45ab-8724-7a95062d8572
+    type: title
+    task:
+      id: ad420cbc-ca20-45ab-8724-7a95062d8572
+      version: -1
+      name: Close Investigation
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "56":
+    id: "56"
+    taskid: 01025fd3-83e2-44cc-820c-4ade5e63fad8
+    type: condition
+    task:
+      id: 01025fd3-83e2-44cc-820c-4ade5e63fad8
+      version: -1
+      name: Is the IP already in the list?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "27"
+      "yes":
+      - "63"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: incident.sourceip
+            iscontext: true
+          right:
+            value:
+              simple: ${lists.IPsToBlock}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "57":
+    id: "57"
+    taskid: fc56320a-2a92-46b5-8ba3-3f1ef14be700
+    type: condition
+    task:
+      id: fc56320a-2a92-46b5-8ba3-3f1ef14be700
+      version: -1
+      name: Is bad indicator found?
+      description: Checks if the investigation found any Malicious File/URL/IP, if
+        so return yes, otherwise no.
+      scriptName: IsMaliciousIndicatorFound
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "59"
+      "yes":
+      - "58"
+    scriptarguments:
+      includeSuspicious:
+        simple: "no"
+      maliciousQueryOverride: {}
+      queryIndicators:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "58":
+    id: "58"
+    taskid: f74bb146-ba6d-487d-8849-a905bd3d2e5d
+    type: regular
+    task:
+      id: f74bb146-ba6d-487d-8849-a905bd3d2e5d
+      version: -1
+      name: Set severity high
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: incident.severity
+      value:
+        simple: "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "59":
+    id: "59"
+    taskid: bf0c229e-9f63-498f-8f84-255c251f9bea
+    type: condition
+    task:
+      id: bf0c229e-9f63-498f-8f84-255c251f9bea
+      version: -1
+      name: Is suspicious indicator found?
+      description: Checks if the investigation found any Malicious File/URL/IP, if
+        so return yes, otherwise no.
+      scriptName: IsMaliciousIndicatorFound
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "61"
+      "yes":
+      - "60"
+    scriptarguments:
+      includeSuspicious:
+        simple: "yes"
+      maliciousQueryOverride: {}
+      queryIndicators:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "60":
+    id: "60"
+    taskid: a64270f5-2266-4a46-8aaa-7c16e826edee
+    type: regular
+    task:
+      id: a64270f5-2266-4a46-8aaa-7c16e826edee
+      version: -1
+      name: Set severity medium
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: incident.severity
+      value:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "61":
+    id: "61"
+    taskid: deaaccbe-eb99-4303-87ba-e1f72e2e2f82
+    type: regular
+    task:
+      id: deaaccbe-eb99-4303-87ba-e1f72e2e2f82
+      version: -1
+      name: Set severity low
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: incident.severity
+      value:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "62":
+    id: "62"
+    taskid: 690db3a4-f8e1-463a-8a13-dd176277ea34
+    type: regular
+    task:
+      id: 690db3a4-f8e1-463a-8a13-dd176277ea34
+      version: -1
+      name: Set close reason
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: reasontoclose
+      value:
+        simple: IP added to OPNsense block list
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "63":
+    id: "63"
+    taskid: 87ee6122-2e63-415d-8432-90acb85722fb
+    type: regular
+    task:
+      id: 87ee6122-2e63-415d-8432-90acb85722fb
+      version: -1
+      name: Set close reason
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: reasontoclose
+      value:
+        simple: IP already exsits in OPNsense block list
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "64":
+    id: "64"
+    taskid: baf1eefa-8348-444a-8f7b-a5ca4d28441e
+    type: regular
+    task:
+      id: baf1eefa-8348-444a-8f7b-a5ca4d28441e
+      version: -1
+      name: Set country
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: sourcecountry
+      value:
+        complex:
+          root: IP
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: IP.Geo.Country
+                iscontext: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IP.Address
+                iscontext: true
+              right:
+                value:
+                  simple: incident.sourceip
+                iscontext: true
+          accessor: Geo.Country
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1635,
+        "width": 1240,
+        "x": 50,
+        "y": -150
+      }
+    }
+  }
+inputs: []
+outputs: []

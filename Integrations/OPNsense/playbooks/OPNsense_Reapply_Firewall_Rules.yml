@@ -1,0 +1,352 @@
+id: 9b8d4da2-d190-4fa8-8e16-c71b241c9dcc
+version: 34
+name: OPNsense Reapply Firewall Rules
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1ef2d5be-e129-46cf-82d8-2146f090b06b
+    type: start
+    task:
+      id: 1ef2d5be-e129-46cf-82d8-2146f090b06b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 620,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: f6d40366-5de3-4b57-8cc3-a809f2a05523
+    type: regular
+    task:
+      id: f6d40366-5de3-4b57-8cc3-a809f2a05523
+      version: -1
+      name: AssignAnalystToIncident
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      assignBy:
+        simple: random
+      email: {}
+      roles: {}
+      username:
+        simple: adam.burt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 620,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: c2c9e242-4d4f-48e5-89d3-d165096cde5f
+    type: condition
+    task:
+      id: c2c9e242-4d4f-48e5-89d3-d165096cde5f
+      version: -1
+      name: Do you want to add IPs and reapply firewall?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "Yes":
+      - "15"
+    scriptarguments:
+      using:
+        simple: DFIR Demisto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 620,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: ${incident.owner}
+      subject:
+        simple: Block IPs?
+      body:
+        complex:
+          root: lists
+          accessor: IPsToBlock
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: count
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: "<html><head>\n<meta http-equiv=\"content-type\" content=\"text/html;
+                    charset=windows-1252\">\n<title></title>\n</head><body bgcolor=\"#FFFFFF\"
+                    text=\"#000000\">\n  <img \nsrc=\"data:image/png;filename=OPNsense_small.png;base64,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Zf20LC6H0cqyM8+T4F/Kh4Lcf0KBTrEmnBNWsuLujGvoF2n6kp0MRHEYHWuuaTbtzHZ3928tXMCy8HJIWAAAAF96VFh0UmF3IHByb2ZpbGUgdHlwZSBpcHRjAAB42j1Jyw2AUAi7M4UjAMUI6wgXb+/g/hFJtE36pWvdSdvAlOCmFlZszR9Skqw4OjoUDEG0+uvzZD9nL4F9ViWtrzLTAzREFPu7S8ucAAAPVGlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNC40LjAtRXhpdjIiPgogPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgeG1sbnM6aXB0Y0V4dD0iaHR0cDovL2lwdGMub3JnL3N0ZC9JcHRjNHhtcEV4dC8yMDA4LTAyLTI5LyIKICAgIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIgogICAgeG1sbnM6c3RFdnQ9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZUV2ZW50IyIKICAgIHhtbG5zOnBsdXM9Imh0dHA6Ly9ucy51c2VwbHVzLm9yZy9sZGYveG1wLzEuMC8iCiAgICB4bWxuczpHSU1QPSJodHRwOi8vd3d3LmdpbXAub3JnL3htcC8iCiAgICB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iCiAgICB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iCiAgIHhtcE1NOkRvY3VtZW50SUQ9ImdpbXA6ZG9jaWQ6Z2ltcDoxMGVlNDY1MS01NDA4LTQ2ODEtYjA1Zi04NDliODE5MTM3ODIiCiAgIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6NjllMjY3MWMtODI1ZC00YmUxLTgyMzktMmE4MzRlYTQ4Y2U5IgogICB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9InhtcC5kaWQ6MmMyMzA1ODItOTE4ZC00NzIxLWI1N2QtYTY4ODkwMmM3YTA3IgogICBHSU1QOkFQST0iMi4wIgogICBHSU1QOlBsYXRmb3JtPSJXaW5kb3dzIgogICBHSU1QOlRpbWVTdGFtcD0iMTU2NjIwNTA5Mjc5MzQ4NCIKICAgR0lNUDpWZXJzaW9uPSIyLjEwLjQiCiAgIGRjOkZvcm1hdD0iaW1hZ2UvcG5nIgogICB4bXA6Q3JlYXRvclRvb2w9IkdJTVAgMi4xMCI+CiAgIDxpcHRjRXh0OkxvY2F0aW9uQ3JlYXRlZD4KICAgIDxyZGY6QmFnLz4KICAgPC9pcHRjRXh0OkxvY2F0aW9uQ3JlYXRlZD4KICAgPGlwdGNFeHQ6TG9jYXRpb25TaG93bj4KICAgIDxyZGY6QmFnLz4KICAgPC9pcHRjRXh0OkxvY2F0aW9uU2hvd24+CiAgIDxpcHRjRXh0OkFydHdvcmtPck9iamVjdD4KICAgIDxyZGY6QmFnLz4KICAgPC9pcHRjRXh0OkFydHdvcmtPck9iamVjdD4KICAgPGlwdGNFeHQ6UmVnaXN0cnlJZD4KICAgIDxyZGY6QmFnLz4KICAgPC9pcHRjRXh0OlJlZ2lzdHJ5SWQ+CiAgIDx4bXBNTTpIaXN0b3J5PgogICAgPHJkZjpTZXE+CiAgICAgPHJkZjpsaQogICAgICBzdEV2dDphY3Rpb249InNhdmVkIgogICAgICBzdEV2dDpjaGFuZ2VkPSIvIgogICAgICBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOjE1NTdjZmU1LWEyMDktNDViYS1iYzE2LWNlZjZkZTdmNzg0NSIKICAgICAgc3RFdnQ6c29mdHdhcmVBZ2VudD0iR2ltcCAyLjEwIChXaW5kb3dzKSIKICAgICAgc3RFdnQ6d2hlbj0iMjAxOS0wOC0xOVQwOTo1ODoxMiIvPgogICAgPC9yZGY6U2VxPgogICA8L3htcE1NOkhpc3Rvcnk+CiAgIDxwbHVzOkltYWdlU3VwcGxpZXI+CiAgICA8cmRmOlNlcS8+CiAgIDwvcGx1czpJbWFnZVN1cHBsaWVyPgogICA8cGx1czpJbWFnZUNyZWF0b3I+CiAgICA8cmRmOlNlcS8+CiAgIDwvcGx1czpJbWFnZUNyZWF0b3I+CiAgIDxwbHVzOkNvcHlyaWdodE93bmVyPgogICAgPHJkZjpTZXEvPgogICA8L3BsdXM6Q29weXJpZ2h0T3duZXI+CiAgIDxwbHVzOkxpY2Vuc29yPgogICAgPHJkZjpTZXEvPgogICA8L3BsdXM6TGljZW5zb3I+CiAgPC9yZGY6RGVzY3JpcHRpb24+CiA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgCjw/eHBhY2tldCBlbmQ9InciPz7JDSHZAAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAFxGAABcRgEUlENBAAAAB3RJTUUH4wgTCDoMDNSz1gAAB6FJREFUeNrtnGmMFEUUx381K9cuKggYLxTx6OWIqCjxxCtCRJn2At0ZL9QYPigmRuOtrAQQNEoAxSMcGmuVBEJ6UMELRaMiIqeRbTWygKDgRdZdDoFpP3TNbtNbPbM7PevuYv+TTs9UVdcx9e9X7716NQIgkUjEhBCjgFFALyBGeHwupRyhy0gmk5cBY4DSArT1m5TyvIB2OgB3AVcAXSgMxkkpFxEhEIcoQlUANxS47iMCJnoMMAUQBWqnc0A73YAPgdMLPK4eEW2yIyaEuK0ZCEXARPcGni0gobLhxWYgVITGSCrgds/3OcAEYF+e9Q1WdQThWqCd+rwKGA3szKOdY4HFWch7FOBdeh8CvgScPMf1GDAkokvjSXWi53u5lLIqhCQ6NUeRYzyf50kpl+fTTiKRqBEiq7Dr6ZGGq6WUk0JK2O0RVZqw/PkU5T3N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\"><br>\n
+                    \ <br>\n  <span style=\"text-decoration: underline;\"><span style=\"font-size:
+                    \n22pt;\"><span style=\"font-weight: bold;\"><span style=\"color:
+                    rgb(255, \n139, 9);\">Firewall re-apply</span></span></span></span><br>\n
+                    \ <br>\nThere are "
+              suffix:
+                value:
+                  simple: |2-
+                     IP addresses in the block list. Would you like to add them
+                     to the firewall and re-apply the rules?<br>
+                    </body>
+                    </html>
+      methods:
+      - email
+      format: html
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - "Yes"
+      - "No"
+  "6":
+    id: "6"
+    taskid: 67f67684-1c8c-4f0b-808f-cd189f46e910
+    type: title
+    task:
+      id: 67f67684-1c8c-4f0b-808f-cd189f46e910
+      version: -1
+      name: Close Incident
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 1665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 5912d501-7a93-4dcc-8c41-950ac2382130
+    type: regular
+    task:
+      id: 5912d501-7a93-4dcc-8c41-950ac2382130
+      version: -1
+      name: Set incident close data
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: ${incident.closeNotes}
+      value:
+        simple: ${incident.owner} opted to not block the IPs at this time
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 7688bb7e-1300-4a68-8f21-61c44b3be4a5
+    type: regular
+    task:
+      id: 7688bb7e-1300-4a68-8f21-61c44b3be4a5
+      version: -1
+      name: Set incident close notes
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: incident.closeNotes
+      value:
+        simple: "${incident.owner} added IPs to the block list\n \nThe state of the
+          firewall reload was:\n \n${OPNsense.Firewall.Reload.Request.Status}"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: b85baf73-4dd9-43ae-8b0c-ce15533de30c
+    type: regular
+    task:
+      id: b85baf73-4dd9-43ae-8b0c-ce15533de30c
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: ${incident.closeNotes}
+      closeReason:
+        simple: Resolved
+      id:
+        simple: ${incident.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 1840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 0ae6f2b2-f701-453d-8bb3-96183f75d6ca
+    type: regular
+    task:
+      id: 0ae6f2b2-f701-453d-8bb3-96183f75d6ca
+      version: -1
+      name: opnsense-reload-firewall
+      description: Requests that the firewall reloads its rules which includes modified
+        Alias lists
+      script: OPNsense|||opnsense-reload-firewall
+      type: regular
+      iscommand: true
+      brand: OPNsense
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: b65717e1-9e3e-4411-8856-8c8c58ecdc9a
+    type: playbook
+    task:
+      id: b65717e1-9e3e-4411-8856-8c8c58ecdc9a
+      version: -1
+      name: OPNsense Add IPs to Alias
+      playbookName: OPNsense Add IPs to Alias
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      alias:
+        simple: BlockedSources
+      ips:
+        simple: ${lists.IPsToBlock}
+      list:
+        simple: IPsToBlock
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1515,
+        "width": 1040,
+        "x": 300,
+        "y": 420
+      }
+    }
+  }
+inputs: []
+outputs: []

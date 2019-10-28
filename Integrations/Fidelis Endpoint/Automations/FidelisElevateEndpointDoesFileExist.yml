@@ -1,0 +1,54 @@
+commonfields:
+  id: 2a3fe2aa-984a-4262-8ab4-120f6ec73373
+  version: 2
+name: FidelisElevateEndpointDoesFileExist
+script: |
+  #####################
+  # Get hostname
+  #####################
+  hostname = None
+  try:
+      hostname = demisto.args()["hostname"]
+  except:
+      hostname = None
+  if hostname is None:
+      hostname = demisto.get(demisto.context(), "Fidelis.Endpoint.Alert.Target")
+
+  ##############
+  # Get filepath
+  ##############
+  filepath = None
+  try:
+      filepath = demisto.args()["filepath"]
+  except:
+      pass
+
+  ##############
+  # Get timeout
+  ##############
+  timeout = None
+  try:
+      timeout = demisto.args()["timeout"]
+  except:
+      pass
+
+  #####################
+  # Execute the script
+  #####################
+  demisto.results(demisto.executeCommand("fidelis-edr-does-file-exist", {"hostname": hostname, "filepath": filepath, "timeout": timeout }))
+type: python
+tags: []
+comment: Checks to see if a file exists on the endpoint
+enabled: true
+args:
+- name: hostname
+  description: Host Name to target
+- name: filepath
+  description: File path to check
+- name: timeout
+  description: Timeout to wait for the job to complete (default is 300 seconds)
+  defaultValue: "300"
+scripttarget: 0
+subtype: python3
+runonce: false
+runas: DBotWeakRole

@@ -1,0 +1,629 @@
+id: 33ee3602-68a8-4c03-8df9-8a6981384ae5
+version: 17
+name: OPNsense Populate Data
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7a3f9764-6680-4f73-8b4c-132a24a9e683
+    type: start
+    task:
+      id: 7a3f9764-6680-4f73-8b4c-132a24a9e683
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 5464a30a-e7a3-4f32-8221-a0a149be2bb5
+    type: regular
+    task:
+      id: 5464a30a-e7a3-4f32-8221-a0a149be2bb5
+      version: -1
+      name: Copy country field
+      description: Copy a context key to an incident field to multiple number of incidents,
+        based on a query.
+      scriptName: CopyContextToField
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      incidentsQuery:
+        simple: ${incident.id}
+      limit:
+        simple: "1"
+      sourceContextKey:
+        complex:
+          root: AbuseIPDB
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: AbuseIPDB.IP.Address
+                iscontext: true
+              right:
+                value:
+                  simple: incident.sourceip
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: AbuseIPDB.IP.Geo.Country
+                iscontext: true
+          accessor: IP.Geo.Country
+      targetIncidentField:
+        simple: country
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 4ec9dab8-d4b2-457b-8a4f-f4678539ca61
+    type: regular
+    task:
+      id: 4ec9dab8-d4b2-457b-8a4f-f4678539ca61
+      version: -1
+      name: Copy DNS resolution
+      description: Copy a context key to an incident field to multiple number of incidents,
+        based on a query.
+      scriptName: CopyContextToField
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      incidentsQuery:
+        simple: ${incident.id}
+      limit:
+        simple: "1"
+      sourceContextKey:
+        simple: IP.1.VirusTotal.Resolutions.1.hostname
+      targetIncidentField:
+        simple: dnsresolution
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 9e163d99-1121-4ba3-8e52-5c4699e559f8
+    type: condition
+    task:
+      id: 9e163d99-1121-4ba3-8e52-5c4699e559f8
+      version: -1
+      name: Is the IP on the Demisto whitelist?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: incident.sourceip
+            iscontext: true
+          right:
+            value:
+              simple: lists.OPNsenseWhitelistHosts
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 1bfd1d58-469f-46ce-8ded-67e39c47663f
+    type: regular
+    task:
+      id: 1bfd1d58-469f-46ce-8ded-67e39c47663f
+      version: -1
+      name: whitelisted-demisto
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: ipstate
+      value:
+        simple: whitelisted-demisto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 6f40c75b-b71a-4e86-8124-c301435bab82
+    type: condition
+    task:
+      id: 6f40c75b-b71a-4e86-8124-c301435bab82
+      version: -1
+      name: Is the IP on the OPNsense blacklist?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: IPExistsInOPNsenseAliasList
+            iscontext: true
+          right:
+            value:
+              simple: "yes"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 66d01876-e226-40f1-81f2-7c268cca086c
+    type: regular
+    task:
+      id: 66d01876-e226-40f1-81f2-7c268cca086c
+      version: -1
+      name: Check IP in OPNsense blacklist
+      description: Checks whether an IP exists in an alias list or not
+      script: OPNsense|||opnsense-check-ip-in-list
+      type: regular
+      iscommand: true
+      brand: OPNsense
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      ip:
+        simple: ${incident.sourceip}
+      listname:
+        simple: BlockedSources
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: dfe15912-5ad6-4d9e-85bb-6882905f6766
+    type: regular
+    task:
+      id: dfe15912-5ad6-4d9e-85bb-6882905f6766
+      version: -1
+      name: blacklisted
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: ipstate
+      value:
+        simple: blacklisted
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 1415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 1de8b39f-1cdc-40df-8df1-4bc53c63ffee
+    type: condition
+    task:
+      id: 1de8b39f-1cdc-40df-8df1-4bc53c63ffee
+      version: -1
+      name: Is the source country on a blocklist?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: incident.country
+            iscontext: true
+          right:
+            value:
+              simple: lists.BlockedCountries
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 23cf0d67-667c-43e6-82be-74dc6ec86511
+    type: regular
+    task:
+      id: 23cf0d67-667c-43e6-82be-74dc6ec86511
+      version: -1
+      name: blockedCountry
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: ipstate
+      value:
+        simple: blockedCountry
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 1830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: db18ec0d-2bb6-4237-879c-88fe4c5951a9
+    type: regular
+    task:
+      id: db18ec0d-2bb6-4237-879c-88fe4c5951a9
+      version: -1
+      name: Is neutral
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: ipstate
+      value:
+        simple: neutral
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 605ac0bb-c0fe-4b5b-8476-3fa29a15596c
+    type: regular
+    task:
+      id: 605ac0bb-c0fe-4b5b-8476-3fa29a15596c
+      version: -1
+      name: Check IP in OPNsense whitelist
+      description: Checks whether an IP exists in an alias list or not
+      script: OPNsense|||opnsense-check-ip-in-list
+      type: regular
+      iscommand: true
+      brand: OPNsense
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      ip:
+        simple: ${incident.sourceip}
+      listname:
+        simple: GlobalWhitelist
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: d7244f31-2e4d-4912-83b2-006da6387306
+    type: condition
+    task:
+      id: d7244f31-2e4d-4912-83b2-006da6387306
+      version: -1
+      name: Is the IP on the OPNsense whitelist?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: IPExistsInOPNsenseAliasList
+            iscontext: true
+          right:
+            value:
+              simple: "yes"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 675
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: c229de17-6e7d-44a9-86fc-76d18b866c78
+    type: regular
+    task:
+      id: c229de17-6e7d-44a9-86fc-76d18b866c78
+      version: -1
+      name: whitelisted-OPNsense
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: ipstate
+      value:
+        simple: whitelisted-opnsense
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 6750fee5-f7a3-4444-8d48-235c6015fca6
+    type: regular
+    task:
+      id: 6750fee5-f7a3-4444-8d48-235c6015fca6
+      version: -1
+      name: Copy country field
+      description: Copy a context key to an incident field to multiple number of incidents,
+        based on a query.
+      scriptName: CopyContextToField
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      incidentsQuery:
+        simple: ${incident.id}
+      limit:
+        simple: "1"
+      sourceContextKey:
+        complex:
+          root: IP
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: IP.Geo.Country
+                iscontext: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IP.Address
+                iscontext: true
+              right:
+                value:
+                  simple: incident.sourceip
+                iscontext: true
+          accessor: Geo.Country
+      targetIncidentField:
+        simple: country
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1280,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 45e0fe38-6520-47a8-8a66-0475697f8539
+    type: condition
+    task:
+      id: 45e0fe38-6520-47a8-8a66-0475697f8539
+      version: -1
+      name: Is the country empty?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: incident.country
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 2d4bdd33-a441-40c9-8171-905b7df907ab
+    type: regular
+    task:
+      id: 2d4bdd33-a441-40c9-8171-905b7df907ab
+      version: -1
+      name: Wait for 1 minute
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      seconds:
+        simple: "60"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1280,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2055,
+        "width": 1670,
+        "x": -10,
+        "y": -130
+      }
+    }
+  }
+inputs: []
+outputs: []

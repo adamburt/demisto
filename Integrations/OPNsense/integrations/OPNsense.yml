@@ -1,0 +1,588 @@
+commonfields:
+  id: OPNsense
+  version: -1
+name: OPNsense
+display: OPNsense
+category: Network Security
+image: data:image/png;base64,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
+description: OPNsense firewall and gateway integration
+detaileddescription: Enter the secret and key in the credentials section.
+configuration:
+- display: Host name / IP
+  name: host
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Port
+  name: port
+  defaultvalue: "443"
+  type: 0
+  required: true
+- display: Authentication key / secret
+  name: auth
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Verify SSL Certificates
+  name: secure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Use proxy
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: |
+    ''' IMPORTS '''
+
+    import json
+    import requests
+
+    ''' CLASSES '''
+
+    class opnsense():
+        def __init__(self, host, port, key, secret, ignoressl):
+            self.host = str(host)
+            self.key = str(key)
+            self.secret = str(secret)
+            self.baseURL = "https://{0}:{1}/api/".format(host, port)
+            self.ignoressl = ignoressl
+            self.verify = True
+            if self.ignoressl:
+                self.verify = False
+            self.headers = {"Content-Type": "application/json"}
+            self.params = None
+            self.auth = (self.key, self.secret)
+
+        def http_request(self, method, url_suffix, params=None, data=None, headers=None, auth=None):
+
+            if auth is None:
+                auth = self.auth
+            if params is None:
+                params = self.params
+            if headers is None:
+                headers = self.headers
+
+            if data:
+                data = json.dumps(data)
+
+            if method.lower() == "get":
+                res = requests.get(self.baseURL + url_suffix, auth=auth, headers=headers, params=params, verify=self.verify)
+            if method.lower() == "post":
+                res = requests.get(self.baseURL + url_suffix, auth=auth, headers=headers, data=data, params=params, verify=self.verify)
+
+            # Handle error responses gracefully
+            if res.status_code not in [200]:
+                if 'err_code' in res.text:
+                    error = res.json().get('reply')
+                    raise ValueError('Error occurred while doing HTTP request.\nURL: {}\nstatus_code: {}\nerr_code: {}'
+                                     '\nerr_message: {}\n{}'
+                                     .format(BASE_URL + url_suffix, res.status_code, error.get('err_code'),
+                                             error.get('err_msg'), error.get('err_extra')))
+
+                raise ValueError('Error in API call to OPNsense (%s) [%d] - %s' % (url_suffix, res.status_code, res.reason))
+
+            try:
+                return res.json()
+            except Exception:
+                raise ValueError("Failed to parse HTTP response to JSON. Original response: \n\n{}".format(res.text))
+
+        def firmwareRunning(self):
+            return self.http_request('GET', 'core/firmware/running')
+
+        def getAliasLists(self):
+            return self.http_request('POST', 'firewall/alias/searchItem')
+
+        def getAliasList(self, aliasID):
+            return self.http_request('GET', 'firewall/alias/getItem/{0}'.format(aliasID))
+
+        def addIPstoAlias(self, ip, aliasName):
+
+            # Get all aliases
+            aliases = self.getAliasLists()
+            alias = None
+            uuid = None
+
+            # Find our list
+            for x in aliases['rows']:
+                if x['name'] == aliasName:
+                    alias = x
+                    uuid = x['uuid']
+                    break
+
+            # If we do not find the alias
+            if not alias:
+                return {"success": False, "message": "Could not find an alias list named \"{0}\"".format(aliasName)}
+
+            # Get the full alias list
+            alias = self.getAliasList(alias['uuid'])
+            if not alias:
+                return {"success": False, "message": "Could not obtain content of alias list"}
+            alias = alias['alias']
+            if not alias['type']['host']['selected']:
+                return {"success": False, "message": "Alias list is not that of type \"host\""}
+
+            # Obtain the counters
+            counters = alias['counters']
+
+            # Obtain the description
+            description = alias['description']
+
+            # Obtain the enabled status
+            enabled = alias['enabled']
+
+            # Obtain the name
+            name = alias['name']
+
+            # Obtain the protocol
+            proto = ""
+            for x in alias['proto']:
+                if alias['proto'][x]['selected']:
+                    proto = alias['proto'][x]['value']
+
+            # Obtain the type
+            typeO = "host"
+
+            # Obtain the update frequency
+            updateFreq = alias['updatefreq']
+
+            # Obtain the content
+            content = []
+            for x in alias['content']:
+                if alias['content'][x]['selected']:
+                    content.append(alias['content'][x]['value'])
+
+            # Add our new content
+            iplist = ip.split(",")
+            iplist [:] = [x for x in iplist if len(ip) > 0]
+            for x in iplist:
+                if x not in content:
+                    content.append(x)
+
+            # Clean up the content (i.e. get rid of any 0 length values)
+            content [:] = [x for x in content if len(x) > 0]
+
+            # Build the structure for the list
+            newAlias = {"alias": {
+
+                    "enabled": enabled,
+                    "name": name,
+                    "type": typeO,
+                    "proto": proto,
+                    "updatefreq": updateFreq,
+                    "content": "\n".join(content),
+                    "counters": counters,
+                    "description": description
+                    }
+            }
+
+
+            # Commit the list
+            r = requests.post(self.baseURL + "firewall/alias/setItem/{0}".format(uuid), auth=(self.key, self.secret), headers={"Content-Type": "application/json"}, data=json.dumps(newAlias), verify=False)
+            results = r.json()
+            demisto.results(results)
+            if not "saved" in results['result']:
+                if results["validations"]:
+                    demisto.results(results["validations"])
+                    exit(0)
+                else:
+                    demisto.results("Could not save the list")
+                    exit(0)
+
+            return {"success": True, "message": results}
+
+
+        def reloadFirewall(self):
+            # Reload the alias tables (hit apply)
+            r = requests.post(self.baseURL + "firewall/alias/reconfigure", auth=(self.key, self.secret), headers={"Content-Type": "application/json"}, data=json.dumps({}), verify=False)
+            results = r.json()
+            return{"success": True, "message": results['status']}
+
+        def firmwareReboot(self):
+            return self.http_request('POST', 'core/firmware/reboot')
+
+        def firmwareShutdown(self):
+            return self.http_request('POST', 'core/firmware/poweroff')
+
+
+
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBALS/PARAMS '''
+
+
+    SERVER = demisto.params()['host']
+    PORT = demisto.params()['port']
+    USE_SSL = not demisto.params()['secure']
+    KEY = demisto.params()['auth']['identifier']
+    SECRET = demisto.params()['auth']['password']
+
+    opn = opnsense(SERVER, PORT, KEY, SECRET, USE_SSL)
+    opn.headers = {"Content-Type:": "application/json"}
+
+
+    # Remove proxy if not set to true in params
+    if not demisto.params().get('proxy'):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    ''' HELPER FUNCTIONS '''
+
+
+
+    ''' COMMANDS + REQUESTS FUNCTIONS '''
+
+
+    def test_module():
+        """
+        Performs basic get request to get item samples
+        """
+        data = opn.firmwareRunning()
+        if data['status'] != "ready":
+            demisto.results('Firewall not ready')
+            exit(-1)
+
+    def get_alias_lists():
+
+        limit = -1
+        search = None
+
+        try:
+            search = demisto.args()['search']
+        except:
+            pass
+        try:
+            limit = int(demisto.args()['limit'])
+        except:
+            pass
+
+        # Get all the data
+        data = opn.getAliasLists()
+        try:
+            data = data['rows']
+        except:
+            demisto.results("No data found")
+            exit(0)
+
+        # Attempt the search
+        if search:
+            try:
+                data [:] = [x for x in data if search in x['name']]
+            except:
+                pass
+
+        # Attempt the limit
+        if not limit is -1:
+            try:
+                data = data[0:limit]
+            except:
+                demisto.results("Error limiting data")
+
+        demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': data})
+
+    def get_aliases_from_list():
+        listname = demisto.get(demisto.args(), 'listname')
+
+        # Get all lists
+        items = opn.getAliasLists()
+
+        # Find a list that matches the name provided
+        theList = None
+        theList = [x for x in opn.getAliasLists()['rows'] if x['name'] == listname]
+
+        # If there was no match, exit
+        if not theList:
+            demisto.results("Could not find a list named \"{0}\"".format(listname))
+            exit(0)
+
+        # Get the list contents
+        if type(theList) is list:
+            theList = theList[0]
+
+        theList = opn.getAliasList(theList['uuid'])['alias']
+
+        # Get the name
+        name = demisto.get(theList, 'name')
+
+        # Get the description
+        description = demisto.get(theList, 'description')
+
+        # Get the enabled or not
+        enabled = demisto.get(theList, 'enabled')
+
+        # Get the type
+        typeO = [x for x in theList['type'] if theList['type'][x]['selected']]
+        if len(typeO) > 0: typeO = typeO[0]
+        else: typeO = None
+
+        # Get the content
+        contents = [x for x in theList['content'] if theList['content'][x]['selected']]
+
+        # Get the protocol
+        protocol = [x['value'] for x in theList['proto'] if theList['proto'][x]['selected']]
+        if len(protocol) > 0: protocol = protocol[0]
+        else: protocol = None
+
+
+        # Create our returned item
+        ret = {
+            "Name": name,
+            "Description": description,
+            "Enabled": enabled,
+            "Type": typeO,
+            "Protocol": protocol,
+            "Contents": contents
+        }
+        demisto.results( {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': ret, "EntryContext": { "OPNsense.AliasList.{0}".format(ret['Name']): ret }})
+
+    def add_ip_addresses_to_alias():
+        ip = demisto.args()['ip']
+
+        alias = demisto.args()['alias']
+
+
+        data = opn.addIPstoAlias(ip, alias)
+        if data["success"]:
+            demisto.results("Successfully added {0} to the alias list \"{1}\"".format(ip, alias))
+        else:
+            demisto.results("Failed to add {0} to the alias list \"{1}\" - {0}".format(ip, alias, data["message"]))
+
+    def reload_firewall():
+        entryData = opn.reloadFirewall()
+        demisto.results( { "Type" : entryTypes["note"], "ContentsFormat" : formats["json"], "Contents" : entryData, "EntryContext": {'OPNsense.Firewall.Reload.Request.Status': entryData}} )
+
+
+    def check_ip_in_aliases():
+        listname = demisto.get(demisto.args(), 'listname')
+        ip = demisto.get(demisto.args(), 'ip')
+        if not is_ip_valid(ip):
+            demisto.error("{0} is not a valid IP address".format(ip))
+            demisto.results('no')
+            exit(-1)
+
+        # Get all alias list names
+        aliasLists = opn.getAliasLists()
+
+        # See if there is a list with the alias list name provided
+        matches = None
+        matches = [x for x in aliasLists['rows'] if x['name'] == listname]
+        if matches is None:
+            demisto.error("Could not find a list named \"{0}\"")
+            demisto.results('no')
+            exit(0)
+
+        # Get the list contents
+        if type(matches) is list:
+            matches = matches[0]
+        thisList = opn.getAliasList(matches['uuid'])
+        alias = thisList['alias']
+
+        # Check the contents
+        matches = None
+        matches = [x for x in alias['content'] if alias['content'][x]['selected'] and alias['content'][x]['value'] == ip]
+        if matches:
+            demisto.results( {'ContentsFormat': formats['text'], 'Type': entryTypes['note'], 'Contents': "yes", "EntryContext": { "IPExistsInOPNsenseAliasList": "yes" }})
+        else:
+            demisto.results( {'ContentsFormat': formats['text'], 'Type': entryTypes['note'], 'Contents': "no", "EntryContext": { "IPExistsInOPNsenseAliasList": "no" }})
+
+
+    def firmware(outputs, url):
+        urlMethods = {
+            'core/firmware/running': 'GET',
+            'core/firmware/status': 'GET',
+            'core/firmware/upgrade': 'POST',
+            'core/firmware/upgradestatus': 'GET',
+            'core/firmware/reboot': 'POST',
+            'core/firmware/poweroff': 'POST'
+        }
+        data = opn.http_request(urlMethods[url], url)
+        entryData = {}
+        for x in outputs:
+            entryData[x] = demisto.get(data, outputs[x])
+        demisto.results( { "Type" : entryTypes["note"], "ContentsFormat" : formats["json"], "Contents" : data, "EntryContext": entryData} )
+
+
+
+
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+
+
+    def main():
+        LOG('Command being called is %s' % (demisto.command()))
+
+        try:
+            if demisto.command() == 'test-module':
+                test_module()
+                demisto.results('ok')
+
+            elif demisto.command() == 'opnsense-get-alias-lists':
+                get_alias_lists()
+
+            elif demisto.command() == 'opnsense-add-ip-addresses-to-alias':
+                add_ip_addresses_to_alias()
+
+            elif demisto.command() == 'opnsense-get-aliases-from-list':
+                get_aliases_from_list()
+
+            elif demisto.command() == 'opnsense-check-ip-in-list':
+                check_ip_in_aliases()
+
+            elif demisto.command() == 'opnsense-reload-firewall':
+                reload_firewall()
+
+            elif demisto.command() == 'opnsense-get-firmware-status':
+                firmware({
+            'OPNsense.Firmware.Current Firmware Version': 'product_version',
+            'OPNsense.Firmware.Upgrades': 'updates',
+            "OPNsense.Firmware.Upgrade Major Version": 'upgrade_major_version',
+            "OPNsense.Firmware.Upgrade Major Message": 'upgrade_major_message',
+            "OPNsense.Firmware.Currently Requires Reboot": 'upgrade_needs_reboot',
+            "OPNsense.Firmware.Upgrade Packages": 'upgrade_packages',
+            "OPNsense.Firmware.Current OS Version": 'os_version',
+            "OPNsense.Firmware.Update Download Size": 'download_size',
+            "OPNsense.Firmware.Update Last Checked": 'last_check',
+            "OPNsense.Firmware.Status Message": 'status_msg',
+            "OPNsense.Firmware.Status": 'status',
+                },
+            'core/firmware/status')
+
+            elif demisto.command() == 'opnsense-upgrade-firmware':
+                firmware({"OPNsense.Firmware.UpgradeRequest": 'status'}, 'core/firmware/upgrade')
+
+            elif demisto.command() == 'opnsense-upgrade-firmware-status':
+                firmware({"OPNsense.Firmware.UpgradeRequestStatus": 'status', 'OPNsense.Firmware.UpgradeRequestLog': 'log'}, 'core/firmware/upgradestatus')
+
+            elif demisto.command() == 'opnsense-firmware-running':
+                firmware({'OPNsense.Firmware.Running Status': 'status'}, 'core/firmware/running')
+
+            elif demisto.command() == 'opnsense-firmware-reboot':
+                firmware({"OPNsense.Firmware.Reboot.Request.Status": 'status'}, 'core/firmware/reboot')
+
+            elif demisto.command() == 'opnsense-firmware-shutdown':
+                firmware({"OPNsense.Firmware.Reboot.Shutdown.Status": 'status'}, 'core/firmware/poweroff')
+
+
+
+        # Log exceptions
+        except Exception as e:
+            if demisto.command() == 'fetch-incidents':
+                LOG(str(e))
+                raise
+            else:
+                return_error(e)
+
+
+    if __name__ in ['__main__', '__builtin__', 'builtins']:
+        main()
+  type: python
+  commands:
+  - name: opnsense-get-alias-lists
+    arguments:
+    - name: limit
+      description: Limits the number of lists returned (-1 is all)
+      defaultValue: "-1"
+    - name: search
+      description: Search phrase
+    outputs:
+    - contextPath: OPNsense.Firewall.GetAliases
+    description: Returns a list of alias list names
+  - name: opnsense-add-ip-addresses-to-alias
+    arguments:
+    - name: ip
+      required: true
+      description: IP addresses to add (comma separated, not list)
+    - name: alias
+      required: true
+      description: Alias list name to add the IP to
+    description: Add an IP address to an alias list
+  - name: opnsense-get-aliases-from-list
+    arguments:
+    - name: listname
+      required: true
+      description: The list name to obtain the aliases from
+    outputs:
+    - contextPath: OPNsense.AliasList
+  - name: opnsense-check-ip-in-list
+    arguments:
+    - name: ip
+      required: true
+      description: IP address to check
+    - name: listname
+      required: true
+      description: List name to check against
+    outputs:
+    - contextPath: IPExistsInOPNsenseAliasList
+      type: boolean
+    description: Checks whether an IP exists in an alias list or not
+  - name: opnsense-get-firmware-status
+    arguments: []
+    outputs:
+    - contextPath: OPNsense.Firmware.Current Firmware Version
+      description: OPNsense current firmware version
+    - contextPath: OPNsense.Firmware.Upgrades
+      description: OPNsense upgrades
+    - contextPath: OPNsense.Firmware.Upgrade Major Version
+      description: Major version of the available upgrade
+    - contextPath: OPNsense.Firmware.Upgrade Major Message
+      description: Major version message of the available upgrade
+    - contextPath: OPNsense.Firmware.Upgrade Requires Reboot
+      description: Does the firmware require a reboot?
+    - contextPath: OPNsense.Firmware.Upgrade Packages
+      description: Packages that require an upgrade
+    - contextPath: OPNsense.Firmware.Current OS Version
+      description: Current OS version
+    - contextPath: OPNsense.Firmware.Update Download Size
+      description: Download size of the available update
+    - contextPath: OPNsense.Firmware.Update Last Checked
+      description: Date when updates were last checked for
+    - contextPath: OPNsense.Firmware.Status Message
+      description: Current status message
+    - contextPath: OPNsense.Firmware.Status
+      description: Current status
+    description: Obtains the firwmare status and whether there is an update available
+  - name: opnsense-upgrade-firmware
+    arguments: []
+    outputs:
+    - contextPath: OPNsense.Firmware.UpgradeRequest
+      description: Status of the request to upgrade the firmware
+    description: Requests that OPNsense updates its firmware
+  - name: opnsense-upgrade-firmware-status
+    arguments: []
+    outputs:
+    - contextPath: OPNsense.Firmware.UpgradeRequestStatus
+    - contextPath: OPNsense.Firmware.UpgradeRequestLog
+    description: Gets the status of a current firmware upgrade
+  - name: opnsense-firmware-reboot
+    arguments: []
+    outputs:
+    - contextPath: OPNsense.Firmware.Reboot.Request.Status
+      description: Status of the reboot request
+    description: Requests a reboot
+    execution: true
+  - name: opnsense-firmware-shutdown
+    arguments: []
+    outputs:
+    - contextPath: OPNsense.Firmware.Reboot.Shutdown.Status
+      description: Status of the shutdown request
+    description: Requests shutdown
+    execution: true
+  - name: opnsense-firmware-running
+    arguments: []
+    outputs:
+    - contextPath: OPNsense.Firmware.Running Status
+    description: Checks whether the firmware is running
+  - name: opnsense-reload-firewall
+    arguments: []
+    outputs:
+    - contextPath: OPNsense.Firewall.Reload.Request.Status
+    description: Requests that the firewall reloads its rules which includes modified
+      Alias lists
+    execution: true
+  dockerimage: demisto/python3:latest
+  runonce: false

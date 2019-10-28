@@ -1,0 +1,662 @@
+id: 77917950-5f9f-4304-82c3-4135ec697a52
+version: 16
+name: OPNsense Check Firmware Upgrades
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d7a67780-da82-426d-82c9-d7ae0236b07e
+    type: start
+    task:
+      id: d7a67780-da82-426d-82c9-d7ae0236b07e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 0da0c636-8d7d-4d45-8967-653defe9f8a8
+    type: regular
+    task:
+      id: 0da0c636-8d7d-4d45-8967-653defe9f8a8
+      version: -1
+      name: Get firmware update status from OPNsense
+      description: Obtains the firwmare status and whether there is an update available
+      script: OPNsense|||opnsense-get-firmware-status
+      type: regular
+      iscommand: true
+      brand: OPNsense
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: d5c79088-6e89-431e-8bf1-ff0d9ad95cef
+    type: condition
+    task:
+      id: d5c79088-6e89-431e-8bf1-ff0d9ad95cef
+      version: -1
+      name: Are there any firmware updates?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: OPNsense.Firmware.Status
+            iscontext: true
+          right:
+            value:
+              simple: none
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: a22d8e08-ae49-44f2-8996-c0bcb3c57b64
+    type: regular
+    task:
+      id: a22d8e08-ae49-44f2-8996-c0bcb3c57b64
+      version: -1
+      name: Upgrade now
+      description: Requests that OPNsense updates its firmware
+      script: OPNsense|||opnsense-upgrade-firmware
+      type: regular
+      iscommand: true
+      brand: OPNsense
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: faf6e32c-9d5b-4c11-8019-33c81f3184d2
+    type: regular
+    task:
+      id: faf6e32c-9d5b-4c11-8019-33c81f3184d2
+      version: -1
+      name: send-mail
+      description: Send an email
+      script: Mail Sender (New)|||send-mail
+      type: regular
+      iscommand: true
+      brand: Mail Sender (New)
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body: {}
+      cc: {}
+      htmlBody:
+        simple: "<html><head>\n<meta http-equiv=\"content-type\" content=\"text/html;
+          charset=windows-1252\">\n<title></title>\n</head><body bgcolor=\"#FFFFFF\"
+          text=\"#000000\">\n  <span style=\"font-size: 20pt;\"><span style=\"color:
+          rgb(255, 139, 9);\"><span\n style=\"text-decoration: underline;\"><span
+          style=\"font-weight: bold;\"><span\n style=\"font-family: Calibri;\">OPNsense
+          Firmware </span></span></span></span></span><span\n style=\"font-size: 20pt;\"><span
+          style=\"color: rgb(255, 139, 9);\"><span \nstyle=\"text-decoration: underline;\"><span
+          style=\"font-weight: bold;\"><span\n style=\"font-family: Calibri;\">Updat<span
+          style=\"color: rgb(0, 0, 0);\"><span\n style=\"color: rgb(255, 139, 9);\">e
+          Status</span></span></span></span></span></span></span><span\n style=\"font-family:
+          Calibri;\"><br>\n  </span><span style=\"font-family: Calibri;\"><br>\n  </span><span
+          style=\"font-family: Calibri;\">Please see the status of \nthe firmware
+          upgrade request status:<br>\n    <br>\n    <br>\n    <span style=\"font-weight:
+          bold;\">${OPNsense.Firmware.UpgradeRequestStatus}<br>\n      <br>\n      <br>\n
+          \   </span></span><span style=\"font-family: Calibri;\"><span \nstyle=\"font-weight:
+          bold;\"></span></span>\n</body>\n</html>"
+      replyTo: {}
+      subject:
+        simple: OPNsense firwmare installation
+      templateParams: {}
+      to:
+        simple: ${IncidentOwner.email}
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: fc0b46c3-4651-44bf-804f-14a2b48a425a
+    type: regular
+    task:
+      id: fc0b46c3-4651-44bf-804f-14a2b48a425a
+      version: -1
+      name: AssignAnalystToIncident
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      assignBy:
+        simple: random
+      email: {}
+      roles: {}
+      username:
+        simple: adam.burt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: d629ec96-fa70-4c65-8c43-c15f67cbaa35
+    type: collection
+    task:
+      id: d629ec96-fa70-4c65-8c43-c15f67cbaa35
+      version: -1
+      name: Shall I upgrade?
+      type: collection
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    sla:
+      hours: 0
+      days: 1
+      weeks: 0
+    slareminder:
+      hours: 8
+      days: 0
+      weeks: 0
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: ${incident.owner}
+      subject:
+        simple: New OPNsense Firmware Available!
+      body:
+        simple: "<html><head>\n<meta http-equiv=\"content-type\" content=\"text/html;
+          charset=windows-1252\">\n<title></title>\n</head><body bgcolor=\"#FFFFFF\"
+          text=\"#000000\">\n  <span style=\"font-size: 20pt;\"><span style=\"color:
+          rgb(255, 139, 9);\"><span\n style=\"text-decoration: underline;\"><span
+          style=\"font-weight: bold;\"><span\n style=\"font-family: Calibri;\">OPNsense
+          Firmware </span></span></span></span></span><span\n style=\"font-size: 20pt;\"><span
+          style=\"color: rgb(255, 139, 9);\"><span \nstyle=\"text-decoration: underline;\"><span
+          style=\"font-weight: bold;\"><span\n style=\"font-family: Calibri;\">Update</span></span></span></span></span><span\n
+          style=\"font-family: Calibri;\"><br>\n  </span><span style=\"font-family:
+          Calibri;\"><br>\n  </span><span style=\"font-family: Calibri;\">We last
+          checked for a \nfirmware update at ${OPNsense.Firmware.Update Last Checked}
+          and we </span><span\n style=\"font-family: Calibri;\"><span style=\"font-weight:
+          bold;\">found \none</span></span><span style=\"font-family: Calibri;\">!</span><span
+          \nstyle=\"font-family: Calibri;\"><br>\n    <br>\n&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+          <br>\n  </span>\n  <table style=\"width: 743px; height: 256px;\" cellspacing=\"2\"
+          \ncellpadding=\"2\" border=\"1\">\n    <tbody>\n      <tr>\n        <td
+          style=\"vertical-align: top;\"><span style=\"font-size: 12pt;\"><span\n
+          style=\"font-weight: bold;\"><span style=\"font-family: Calibri;\"></span></span></span><span\n
+          style=\"font-size: 12pt;\"><span style=\"font-weight: bold;\">Status</span></span><span\n
+          style=\"font-size: 12pt;\"><span style=\"font-weight: bold;\"><br>\n            </span></span></td>\n
+          \       <td style=\"vertical-align: top;\"><br>\n        </td>\n        <td
+          style=\"vertical-align: top;\"><span style=\"color: rgb(255, \n139, 9);\"><span
+          style=\"font-family: Calibri;\"></span></span><span \nstyle=\"color: rgb(255,
+          139, 9);\">${OPNsense.Firmware.Status}</span><span\n style=\"color: rgb(255,
+          139, 9);\"><br>\n          </span></td>\n      </tr>\n      <tr>\n        <td
+          style=\"vertical-align: top;\"><span style=\"font-size: 12pt;\"><span\n
+          style=\"font-weight: bold;\"><span style=\"font-family: Calibri;\"></span></span></span><span\n
+          style=\"font-size: 12pt;\"><span style=\"font-weight: bold;\">Message</span></span><span\n
+          style=\"font-size: 12pt;\"><span style=\"font-weight: bold;\"><br>\n            </span></span></td>\n
+          \       <td style=\"vertical-align: top;\"><br>\n        </td>\n        <td
+          style=\"vertical-align: top;\"><span style=\"color: rgb(255, \n139, 9);\"><span
+          style=\"font-family: Calibri;\"></span></span><span \nstyle=\"color: rgb(255,
+          139, 9);\">${OPNsense.Firmware.Status Message}</span><span\n style=\"color:
+          rgb(255, 139, 9);\"><br>\n          </span></td>\n      </tr>\n      <tr>\n
+          \       <td style=\"vertical-align: top;\"><span style=\"font-size: 12pt;\"><span\n
+          style=\"font-weight: bold;\"><span style=\"font-family: Calibri;\">Current
+          \nFirmware</span></span></span><span style=\"font-size: 12pt;\"><span \nstyle=\"font-weight:
+          bold;\"><br>\n            </span></span></td>\n        <td style=\"vertical-align:
+          top;\"><br>\n        </td>\n        <td style=\"vertical-align: top;\"><span
+          style=\"color: rgb(255, \n139, 9);\"><span style=\"font-family: Calibri;\">${OPNsense.Firmware.Current\n
+          Firmware Version}</span></span></td>\n      </tr>\n      <tr>\n        <td
+          style=\"vertical-align: top;\"><span style=\"font-size: 12pt;\"><span\n
+          style=\"font-weight: bold;\"><span style=\"font-family: Calibri;\">New \nFirmware</span></span></span><span
+          style=\"font-size: 12pt;\"><span \nstyle=\"font-weight: bold;\"><br>\n            </span></span></td>\n
+          \       <td style=\"vertical-align: top;\"><br>\n        </td>\n        <td
+          style=\"vertical-align: top;\"><span style=\"color: rgb(255, \n139, 9);\">${OPNsense.Firmware.Upgrade
+          Major Version}</span><span \nstyle=\"color: rgb(255, 139, 9);\"><br>\n          </span></td>\n
+          \     </tr>\n      <tr>\n        <td style=\"vertical-align: top;\"><span
+          style=\"font-size: 12pt;\"><span\n style=\"font-weight: bold;\">Current
+          OS Version</span></span><span \nstyle=\"font-size: 12pt;\"><span style=\"font-weight:
+          bold;\"><br>\n            </span></span></td>\n        <td style=\"vertical-align:
+          top;\"><br>\n        </td>\n        <td style=\"vertical-align: top;\"><span
+          style=\"color: rgb(255, \n139, 9);\">${OPNsense.Firmware.Current OS Version}</span></td>\n
+          \     </tr>\n      <tr>\n        <td style=\"vertical-align: top;\"><span
+          style=\"font-size: 12pt;\"><span\n style=\"font-weight: bold;\">Upgrade
+          Packages</span></span><span \nstyle=\"font-size: 12pt;\"><span style=\"font-weight:
+          bold;\"><br>\n            </span></span></td>\n        <td style=\"vertical-align:
+          top;\"><br>\n        </td>\n        <td style=\"vertical-align: top;\"><span
+          style=\"color: rgb(255, \n139, 9);\">${OPNsense.Firmware.Upgrades}</span><span
+          style=\"color: \nrgb(255, 139, 9);\"><br>\n          </span></td>\n      </tr>\n
+          \     <tr>\n        <td style=\"vertical-align: top;\"><span style=\"font-size:
+          12pt;\"><span\n style=\"font-weight: bold;\">Download size</span></span><span
+          \nstyle=\"font-size: 12pt;\"><span style=\"font-weight: bold;\"><br>\n            </span></span></td>\n
+          \       <td style=\"vertical-align: top;\"><br>\n        </td>\n        <td
+          style=\"vertical-align: top;\"><span style=\"color: rgb(255, \n139, 9);\">${OPNsense.Firmware.Update
+          Download Size} (bytes)</span><span \nstyle=\"color: rgb(255, 139, 9);\"><br>\n
+          \         </span></td>\n      </tr>\n      <tr>\n        <td style=\"vertical-align:
+          top;\"><span style=\"font-size: 12pt;\"><span\n style=\"font-weight: bold;\">Requires
+          reboot?</span></span><span \nstyle=\"font-size: 12pt;\"><span style=\"font-weight:
+          bold;\"><br>\n            </span></span></td>\n        <td style=\"vertical-align:
+          top;\"><br>\n        </td>\n        <td style=\"vertical-align: top;\"><span
+          style=\"color: rgb(255, \n139, 9);\"><span style=\"font-family: Calibri;\"></span></span><span
+          \nstyle=\"color: rgb(255, 139, 9);\">${OPNsense.Firmware.Currently Requires
+          \nReboot}</span><span style=\"color: rgb(255, 139, 9);\"><br>\n          </span></td>\n
+          \     </tr>\n      <tr>\n        <td style=\"vertical-align: top;\"><span
+          style=\"font-size: 12pt;\"><span\n style=\"font-weight: bold;\">Update last
+          checked</span></span><span \nstyle=\"font-size: 12pt;\"><span style=\"font-weight:
+          bold;\"><br>\n            </span></span></td>\n        <td style=\"vertical-align:
+          top;\"><br>\n        </td>\n        <td style=\"vertical-align: top;\"><span
+          style=\"color: rgb(255, \n139, 9);\">${OPNsense.Firmware.Update Last Checked}</span><span
+          \nstyle=\"color: rgb(255, 139, 9);\"><br>\n          </span></td>\n      </tr>\n
+          \   </tbody>\n  </table>\n  <span style=\"font-family: Calibri;\"><br>\n
+          \   <br>\nUse the link below to determine how / if to update.<br>\n  </span>\n</body>\n</html>"
+      methods:
+      - email
+      format: html
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 3
+        retriesinterval: 4
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: When would you like to upgrade?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - Now
+        - On a schedule
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Please select either now or on a schedule. If you select on a schedule
+          then you'll need to pick a scheduled date  below
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Please choose a scheduled date and time (if required)
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: date
+        options: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Please select a date / time
+      title: OPNsense Upgrade
+      description: Please complete all questions
+      sender: ""
+      expired: false
+      totalanswers: 0
+  "11":
+    id: "11"
+    taskid: 6dd80e2f-e4ed-4219-894d-a455a6b3f4b7
+    type: regular
+    task:
+      id: 6dd80e2f-e4ed-4219-894d-a455a6b3f4b7
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: ${OPNsense.Firmware.Status Message}
+      closeReason:
+        simple: Resolved
+      id:
+        simple: ${incident.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 531e08ce-de0d-456d-85ac-81a69f6cea7f
+    type: condition
+    task:
+      id: 531e08ce-de0d-456d-85ac-81a69f6cea7f
+      version: -1
+      name: Would you like to upgrade?
+      description: Extract user's response from EmailAskUser reply. Returns the first
+        textual response line of the provided entry that contains the reply body.
+        Use ${lastCompletedTaskEntries} to analyze the previous playbook task containing
+        the user's reply.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "11"
+      "Yes":
+      - "5"
+    scriptarguments:
+      using:
+        simple: DFIR Demisto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: ${incident.owner}
+      subject:
+        simple: OPNsense new firmware available!
+      body:
+        simple: "<html><head>\n<meta http-equiv=\"content-type\" content=\"text/html;
+          charset=windows-1252\">\n<title></title>\n</head><body bgcolor=\"#FFFFFF\"
+          text=\"#000000\">\n  <span style=\"font-size: 20pt;\"><span style=\"color:
+          rgb(255, 139, 9);\"><span\n style=\"text-decoration: underline;\"><span
+          style=\"font-weight: bold;\"><span\n style=\"font-family: Calibri;\">OPNsense
+          Firmware </span></span></span></span></span><span\n style=\"font-size: 20pt;\"><span
+          style=\"color: rgb(255, 139, 9);\"><span \nstyle=\"text-decoration: underline;\"><span
+          style=\"font-weight: bold;\"><span\n style=\"font-family: Calibri;\">Update</span></span></span></span></span><span\n
+          style=\"font-family: Calibri;\"><br>\n  </span><span style=\"font-family:
+          Calibri;\"><br>\n  </span><span style=\"font-family: Calibri;\">We last
+          checked for a \nfirmware update at ${OPNsense.Firmware.Update Last Checked}
+          and we </span><span\n style=\"font-family: Calibri;\"><span style=\"font-weight:
+          bold;\">found \none</span></span><span style=\"font-family: Calibri;\">!</span><span
+          \nstyle=\"font-family: Calibri;\"><br>\n    <br>\n&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+          <br>\n  </span>\n  <table style=\"width: 743px; height: 256px;\" cellspacing=\"2\"
+          \ncellpadding=\"2\" border=\"1\">\n    <tbody>\n      <tr>\n        <td
+          style=\"vertical-align: top;\"><span style=\"font-size: 12pt;\"><span\n
+          style=\"font-weight: bold;\"><span style=\"font-family: Calibri;\"></span></span></span><span\n
+          style=\"font-size: 12pt;\"><span style=\"font-weight: bold;\">Status</span></span><span\n
+          style=\"font-size: 12pt;\"><span style=\"font-weight: bold;\"><br>\n            </span></span></td>\n
+          \       <td style=\"vertical-align: top;\"><br>\n        </td>\n        <td
+          style=\"vertical-align: top;\"><span style=\"color: rgb(255, \n139, 9);\"><span
+          style=\"font-family: Calibri;\"></span></span><span \nstyle=\"color: rgb(255,
+          139, 9);\">${OPNsense.Firmware.Status}</span><span\n style=\"color: rgb(255,
+          139, 9);\"><br>\n          </span></td>\n      </tr>\n      <tr>\n        <td
+          style=\"vertical-align: top;\"><span style=\"font-size: 12pt;\"><span\n
+          style=\"font-weight: bold;\"><span style=\"font-family: Calibri;\"></span></span></span><span\n
+          style=\"font-size: 12pt;\"><span style=\"font-weight: bold;\">Message</span></span><span\n
+          style=\"font-size: 12pt;\"><span style=\"font-weight: bold;\"><br>\n            </span></span></td>\n
+          \       <td style=\"vertical-align: top;\"><br>\n        </td>\n        <td
+          style=\"vertical-align: top;\"><span style=\"color: rgb(255, \n139, 9);\"><span
+          style=\"font-family: Calibri;\"></span></span><span \nstyle=\"color: rgb(255,
+          139, 9);\">${OPNsense.Firmware.Status Message}</span><span\n style=\"color:
+          rgb(255, 139, 9);\"><br>\n          </span></td>\n      </tr>\n      <tr>\n
+          \       <td style=\"vertical-align: top;\"><span style=\"font-size: 12pt;\"><span\n
+          style=\"font-weight: bold;\"><span style=\"font-family: Calibri;\">Current
+          \nFirmware</span></span></span><span style=\"font-size: 12pt;\"><span \nstyle=\"font-weight:
+          bold;\"><br>\n            </span></span></td>\n        <td style=\"vertical-align:
+          top;\"><br>\n        </td>\n        <td style=\"vertical-align: top;\"><span
+          style=\"color: rgb(255, \n139, 9);\"><span style=\"font-family: Calibri;\">${OPNsense.Firmware.Current\n
+          Firmware Version}</span></span></td>\n      </tr>\n      <tr>\n        <td
+          style=\"vertical-align: top;\"><span style=\"font-size: 12pt;\"><span\n
+          style=\"font-weight: bold;\"><span style=\"font-family: Calibri;\">New \nFirmware</span></span></span><span
+          style=\"font-size: 12pt;\"><span \nstyle=\"font-weight: bold;\"><br>\n            </span></span></td>\n
+          \       <td style=\"vertical-align: top;\"><br>\n        </td>\n        <td
+          style=\"vertical-align: top;\"><span style=\"color: rgb(255, \n139, 9);\">${OPNsense.Firmware.Upgrade
+          Major Version}</span><span \nstyle=\"color: rgb(255, 139, 9);\"><br>\n          </span></td>\n
+          \     </tr>\n      <tr>\n        <td style=\"vertical-align: top;\"><span
+          style=\"font-size: 12pt;\"><span\n style=\"font-weight: bold;\">Current
+          OS Version</span></span><span \nstyle=\"font-size: 12pt;\"><span style=\"font-weight:
+          bold;\"><br>\n            </span></span></td>\n        <td style=\"vertical-align:
+          top;\"><br>\n        </td>\n        <td style=\"vertical-align: top;\"><span
+          style=\"color: rgb(255, \n139, 9);\">${OPNsense.Firmware.Current OS Version}</span></td>\n
+          \     </tr>\n      <tr>\n        <td style=\"vertical-align: top;\"><span
+          style=\"font-size: 12pt;\"><span\n style=\"font-weight: bold;\">Upgrade
+          Packages</span></span><span \nstyle=\"font-size: 12pt;\"><span style=\"font-weight:
+          bold;\"><br>\n            </span></span></td>\n        <td style=\"vertical-align:
+          top;\"><br>\n        </td>\n        <td style=\"vertical-align: top;\"><span
+          style=\"color: rgb(255, \n139, 9);\">${OPNsense.Firmware.Upgrades}</span><span
+          style=\"color: \nrgb(255, 139, 9);\"><br>\n          </span></td>\n      </tr>\n
+          \     <tr>\n        <td style=\"vertical-align: top;\"><span style=\"font-size:
+          12pt;\"><span\n style=\"font-weight: bold;\">Download size</span></span><span
+          \nstyle=\"font-size: 12pt;\"><span style=\"font-weight: bold;\"><br>\n            </span></span></td>\n
+          \       <td style=\"vertical-align: top;\"><br>\n        </td>\n        <td
+          style=\"vertical-align: top;\"><span style=\"color: rgb(255, \n139, 9);\">${OPNsense.Firmware.Update
+          Download Size} (bytes)</span><span \nstyle=\"color: rgb(255, 139, 9);\"><br>\n
+          \         </span></td>\n      </tr>\n      <tr>\n        <td style=\"vertical-align:
+          top;\"><span style=\"font-size: 12pt;\"><span\n style=\"font-weight: bold;\">Requires
+          reboot?</span></span><span \nstyle=\"font-size: 12pt;\"><span style=\"font-weight:
+          bold;\"><br>\n            </span></span></td>\n        <td style=\"vertical-align:
+          top;\"><br>\n        </td>\n        <td style=\"vertical-align: top;\"><span
+          style=\"color: rgb(255, \n139, 9);\"><span style=\"font-family: Calibri;\"></span></span><span
+          \nstyle=\"color: rgb(255, 139, 9);\">${OPNsense.Firmware.Currently Requires
+          \nReboot}</span><span style=\"color: rgb(255, 139, 9);\"><br>\n          </span></td>\n
+          \     </tr>\n      <tr>\n        <td style=\"vertical-align: top;\"><span
+          style=\"font-size: 12pt;\"><span\n style=\"font-weight: bold;\">Update last
+          checked</span></span><span \nstyle=\"font-size: 12pt;\"><span style=\"font-weight:
+          bold;\"><br>\n            </span></span></td>\n        <td style=\"vertical-align:
+          top;\"><br>\n        </td>\n        <td style=\"vertical-align: top;\"><span
+          style=\"color: rgb(255, \n139, 9);\">${OPNsense.Firmware.Update Last Checked}</span><span
+          \nstyle=\"color: rgb(255, 139, 9);\"><br>\n          </span></td>\n      </tr>\n
+          \   </tbody>\n  </table>\n  <span style=\"font-family: Calibri;\"><br>\n
+          \   <br>\n    <span style=\"font-weight: bold;\">Would you like to upgrade?<br>\n
+          \     <br>\n      <br>\n    </span></span>\n</body>\n</html>"
+      methods:
+      - email
+      format: html
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - "Yes"
+      - "No"
+  "13":
+    id: "13"
+    taskid: a978c9d5-f93a-437b-8cbe-ea6fc7ef417f
+    type: regular
+    task:
+      id: a978c9d5-f93a-437b-8cbe-ea6fc7ef417f
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      id:
+        simple: ${incident.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 3732a111-2711-4cdf-8f8d-371ed1082c82
+    type: regular
+    task:
+      id: 3732a111-2711-4cdf-8f8d-371ed1082c82
+      version: -1
+      name: ExposeIncidentOwner
+      description: Expose the incident owner into IncidentOwner context key
+      scriptName: ExposeIncidentOwner
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    results:
+    - IncidentOwner
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -15
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 62ed3cea-5ff8-4df9-8a4f-c8c6129f723e
+    type: playbook
+    task:
+      id: 62ed3cea-5ff8-4df9-8a4f-c8c6129f723e
+      version: -1
+      name: OPNsense Check Firmware Upgrade Status
+      playbookName: OPNsense Check Firmware Upgrade Status
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    loop:
+      iscommand: false
+      builtincondition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OPNsense.Firmware.UpgradeRequestStatus
+            iscontext: true
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2065,
+        "width": 1370,
+        "x": -240,
+        "y": -350
+      }
+    }
+  }
+inputs: []
+outputs: []

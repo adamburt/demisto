@@ -1,0 +1,127 @@
+commonfields:
+  id: 7dbc2f50-9f18-4a6d-8062-d04a3ff29691
+  version: 44
+name: MitreAttackReputation
+script: |
+  ''' IMPORTS '''
+  import requests
+
+
+  ''' GLOBAL VARIABLES '''
+  mitreURL = 'https://raw.githubusercontent.com/mitre/cti/master/enterprise-attack/enterprise-attack.json'
+  ref = demisto.get(demisto.args(), 'input')
+
+  ''' Replacement matrix for MarkDown data'''
+  replacements = {
+      '<code>': '**__',
+      '</code>': '__**'
+  }
+
+
+  # Get the Mitre Enterprise attack JSON reference
+  requests.packages.urllib3.disable_warnings()
+
+  data = None
+  score = 2
+
+  try:
+      r = requests.get(mitreURL, verify=False)
+      data = r.json()
+      fullRef = None
+  except:
+      demisto.results({
+          'Type': entryTypes['error'],
+          'ContentsFormat': formats['text'],
+          'Contents': 'There was an error when collecting MITRE information'
+      })
+      exit(0)
+
+
+  for x in data['objects']:
+      try:
+          for y in x['external_references']:
+              if ref in y['external_id']:
+                  fullRef = x
+                  break
+      except:
+          continue
+
+  if fullRef:
+
+      # Apply replacements
+      for x in replacements:
+          fullRef['description'] = fullRef['description'].replace(x, replacements[x])
+
+      try:
+          url = fullRef['external_references'][0]['url']
+      except:
+          url = 'https://attack.mitre.org/techniques/{0}/'.format(ref)
+      try:
+          shortName = fullRef['x_mitre_shortname']
+      except:
+          shortName = ''
+
+      overview = {
+          'Name': fullRef['name'],
+          'Description': fullRef['description'],
+          'Score': score, #suspicious
+          'Type': fullRef['type'],
+          'Reference': ref,
+          'URL': url
+      }
+      entry = {
+          'DBotScore': {
+              'Indicator': ref,
+              'Score': score,
+              'Type': 'mitreatt&ck',
+              'Vendor': 'MITRE'
+          },
+          'MitreAtt&ck.{0}(val.Name == obj.Name)'.format(ref): overview,
+          'MitreAtt&ck.{0}(val.Description == obj.Description)'.format(ref): overview,
+          'MitreAtt&ck.{0}(val.Type == obj.Type)'.format(ref): overview,
+          'MitreAtt&ck.{0}(val.Reference == obj.Reference)'.format(ref): overview,
+          'MitreAtt&ck.{0}(val.URL == obj.URL)'.format(ref): overview
+      }
+      md = '![alt text](https://attack.mitre.org/theme/images/mitre_attack.png "")\n_____\n# {} [{}]({})\n_____\n\n{}\n'.format(fullRef['name'], ref, url, fullRef['description'])
+      demisto.results({
+          'Type': entryTypes['note'],
+          'ContentsFormat': formats['json'],
+          'Contents': overview['Score'],
+          'ReadableContentsFormat' : formats['markdown'],
+          'HumanReadable': md,
+          'EntryContext': entry
+      })
+
+  else:
+      url = 'https://attack.mitre.org/techniques/{0}/'.format(ref)
+      md = '![alt text](https://attack.mitre.org/theme/images/mitre_attack.png "")\n_____\n# [{}]({})\n_____\nNo provided information from MITRE json file, please use the link above to read more.\n'.format(ref, url)
+      entry = {
+          'DBotScore': {
+              'Indicator': ref,
+              'Score': score,
+              'Type': 'mitreatt&ck',
+              'Vendor': 'MITRE'
+          },
+          'MitreAtt&ck.{0}.Reference'.format(ref): ref
+      }
+      demisto.results({
+          'Type': entryTypes['note'],
+          'ContentsFormat': formats['json'],
+          'Contents': score,
+          'ReadableContentsFormat' : formats['markdown'],
+          'HumanReadable': md,
+          'EntryContext': entry
+      })
+type: python
+tags:
+- reputation
+enabled: true
+args:
+- name: input
+  required: true
+  default: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.7.4.977
+runas: DBotWeakRole

@@ -1,0 +1,746 @@
+id: 5bf7740f-b921-4f8a-8e8b-59821c665016
+version: 86
+name: OPNsense Playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b618bf86-34cb-45c0-86d1-ff0998900f3d
+    type: start
+    task:
+      id: b618bf86-34cb-45c0-86d1-ff0998900f3d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": -550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: b79ea742-ea95-41ca-8f6a-3d4613f92d4a
+    type: regular
+    task:
+      id: b79ea742-ea95-41ca-8f6a-3d4613f92d4a
+      version: -1
+      name: AssignAnalystToIncident
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      assignBy:
+        simple: machine-learning
+      email: {}
+      roles: {}
+      username:
+        simple: adam.burt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": -415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: db727f25-9a74-48d3-8261-9a99d0a2edc6
+    type: condition
+    task:
+      id: db727f25-9a74-48d3-8261-9a99d0a2edc6
+      version: -1
+      name: Is the source currently being dealt with?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "27"
+      "yes":
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: incident.sourceip
+            iscontext: true
+          right:
+            value:
+              simple: lists.OPNsenseBeingDealthWith
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": -230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 1ec57f76-7083-4922-822a-25a6375651e6
+    type: regular
+    task:
+      id: 1ec57f76-7083-4922-822a-25a6375651e6
+      version: -1
+      name: Close Investigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      id:
+        simple: ${incident.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 1830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: cd0f55e9-a1ec-4775-8928-4d7c4a90afa6
+    type: condition
+    task:
+      id: cd0f55e9-a1ec-4775-8928-4d7c4a90afa6
+      version: -1
+      name: Any malicious indicators?
+      description: Checks if the investigation found any Malicious File/URL/IP, if
+        so return yes, otherwise no.
+      scriptName: IsMaliciousIndicatorFound
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "43"
+      "yes":
+      - "48"
+    scriptarguments:
+      includeSuspicious:
+        simple: "yes"
+      maliciousQueryOverride: {}
+      queryIndicators:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: b74ee833-0526-431b-8694-3cd97ea9521b
+    type: regular
+    task:
+      id: b74ee833-0526-431b-8694-3cd97ea9521b
+      version: -1
+      name: Remove IP from the being dealt with list
+      description: Remove data from list
+      script: Builtin|||removeFromList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      listData:
+        simple: ${incident.sourceip}
+      listName:
+        simple: OPNsenseBeingDealthWith
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: e067c29c-db0d-4047-878d-0cbc7261c60c
+    type: regular
+    task:
+      id: e067c29c-db0d-4047-878d-0cbc7261c60c
+      version: -1
+      name: Add the source IP to the currently being dealt with list
+      description: Add data to a list
+      script: Builtin|||addToList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      listData:
+        simple: ${incident.sourceip}
+      listName:
+        simple: OPNsenseBeingDealthWith
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "32":
+    id: "32"
+    taskid: 7891f0d7-0c3a-46f5-82bc-a87ce76a97ca
+    type: playbook
+    task:
+      id: 7891f0d7-0c3a-46f5-82bc-a87ce76a97ca
+      version: -1
+      name: OPNsense Populate Data
+      playbookName: OPNsense Populate Data
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "39":
+    id: "39"
+    taskid: ad420cbc-ca20-45ab-8724-7a95062d8572
+    type: title
+    task:
+      id: ad420cbc-ca20-45ab-8724-7a95062d8572
+      version: -1
+      name: Close Investigation
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "43":
+    id: "43"
+    taskid: 1695d806-be54-4c56-81ae-bbe896660a8f
+    type: condition
+    task:
+      id: 1695d806-be54-4c56-81ae-bbe896660a8f
+      version: -1
+      name: Would you like to block the IP?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "51"
+      "Yes":
+      - "49"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -370,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: ${incident.owner}
+      subject: null
+      body:
+        simple: Would you like to block the IP "${incident.sourceip}" (${incident.country})
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - "Yes"
+      - "No"
+  "46":
+    id: "46"
+    taskid: 43b4515f-0955-4ed5-8b9a-0db0fb8658c5
+    type: condition
+    task:
+      id: 43b4515f-0955-4ed5-8b9a-0db0fb8658c5
+      version: -1
+      name: Check IP state of whitelisted / blacklisted / blockedCountry
+      description: "Gets a value and return it. This is to be used in playbook conditional
+        tasks - get a value from incident field, label or context, and act accordingly.
+        \nIf an array is returned. the first value will be the decision making value."
+      scriptName: checkValue
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "39"
+      blockedCountry:
+      - "47"
+      neutral:
+      - "12"
+      whitelisted-demisto:
+      - "52"
+    scriptarguments:
+      value:
+        simple: ${ipstate}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 320
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: ${incident.sourceip} is found to be "${ipstate}"
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+  "47":
+    id: "47"
+    taskid: 76d7605a-a147-44fe-8cef-7feb884228e5
+    type: regular
+    task:
+      id: 76d7605a-a147-44fe-8cef-7feb884228e5
+      version: -1
+      name: Add IP to list in OPNsense
+      description: Adds an IP address to an alias list
+      script: OPNsense|||opnsense-add-single-ip-to-alias
+      type: regular
+      iscommand: true
+      brand: OPNsense
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      alias:
+        simple: BlockedSources
+      ip:
+        simple: ${incident.sourceip}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 580
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Added "${incident.sourceip}" to list "BlockedSources" as it was from
+          a blocked country
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+  "48":
+    id: "48"
+    taskid: ff7ba970-c382-49a1-8dda-3f4b417f5137
+    type: regular
+    task:
+      id: ff7ba970-c382-49a1-8dda-3f4b417f5137
+      version: -1
+      name: Add IP to list in OPNsense
+      description: Adds an IP address to an alias list
+      script: OPNsense|||opnsense-add-single-ip-to-alias
+      type: regular
+      iscommand: true
+      brand: OPNsense
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      alias:
+        simple: BlockedSources
+      ip:
+        simple: ${incident.sourceip}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 790
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Added "${incident.sourceip}" to list "BlockedSources" as it contained
+          malicious indicators
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+  "49":
+    id: "49"
+    taskid: 19a0a876-eb21-4561-8fe1-a8f4943bf97f
+    type: regular
+    task:
+      id: 19a0a876-eb21-4561-8fe1-a8f4943bf97f
+      version: -1
+      name: Add IP to list in OPNsense
+      description: Adds an IP address to an alias list
+      script: OPNsense|||opnsense-add-single-ip-to-alias
+      type: regular
+      iscommand: true
+      brand: OPNsense
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      alias:
+        simple: BlockedSources
+      ip:
+        simple: ${incident.sourceip}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -800,
+          "y": 1110
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Added "${incident.sourceip}" to list "BlockedSources" by "${incident.owner}"
+          manually
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+  "50":
+    id: "50"
+    taskid: cff6bf79-2026-487a-8e5d-cbd6332289b0
+    type: regular
+    task:
+      id: cff6bf79-2026-487a-8e5d-cbd6332289b0
+      version: -1
+      name: Add the source IP to the whitelist
+      description: Add data to a list
+      script: Builtin|||addToList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      listData:
+        simple: ${incident.sourceip}
+      listName:
+        simple: OPNsenseWhitelistHosts
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 80,
+          "y": 1290
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: '"${incident.owner}" added the IP "${incident.sourceip}" to the Demisto
+          whitelist'
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+  "51":
+    id: "51"
+    taskid: d0fadd05-2a1c-427a-81ae-7059d17e5f6c
+    type: condition
+    task:
+      id: d0fadd05-2a1c-427a-81ae-7059d17e5f6c
+      version: -1
+      name: Would you like to whitelist the IP?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "39"
+      "Yes":
+      - "50"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -350,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: ${incident.owner}
+      subject: null
+      body:
+        simple: Would you like to whitelist the IP ${incident.sourceip} (${incident.country})
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - "Yes"
+      - "No"
+  "52":
+    id: "52"
+    taskid: 6f2ac442-8499-41e9-848a-7ac862bc3be4
+    type: condition
+    task:
+      id: 6f2ac442-8499-41e9-848a-7ac862bc3be4
+      version: -1
+      name: Would you like to whitelist the IP?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "54"
+      "Yes":
+      - "53"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: ${incident.owner}
+      subject: null
+      body:
+        simple: The IP "${incident.sourceip}" (${incident.country}) is on the Demisto
+          whitelist, but not the OPNsense whitelist, would you like to add it to the
+          OPNsense whitelist?
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - "Yes"
+      - "No"
+  "53":
+    id: "53"
+    taskid: b647c52a-4658-4adf-83ab-656d42c013d0
+    type: regular
+    task:
+      id: b647c52a-4658-4adf-83ab-656d42c013d0
+      version: -1
+      name: Add IP to list in OPNsense
+      description: Adds an IP address to an alias list
+      script: OPNsense|||opnsense-add-single-ip-to-alias
+      type: regular
+      iscommand: true
+      brand: OPNsense
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      alias:
+        simple: GlobalWhitelist
+      ip:
+        simple: ${incident.sourceip}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1300,
+          "y": 790
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Added "${incident.sourceip}" to list "BlockedSources" as it contained
+          malicious indicators
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+  "54":
+    id: "54"
+    taskid: 701d45be-3e18-4884-87f0-2e78bcd415cc
+    type: condition
+    task:
+      id: 701d45be-3e18-4884-87f0-2e78bcd415cc
+      version: -1
+      name: Would you like remove the IP from the Demisto whitelist?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "39"
+      "Yes":
+      - "55"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: ${incident.owner}
+      subject: null
+      body:
+        simple: Would you like to remove "${incident.sourceip}"from the Demisto whitelist?
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - "Yes"
+      - "No"
+  "55":
+    id: "55"
+    taskid: 53d27d8f-50c8-467b-8bcd-9d33300faf17
+    type: regular
+    task:
+      id: 53d27d8f-50c8-467b-8bcd-9d33300faf17
+      version: -1
+      name: Remove IP from whitelist
+      description: Remove data from list
+      script: Builtin|||removeFromList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      listData:
+        simple: ${incident.sourceip}
+      listName:
+        simple: blockedCountry
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2475,
+        "width": 2480,
+        "x": -800,
+        "y": -550
+      }
+    }
+  }
+inputs: []
+outputs: []

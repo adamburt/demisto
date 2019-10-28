@@ -1,0 +1,123 @@
+commonfields:
+  id: ebee7052-8fe4-475e-82f8-cc9a6b78927a
+  version: 15
+name: ZipMultipleFiles
+script: |
+  import zipfile
+  import os
+  from os.path import isfile
+
+  try: # in order to support compression of the file
+      import zlib
+      compression = zipfile.ZIP_DEFLATED
+  except:
+      compression = zipfile.ZIP_STORED
+  import pyminizip
+
+  fileString = demisto.args().get('entryID', None)
+  fileEntries = fileString.split(',')
+  zipName = demisto.args()['zipName']
+  password = demisto.args().get('password', None)
+
+  if not fileEntries:
+    demisto.results({
+        'Type': entryTypes['error'],
+        'ContentsFormat': formats['text'],
+        'Contents': 'You must set at least 1 entryID when using the zip script'
+    })
+    sys.exit(0)
+  files = []
+  filenames = []
+  for item in fileEntries:
+      try:
+          res = demisto.executeCommand('getFilePath', {'id': item})
+          if res[0]['Type'] == entryTypes['error']:
+              demisto.results({
+                  'Type': entryTypes['error'],
+                  'ContentsFormat': formats['text'],
+                  'Contents': 'Failed to get the file path for entry: ' + item +' the error message was '+ res[0]['Contents']
+                  })
+          else:
+              filePath = res[0]['Contents']['path']
+              fileCurrentName = res[0]['Contents']['name']
+              if not isfile(filePath):
+                  demisto.results({
+                      'Type': entryTypes['error'],
+                      'ContentsFormat': formats['text'],
+                      'Contents': fileEntryID + 'is not a file. Please recheck your input.'
+                      })
+                  continue
+
+              files.append({'fileCurrentName': fileCurrentName.replace(' ', '\\ '), 'filePath': filePath})
+              filenames.append(fileCurrentName)
+      except:
+          pass
+
+
+  # copying the file to current location
+  for x in files:
+      os.system('cp ' + x['filePath'] + ' ' + x['fileCurrentName'])
+
+  # zipping the file
+  if password:
+      for x in files:
+          pyminizip.compress(x['fileCurrentName'], zipName, password, 5)
+  else:
+      zf = zipfile.ZipFile(zipName, mode='w')
+      for x in files:
+          try:
+              zf.write(x['fileCurrentName'], compress_type=compression)
+          except:
+              pass
+
+          # testing for file integrity
+          ret = zf.testzip()
+          if ret is not None:
+            demisto.results({
+                'Type': entryTypes['error'],
+                'ContentsFormat': formats['text'],
+                'Contents': 'There was a problem with the zipping, file: ' + ret + 'is corrupted'
+            })
+            sys.exit(0)
+      zf.close()
+  with open(zipName, 'rb') as f:
+      file_data = f.read()
+  demisto.results(fileResult(zipName,file_data))
+  results = []
+  results.append(
+    {
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': { 'ZippedFiles': zipName },
+        'EntryContext': { 'ZippedFiles': zipName, 'zipped': True },
+        'ReadableContentsFormat' : formats['table'],
+        'HumanReadable': { 'ZippedFiles': zipName, 'ContainsFiles': ', '.join(filenames) }
+        })
+  demisto.results(results)
+type: python
+tags:
+- Utility
+- file
+comment: Zip multiple files and upload to war room
+enabled: true
+args:
+- name: entryID
+  required: true
+  description: Comma separated entry id(s) of the file we want to zip
+- name: zipName
+  required: true
+  default: true
+  description: 'Name of the output file, for example: zipName="test" would result
+    in output file "test.zip"'
+  defaultValue: zip.zip
+- name: password
+  description: 'Used to create a password protected zip file. Example: password="abcd"'
+outputs:
+- contextPath: ZipFile.ZippedFile
+  description: The zipped file name
+  type: string
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python_zipfile
+runas: DBotWeakRole

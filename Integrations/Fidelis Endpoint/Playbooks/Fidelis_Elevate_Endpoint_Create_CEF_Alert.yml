@@ -1,0 +1,2068 @@
+id: f646e547-dc48-446b-8a66-40f8a2bed9d5
+version: 1
+name: Fidelis Elevate Endpoint Create CEF Alert
+description: This playbook maps fields from a Fidelis Endpoint Alert and Event to
+  common CEF fields.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5494879e-e240-4236-8278-55501033e18c
+    type: start
+    task:
+      id: 5494879e-e240-4236-8278-55501033e18c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1237.5,
+          "y": 65
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 3a592461-4ebc-44cf-876e-4f56a16164e5
+    type: title
+    task:
+      id: 3a592461-4ebc-44cf-876e-4f56a16164e5
+      version: -1
+      name: Populate CEF headers
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1237.5,
+          "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 3de73400-ba6e-43cf-8a3f-5a4a0c370594
+    type: regular
+    task:
+      id: 3de73400-ba6e-43cf-8a3f-5a4a0c370594
+      version: -1
+      name: Set CEF Header
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: CEF|0|Fidelis Cybersecurity|Fidelis Endpoint|${Fidelis.Endpoint.Platform.Version}|${Fidelis.Endpoint.Alert.Source}|${Fidelis.Endpoint.Alert.Intel
+          Source}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1237.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 4405ddc9-c95f-4f57-8c84-d3c44f6d3bb6
+    type: regular
+    task:
+      id: 4405ddc9-c95f-4f57-8c84-d3c44f6d3bb6
+      version: -1
+      name: Set CEF Severity to Very High
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: ${data}|Very-High|
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: edcd7737-5a65-4501-85a1-116f69fe0346
+    type: condition
+    task:
+      id: edcd7737-5a65-4501-85a1-116f69fe0346
+      version: -1
+      name: Check the severity number
+      description: "Gets a value and return it. This is to be used in playbook conditional
+        tasks - get a value from incident field, label or context, and act accordingly.
+        \nIf an array is returned. the first value will be the decision making value."
+      scriptName: checkValue
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "1":
+      - "10"
+      "2":
+      - "12"
+      "3":
+      - "13"
+      "4":
+      - "14"
+    scriptarguments:
+      value:
+        simple: ${Fidelis.Endpoint.Alert.Severity}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1237.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: cb327f9e-1d32-40ac-857d-3ab0301e506f
+    type: regular
+    task:
+      id: cb327f9e-1d32-40ac-857d-3ab0301e506f
+      version: -1
+      name: Set CEF Severity to High
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: ${data}|High|
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 0d716948-a599-45f8-88be-04911bfcad0d
+    type: regular
+    task:
+      id: 0d716948-a599-45f8-88be-04911bfcad0d
+      version: -1
+      name: Set CEF Severity to Medium
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: ${data}|Medium|
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 4a93d0c2-0159-456d-8432-a07d167e5d12
+    type: regular
+    task:
+      id: 4a93d0c2-0159-456d-8432-a07d167e5d12
+      version: -1
+      name: Set CEF Severity to Low
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: ${data}|Low|
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 5bf31332-69bc-417f-8276-7ed1dd2bb650
+    type: regular
+    task:
+      id: 5bf31332-69bc-417f-8276-7ed1dd2bb650
+      version: -1
+      name: Set CEF Severity to Unknown
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: ${data}|Unknown|
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1985,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 6c78367c-727b-4f00-89af-ae2bb43133af
+    type: title
+    task:
+      id: 6c78367c-727b-4f00-89af-ae2bb43133af
+      version: -1
+      name: Populate event specific field values
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1237.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 090c6977-af96-45d5-8d2d-ec1ad32642e8
+    type: regular
+    task:
+      id: 090c6977-af96-45d5-8d2d-ec1ad32642e8
+      version: -1
+      name: Set the CEF Alert data
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: CEF Alert
+      value:
+        simple: ${data}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 4975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: feabd6d3-b0d5-445e-88cd-0accd8db25ca
+    type: regular
+    task:
+      id: feabd6d3-b0d5-445e-88cd-0accd8db25ca
+      version: -1
+      name: MapValues
+      description: 'Map the given values to the translated values. If given values:
+        a,b,c and translated: 1,2,3 then input is a will return 1'
+      scriptName: MapValues
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      input:
+        simple: 1,2,3,4,5
+      translated:
+        simple: '"Very-High","High","Medium","Low","Unknown"'
+      values:
+        complex:
+          root: Fidelis
+          accessor: Endpoint.Alert.Severity
+          transformers:
+          - operator: Stringify
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1667.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: 4a1e4963-5aa4-44bf-88c9-63249ee4cb5d
+    type: regular
+    task:
+      id: 4a1e4963-5aa4-44bf-88c9-63249ee4cb5d
+      version: -1
+      name: Populate filePath
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: ${data} filePath=${Fidelis.Endpoint.Alert.Event.Path}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: fdf531e9-a64a-4c5b-81fd-962f1d61b31c
+    type: condition
+    task:
+      id: fdf531e9-a64a-4c5b-81fd-962f1d61b31c
+      version: -1
+      name: Which event type
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "52"
+      Anti-Malware:
+      - "49"
+      DNS:
+      - "48"
+      File:
+      - "46"
+      Network:
+      - "44"
+      Process:
+      - "43"
+      Registry:
+      - "45"
+      Script-Execution:
+      - "50"
+      USB:
+      - "47"
+    separatecontext: false
+    conditions:
+    - label: Process
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: Fidelis.Endpoint.Alert.Event.Event Type
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              simple: Fidelis.Endpoint.Alert.Event.Event Type
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+        - operator: isEqualString
+          left:
+            value:
+              simple: Fidelis.Endpoint.Alert.Event.Event Type
+            iscontext: true
+          right:
+            value:
+              simple: "30"
+        - operator: isEqualString
+          left:
+            value:
+              simple: Fidelis.Endpoint.Alert.Event.Event Type
+            iscontext: true
+          right:
+            value:
+              simple: "31"
+        - operator: isEqualString
+          left:
+            value:
+              simple: Fidelis.Endpoint.Alert.Event.Event Type
+            iscontext: true
+          right:
+            value:
+              simple: "32"
+    - label: File
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Fidelis.Endpoint.Alert.Event.Event Type
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+        - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: Fidelis.Endpoint.Alert.Event.Event Type
+            iscontext: true
+          right:
+            value:
+              simple: "4"
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              simple: Fidelis.Endpoint.Alert.Event.Event Type
+            iscontext: true
+          right:
+            value:
+              simple: "8"
+    - label: Network
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Fidelis.Endpoint.Alert.Event.Event Type
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    - label: Registry
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: Fidelis.Endpoint.Alert.Event.Event Type
+            iscontext: true
+          right:
+            value:
+              simple: "9"
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              simple: Fidelis.Endpoint.Alert.Event.Event Type
+            iscontext: true
+          right:
+            value:
+              simple: "12"
+    - label: USB
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: Fidelis.Endpoint.Alert.Event.Event Type
+            iscontext: true
+          right:
+            value:
+              simple: "14"
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              simple: Fidelis.Endpoint.Alert.Event.Event Type
+            iscontext: true
+          right:
+            value:
+              simple: "16"
+    - label: DNS
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Fidelis.Endpoint.Alert.Event.Event Type
+            iscontext: true
+          right:
+            value:
+              simple: "17"
+    - label: Anti-Malware
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: Fidelis.Endpoint.Alert.Event.Event Type
+            iscontext: true
+          right:
+            value:
+              simple: "18"
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              simple: Fidelis.Endpoint.Alert.Event.Event Type
+            iscontext: true
+          right:
+            value:
+              simple: "29"
+    - label: Script-Execution
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Fidelis.Endpoint.Alert.Event.Event Type
+            iscontext: true
+          right:
+            value:
+              simple: "34"
+    view: |-
+      {
+        "position": {
+          "x": 1237.5,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: fe1b2eeb-7388-4081-8a46-d05911a31660
+    type: regular
+    task:
+      id: fe1b2eeb-7388-4081-8a46-d05911a31660
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: data
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 5150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: dffc67d3-76e8-4a67-81d2-663ff5ea4f25
+    type: regular
+    task:
+      id: dffc67d3-76e8-4a67-81d2-663ff5ea4f25
+      version: -1
+      name: Populate sproc
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: ${data} sproc=${Fidelis.Endpoint.Alert.Event.Path}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: 3399d829-e7a7-40d5-86e6-f6ce07fe64ff
+    type: regular
+    task:
+      id: 3399d829-e7a7-40d5-86e6-f6ce07fe64ff
+      version: -1
+      name: Populate spid
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: ${data} spid=${Fidelis.Endpoint.Alert.Event.Pid}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: 671dd172-9a69-4ac3-8332-1744d6753c06
+    type: title
+    task:
+      id: 671dd172-9a69-4ac3-8332-1744d6753c06
+      version: -1
+      name: Set the context path and delete temp path
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 4830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "30":
+    id: "30"
+    taskid: 9276ca4f-3816-4cb0-8602-7abee5a2f6d0
+    type: title
+    task:
+      id: 9276ca4f-3816-4cb0-8602-7abee5a2f6d0
+      version: -1
+      name: Populate generic field values
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 3635
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "31":
+    id: "31"
+    taskid: a52f3a68-71ae-4209-8f71-f6c3ef2ee390
+    type: regular
+    task:
+      id: a52f3a68-71ae-4209-8f71-f6c3ef2ee390
+      version: -1
+      name: Populate suser
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: ${data} suser=${Fidelis.Endpoint.Alert.Event.User}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 3780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "32":
+    id: "32"
+    taskid: 0c19f3d4-4840-46dd-87da-e606d0df893f
+    type: regular
+    task:
+      id: 0c19f3d4-4840-46dd-87da-e606d0df893f
+      version: -1
+      name: Populate dst
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: ${data} dst=${Fidelis.Endpoint.Alert.Event.Remote IP}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 2235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "33":
+    id: "33"
+    taskid: 6699929b-ca11-49fc-81d1-e19e214f4fa6
+    type: regular
+    task:
+      id: 6699929b-ca11-49fc-81d1-e19e214f4fa6
+      version: -1
+      name: Populate src
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: ${data} src=${Fidelis.Endpoint.Alert.Event.Local IP}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "34":
+    id: "34"
+    taskid: cce93ec5-36f0-4105-85ce-5615a1c822b8
+    type: regular
+    task:
+      id: cce93ec5-36f0-4105-85ce-5615a1c822b8
+      version: -1
+      name: Populate spt
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: ${data} spt=${Fidelis.Endpoint.Alert.Event.Local Port}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 2585
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "35":
+    id: "35"
+    taskid: 1ca4ffa6-7efa-4bf7-8d8b-0fbfc7554414
+    type: regular
+    task:
+      id: 1ca4ffa6-7efa-4bf7-8d8b-0fbfc7554414
+      version: -1
+      name: Populate dpt
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: ${data} dpt=${Fidelis.Endpoint.Alert.Event.Remote Port}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "36":
+    id: "36"
+    taskid: cff2e7e6-411b-49d0-8d1c-30223870b924
+    type: regular
+    task:
+      id: cff2e7e6-411b-49d0-8d1c-30223870b924
+      version: -1
+      name: Populate filehash
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: ${data} filehash=${Fidelis.Endpoint.Alert.Event.Hash}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "37":
+    id: "37"
+    taskid: 9561c07f-e532-4197-814d-2100c2dd1abf
+    type: regular
+    task:
+      id: 9561c07f-e532-4197-814d-2100c2dd1abf
+      version: -1
+      name: Populate filePath
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: ${data} filePath=${Fidelis.Endpoint.Alert.Event.Path}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "38":
+    id: "38"
+    taskid: 1e4b5164-2e17-49e4-835d-70f96ac8437a
+    type: regular
+    task:
+      id: 1e4b5164-2e17-49e4-835d-70f96ac8437a
+      version: -1
+      name: Populate filehash
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: ${data} filehash=${Fidelis.Endpoint.Alert.Event.Hash}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "39":
+    id: "39"
+    taskid: 23cf6205-6746-4c74-8e7b-a544222477d6
+    type: regular
+    task:
+      id: 23cf6205-6746-4c74-8e7b-a544222477d6
+      version: -1
+      name: Populate fsize
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: ${data} fsize=${Fidelis.Endpoint.Alert.Event.Size}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "40":
+    id: "40"
+    taskid: e6bebed2-6c05-4807-849f-1290b0062ea9
+    type: regular
+    task:
+      id: e6bebed2-6c05-4807-849f-1290b0062ea9
+      version: -1
+      name: Populate fsize
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: ${data} fsize=${Fidelis.Endpoint.Alert.Event.Size}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "41":
+    id: "41"
+    taskid: 02a9cd28-c357-45d2-8989-9fa4d4286024
+    type: regular
+    task:
+      id: 02a9cd28-c357-45d2-8989-9fa4d4286024
+      version: -1
+      name: Populate sproc
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: ${data} sproc=${Fidelis.Endpoint.Alert.Event.Parent Path}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 3285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "42":
+    id: "42"
+    taskid: 8570097a-4445-4194-827f-67783d53c288
+    type: regular
+    task:
+      id: 8570097a-4445-4194-827f-67783d53c288
+      version: -1
+      name: Populate spid
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: ${data} spid=${Fidelis.Endpoint.Alert.Event.Ppid}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 3460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "43":
+    id: "43"
+    taskid: 6e2ce17f-a63d-4292-8858-927b07d37ce1
+    type: title
+    task:
+      id: 6e2ce17f-a63d-4292-8858-927b07d37ce1
+      version: -1
+      name: Process
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "44":
+    id: "44"
+    taskid: f4f94a0b-1e19-4003-8227-73818d87abbf
+    type: title
+    task:
+      id: f4f94a0b-1e19-4003-8227-73818d87abbf
+      version: -1
+      name: Network
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 2075
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "45":
+    id: "45"
+    taskid: 0e4864a4-5e79-4419-8795-ef80761e60b0
+    type: title
+    task:
+      id: 0e4864a4-5e79-4419-8795-ef80761e60b0
+      version: -1
+      name: Registry
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "64"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1667.5,
+          "y": 2075
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "46":
+    id: "46"
+    taskid: b08235b2-ed20-4d3f-8f7c-42cae2af8714
+    type: title
+    task:
+      id: b08235b2-ed20-4d3f-8f7c-42cae2af8714
+      version: -1
+      name: File
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "47":
+    id: "47"
+    taskid: a1891744-47b7-4054-83aa-9053da0e9cc3
+    type: title
+    task:
+      id: a1891744-47b7-4054-83aa-9053da0e9cc3
+      version: -1
+      name: USB
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1995,
+          "y": 3475
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "48":
+    id: "48"
+    taskid: 4a2428a4-6e21-4f87-81ff-b4181c42fb1f
+    type: title
+    task:
+      id: 4a2428a4-6e21-4f87-81ff-b4181c42fb1f
+      version: -1
+      name: DNS
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1237.5,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "49":
+    id: "49"
+    taskid: 980739b6-a7be-422e-88be-a95ec4bff761
+    type: title
+    task:
+      id: 980739b6-a7be-422e-88be-a95ec4bff761
+      version: -1
+      name: Anti-Malware
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2425,
+          "y": 3475
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "50":
+    id: "50"
+    taskid: 44abc25d-4d7b-4fa0-8011-f5460f331b1b
+    type: title
+    task:
+      id: 44abc25d-4d7b-4fa0-8011-f5460f331b1b
+      version: -1
+      name: Script-Execution
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2855,
+          "y": 3475
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "51":
+    id: "51"
+    taskid: 4f2b92ae-d0a7-4a21-8257-cee0cf286e8e
+    type: title
+    task:
+      id: 4f2b92ae-d0a7-4a21-8257-cee0cf286e8e
+      version: -1
+      name: Complete
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 5325
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "52":
+    id: "52"
+    taskid: 7777caa5-dd7e-4db5-8a56-0b4691a103ce
+    type: regular
+    task:
+      id: 7777caa5-dd7e-4db5-8a56-0b4691a103ce
+      version: -1
+      name: Populate msg
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: ${data} msg=${Fidelis.Endpoint.Alert.Description}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 4305
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "53":
+    id: "53"
+    taskid: 1791baf2-78d8-454f-846c-293e280988b3
+    type: regular
+    task:
+      id: 1791baf2-78d8-454f-846c-293e280988b3
+      version: -1
+      name: Populate filePath
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: ${data} filePath=${Fidelis.Endpoint.Alert.Event.Parent Path}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1237.5,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "54":
+    id: "54"
+    taskid: b5215b48-72d1-48e2-84db-bdb362ae4d04
+    type: regular
+    task:
+      id: b5215b48-72d1-48e2-84db-bdb362ae4d04
+      version: -1
+      name: Populate fsize
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: ${data} fsize=${Fidelis.Endpoint.Alert.Event.Size}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1237.5,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "55":
+    id: "55"
+    taskid: e987930b-0e9e-490c-8451-8885524feb7a
+    type: regular
+    task:
+      id: e987930b-0e9e-490c-8451-8885524feb7a
+      version: -1
+      name: Populate filehash
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: ${data} filehash=${Fidelis.Endpoint.Alert.Event.Parent Hash}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1237.5,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "56":
+    id: "56"
+    taskid: 12128f3f-edc5-4b14-83e5-a2ecf8d8dc9d
+    type: regular
+    task:
+      id: 12128f3f-edc5-4b14-83e5-a2ecf8d8dc9d
+      version: -1
+      name: Populate cs1Label
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: ${data} cs1Label=DNS Information
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1237.5,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "57":
+    id: "57"
+    taskid: 1aba871f-cd04-4950-8e24-efade4a5e8a5
+    type: regular
+    task:
+      id: 1aba871f-cd04-4950-8e24-efade4a5e8a5
+      version: -1
+      name: Populate cs1
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: ${data} cs1=${Fidelis.Endpoint.Alert.Event.Dns Answer}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1237.5,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "58":
+    id: "58"
+    taskid: 83e60ad5-f23f-4d8a-8875-a18b791c6b1d
+    type: regular
+    task:
+      id: 83e60ad5-f23f-4d8a-8875-a18b791c6b1d
+      version: -1
+      name: Populate deviceDirection
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: ${data} deviceDirection=${Fidelis.Endpoint.Alert.Event.Network Direction}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 2935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "59":
+    id: "59"
+    taskid: 8d0418e3-f1e3-4115-836c-dfaee890003e
+    type: regular
+    task:
+      id: 8d0418e3-f1e3-4115-836c-dfaee890003e
+      version: -1
+      name: Populate cs6Label
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: ${data} cs6Label=Command Line
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 3955
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "60":
+    id: "60"
+    taskid: 4737c635-7f81-41d0-8f97-3231d80a5e71
+    type: regular
+    task:
+      id: 4737c635-7f81-41d0-8f97-3231d80a5e71
+      version: -1
+      name: Populate cs6
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: ${data} cs6=${Fidelis.Endpoint.Alert.Event.Parameters}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 4130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "61":
+    id: "61"
+    taskid: 6e7bf480-b274-41dc-83cc-af652e97d451
+    type: regular
+    task:
+      id: 6e7bf480-b274-41dc-83cc-af652e97d451
+      version: -1
+      name: Populate protocol
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: ${data} proto=${Fidelis.Endpoint.Alert.Event.Protocol}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 3110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "62":
+    id: "62"
+    taskid: b7271ffc-1707-4f69-80bf-13bf63343167
+    type: regular
+    task:
+      id: b7271ffc-1707-4f69-80bf-13bf63343167
+      version: -1
+      name: Populate shost
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: ${data} shost=${Fidelis.Endpoint.Alert.Endpoint.Host Name}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 4480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "63":
+    id: "63"
+    taskid: 1809f0f5-2f73-4be3-8390-8df42d34d32f
+    type: regular
+    task:
+      id: 1809f0f5-2f73-4be3-8390-8df42d34d32f
+      version: -1
+      name: Populate smac
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: ${data} smac=${Fidelis.Endpoint.Alert.Endpoint.Mac Address}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 4655
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "64":
+    id: "64"
+    taskid: d161b0ef-4f38-4d46-8cf3-412af837bbcf
+    type: regular
+    task:
+      id: d161b0ef-4f38-4d46-8cf3-412af837bbcf
+      version: -1
+      name: Populate cs1Label
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "68"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: ${data} cs1Label=Registry Key
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1667.5,
+          "y": 2235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "65":
+    id: "65"
+    taskid: cc91d942-075c-4e29-8e40-cef05aee08e9
+    type: regular
+    task:
+      id: cc91d942-075c-4e29-8e40-cef05aee08e9
+      version: -1
+      name: Populate cs2Label
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: ${data} cs2Label=Registry Value
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1667.5,
+          "y": 2585
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "66":
+    id: "66"
+    taskid: 4e03e02f-e6ce-4aa1-8942-df2e53df7840
+    type: regular
+    task:
+      id: 4e03e02f-e6ce-4aa1-8942-df2e53df7840
+      version: -1
+      name: Populate cs3Label
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "67"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: ${data} cs3Label=Registry Data
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1667.5,
+          "y": 2935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "67":
+    id: "67"
+    taskid: b7f2c39f-68f5-4cf4-884d-d8b034055329
+    type: regular
+    task:
+      id: b7f2c39f-68f5-4cf4-884d-d8b034055329
+      version: -1
+      name: Populate cs3
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: ${data} cs3=${Fidelis.Endpoint.Alert.Event.Registry Value}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1667.5,
+          "y": 3110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "68":
+    id: "68"
+    taskid: edcbcb02-a438-4f46-8ad3-8d73a552d936
+    type: regular
+    task:
+      id: edcbcb02-a438-4f46-8ad3-8d73a552d936
+      version: -1
+      name: Populate cs1
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: ${data} cs1l=${Fidelis.Endpoint.Alert.Event.Hive}${Fidelis.Endpoint.Alert.Event.Path}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1667.5,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "69":
+    id: "69"
+    taskid: c2c2d25b-da9a-46a7-86dc-dbc113ec2aaf
+    type: regular
+    task:
+      id: c2c2d25b-da9a-46a7-86dc-dbc113ec2aaf
+      version: -1
+      name: Populate cs2
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "66"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: data
+      value:
+        simple: ${data} cs2=${Fidelis.Endpoint.Alert.Event.Name}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1667.5,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 5340,
+        "width": 3185,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs:
+- contextPath: CEF Alert
+  description: The full CEF data that can be sent over the network
+  type: string

@@ -1,0 +1,43 @@
+{
+	"brandName": "Fidelis Elevate Endpoint",
+	"custom": true,
+	"defaultIncidentType": "Fidelis Elevate Endpoint",
+	"id": "14fe937b-78c9-469a-8bc2-a6c634984de4",
+	"incidentSamples": [],
+	"instanceId": "a90037e4-8cc4-4948-87ae-25e434c6bf22",
+	"instanceName": "Fidelis UK Lab",
+	"isDefault": false,
+	"keyTypeMap": {
+		"Behavior Rules": "Fidelis Elevate Endpoint",
+		"Fidelis Antivirus": "Fidelis Elevate Endpoint",
+		"Fidelis Process Blocking": "Fidelis Elevate Endpoint",
+		"Installed Software CVE": "Fidelis Elevate Endpoint",
+		"Intelligence Feed": "Fidelis Elevate Endpoint"
+	},
+	"mapping": {
+		"Fidelis Elevate Endpoint": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Alert Type": {
+					"complex": null,
+					"simple": "Source"
+				},
+				"Endpoint Name": {
+					"complex": null,
+					"simple": "Target"
+				},
+				"Fidelis Endpoint Alert ID": {
+					"complex": null,
+					"simple": "Id"
+				}
+			}
+		}
+	},
+	"sortValues": null,
+	"transformer": {
+		"complex": null,
+		"simple": "Source"
+	},
+	"unclassifiedCases": {},
+	"version": -1
+}

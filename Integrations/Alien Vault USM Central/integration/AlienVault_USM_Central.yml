@@ -1,0 +1,352 @@
+commonfields:
+  id: AlienVault USM Central
+  version: -1
+name: AlienVault USM Central
+display: AlienVault USM Central
+category: Data Enrichment & Threat Intelligence
+image: data:image/png;base64,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
+description: Search and monitor alarms and events from AlienVault USM Central.
+configuration:
+- display: Server URL (e.g., https://www.example.com)
+  name: url
+  defaultvalue: https://www.example.com
+  type: 0
+  required: true
+- display: Client ID
+  name: client_id
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Client Secret
+  name: client_secret
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Trust any certificate (insecure)
+  name: insecure
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Fetch the first number of hours of alarms (number of hours to go back in
+    time on first collect)
+  name: fetch_time
+  defaultvalue: "48"
+  type: 0
+  required: false
+- display: Use System Proxy
+  name: proxy
+  defaultvalue: "true"
+  type: 8
+  required: false
+script:
+  script: |-
+    ''' IMPORTS '''
+
+    import json
+    import requests
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBALS/PARAMS '''
+
+    CLIENT_ID = demisto.params().get('client_id')
+    CLIENT_SECRET = demisto.params().get('client_secret')
+    # Remove trailing slash to prevent wrong URL path to service
+    SERVER = demisto.params().get('url', '').strip('/')
+
+    # Should we use SSL
+    USE_SSL = not demisto.params().get('insecure', False)
+    IS_FETCH = demisto.params().get('isFetch')
+
+    # How much time before the first fetch to retrieve incidents
+    FETCH_TIME = int(demisto.params().get('fetch_time', 48))
+
+    # Service base URL
+    BASE_URL = SERVER + '/api/1.1'
+
+    # Headers to be sent in requests
+
+    # Auth token to use
+    AUTH_TOKEN = ''
+
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def handle_web_error(res):
+        return_error("Error returned '{}' - '{}'".format(res.status_code, res.text))
+        exit(-1)
+
+
+    def generic_post_request(url_suffix, params=None, headers=None, auth=None, data=None):
+        url = BASE_URL + url_suffix
+        if auth:
+            res = requests.post(url, params=params, headers=headers, auth=auth, data=data)
+        else:
+            res = requests.post(url, params=params, headers=headers, data=data)
+        if res.status_code != 200:
+            handle_web_error(res)
+        return res.json()
+
+
+    def generic_get_request(url_suffix, params=None, headers=None, auth=None):
+        url = BASE_URL + url_suffix
+        res = requests.get(url, params=params, headers=headers, auth=auth)
+        if res.status_code != 200:
+            handle_web_error(res)
+        return res.json()
+
+
+    def get_token():
+        basic_auth_credentials = (CLIENT_ID, CLIENT_SECRET)
+        res = generic_post_request('/oauth/token',
+                                   params={'grant_type': 'client_credentials'},
+                                   headers={'Content-Type': 'application/json'},
+                                   auth=basic_auth_credentials)
+        return res['access_token']
+
+
+    def item_to_incident(item, incidentName, incidentType, identify, timing):
+        incident = {
+            'Type': 'AlienVault USM',
+            'name': '{0}: '.format(incidentName) + item[incidentType].get(identify),
+            'occurred': item[incidentType].get(timing),
+            'rawJSON': json.dumps(item),
+        }
+        return incident
+
+
+    ''' COMMANDS + REQUESTS FUNCTIONS '''
+
+
+    def search_alarms(start_time=None, end_time=None, limit=100, direction='desc'):
+
+        limit = demisto.args().get("limit", limit)
+
+        data = {}
+        data['page'] = 1
+        data['size'] = limit
+        data['sort'] = {'alarm.timestamp_received': direction}
+        data['range'] = {'alarm.timestamp_received': {'gte': start_time, 'lte': end_time, 'timeZone': '-0000'}}
+
+        headers = {"Authorization": "Bearer " + AUTH_TOKEN, "Content-Type": "application/json"}
+        res = generic_post_request('/alarms/search', headers=headers, data=json.dumps(data))
+        if res['total'] == 0:
+            return []
+        return res.get('results', [])
+
+
+    def search_vulnerabilities(start_time=None, end_time=None, host=None, cve=None, limit=100, direction='desc'):
+
+        limit = demisto.args().get("limit", limit)
+
+        data = {}
+        data['page'] = 1
+        data['size'] = limit
+        data['sort'] = {'vulnerability.lastTimestamp': direction}
+        data['range'] = {'vulnerability.lastTimestamp': {'gte': start_time, 'lte': end_time, 'timeZone': '-0000'}}
+        data['find'] = {}
+
+        host = demisto.args().get("host", host)
+        if host:
+            data['find']['asset.name'] = [host]
+        cve = demisto.args().get("cve", cve)
+        if cve:
+            data['find']['vulnerability.cve'] = [cve]
+
+        headers = {"Authorization": "Bearer " + AUTH_TOKEN, "Content-Type": "application/json"}
+        res = generic_post_request('/vulnerabilities/search', headers=headers, data=json.dumps(data))
+        if res['total'] == 0:
+            return []
+
+        res = res['results']
+        demisto.results({
+            "Type": entryTypes["note"],
+            "ContentsFormat": formats["json"],
+            "Contents": res,
+            "ReadableContentsFormat": None,
+            "HumanReadable": None,
+            "EntryContext": {"Vulnerabilities": res}
+        })
+
+
+    def search_assets(start_time=None, end_time=None, host=None, os=None, limit=100, direction='desc'):
+
+        limit = demisto.args().get("limit", limit)
+
+        data = {}
+        data['page'] = 1
+        data['size'] = limit
+        data['sort'] = {'asset.dateFound': direction}
+        data['range'] = {'asset.dateFound': {'gte': start_time, 'lte': end_time, 'timeZone': '-0000'}}
+        data['find'] = {}
+
+        host = demisto.args().get("host", host)
+        if host:
+            data['find']['asset.name'] = [host]
+
+        os = demisto.args().get("os", os)
+        if os:
+            data['find']['asset.operatingSystem'] = [os]
+
+        headers = {"Authorization": "Bearer " + AUTH_TOKEN, "Content-Type": "application/json"}
+        res = generic_post_request('/assets/search', headers=headers, data=json.dumps(data))
+        demisto.results(res)
+        exit(0)
+        if res['total'] == 0:
+            return []
+
+        res = res['results']
+
+        demisto.results({
+            "Type": entryTypes["note"],
+            "ContentsFormat": formats["json"],
+            "Contents": res,
+            "ReadableContentsFormat": None,
+            "HumanReadable": None,
+            "EntryContext": {"Vulnerabilities": res}
+        })
+
+
+    def test_module():
+        """
+        Performs basic get request to get alarm samples
+        """
+        search_alarms(limit=1, start_time="now-1d")
+        demisto.results('ok')
+
+
+    def fetch_incidents():
+        last_run = demisto.getLastRun()
+        # Get the last fetch time, if exists
+        last_fetch = last_run.get('timestamp', "0")
+
+        if last_fetch == 0:
+            start_time = "now-{0}h".format(int(FETCH_TIME))
+        else:
+            start_time = "now-1d"
+        end_time = "now"
+
+        incidents = []
+        items = search_alarms(start_time=start_time, end_time=end_time, direction='asc')
+
+        # Create a holder for the latest timestamp received by an alerts timestamp_received
+        latest_timestamp = 0
+        for item in items:
+
+            # If the alarm is newer than the last alarm we received in the previous batch of incident collections
+            if int(item['alarm']['timestamp_received']) > int(last_fetch):
+
+                # Create the incident
+                incident = item_to_incident(item, "Alarm", "alarm", "uuid", "timestamp_occured_iso8601")
+
+                # Add the incident to the list
+                incidents.append(incident)
+
+            # If alarms received date newer than previous, update marker for storage in getLastRun command
+            if int(item['alarm']['timestamp_received']) > int(latest_timestamp):
+                latest_timestamp = item['alarm']['timestamp_received']
+
+        demisto.setLastRun({'timestamp': latest_timestamp})
+        demisto.incidents(incidents)
+
+
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+    COMMANDS = {
+        'test-module': test_module,
+        'fetch-incidents': fetch_incidents,
+        'alienvault-search-vulnerabilties': search_vulnerabilities,
+        'alienvault-search-assets': search_assets
+    }
+
+
+    def main():
+        global AUTH_TOKEN
+        cmd = demisto.command()
+        LOG('Command being called is {}'.format(cmd))
+
+        try:
+            handle_proxy()
+            AUTH_TOKEN = get_token()
+
+            if cmd in COMMANDS:
+                COMMANDS[cmd]()
+
+        # Log exceptions
+        except Exception as e:
+            import traceback
+            LOG(traceback.format_exc())
+
+            if demisto.command() == 'fetch-incidents':
+                LOG(str(e))
+                LOG.print_log()
+                raise
+            else:
+                return_error('An error occurred: {}'.format(str(e)))
+
+
+    # python2 uses __builtin__ python3 uses builtins
+    if __name__ == "__builtin__" or __name__ == "builtins":
+        main()
+  type: python
+  commands:
+  - name: alienvault-search-vulnerabilties
+    arguments:
+    - name: limit
+      required: true
+      description: Limit how many results are returned
+      defaultValue: "100"
+    - name: from
+      required: true
+      description: 'Last Seen - When to start searching from (example: "now-48h" would
+        search starting from 48 hours ago)'
+      defaultValue: now-48h
+    - name: to
+      required: true
+      description: 'Last Seen - When to start searching to (example: "now" would be
+        now, "now-1d" would be up until 1 day ago)'
+      defaultValue: now
+    - name: host
+      description: Filter on a host name
+    - name: cve
+      description: 'Search for CVE reference (example: "CVE-2017-11600")'
+    outputs:
+    - contextPath: Vulnerabilities
+      description: Vulnerabilties
+      type: Unknown
+    description: Search for vulnerabilities
+  - name: alienvault-search-assets
+    arguments:
+    - name: limit
+      required: true
+      description: Limit how many results are returned
+      defaultValue: "100"
+    - name: from
+      required: true
+      description: 'Date Found - When to start searching from (example: "now-48h"
+        would search starting from 48 hours ago)'
+      defaultValue: now-365d
+    - name: to
+      required: true
+      description: 'Date Found- When to start searching to (example: "now" would be
+        now, "now-1d" would be up until 1 day ago)'
+      defaultValue: now
+    - name: host
+      description: Search by hostname
+    - name: os
+      description: Search by Operating System
+    description: Search for assets
+  dockerimage: demisto/python3:3.7.3.286
+  isfetch: true
+  runonce: false

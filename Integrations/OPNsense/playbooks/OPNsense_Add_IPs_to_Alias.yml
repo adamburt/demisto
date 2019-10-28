@@ -1,0 +1,218 @@
+id: 071e068e-b102-4ee7-8029-7572e693715e
+version: 49
+name: OPNsense Add IPs to Alias
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 95ce5b00-554e-49c6-8aea-316ab9e10581
+    type: start
+    task:
+      id: 95ce5b00-554e-49c6-8aea-316ab9e10581
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 90685782-7df4-4677-8451-f52bc3e32e7a
+    type: regular
+    task:
+      id: 90685782-7df4-4677-8451-f52bc3e32e7a
+      version: -1
+      name: opnsense-add-ip-addresses-to-alias
+      script: '|||opnsense-add-ip-addresses-to-alias'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      alias:
+        simple: ${inputs.alias}
+      ip:
+        simple: ${inputs.ips}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 125
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: b78442e8-ade9-46c1-8705-a43c485cf978
+    type: condition
+    task:
+      id: b78442e8-ade9-46c1-8705-a43c485cf978
+      version: -1
+      name: Is Demisto list provided?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.list
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 53fcffd4-2268-410b-8450-0f59ea2b0747
+    type: title
+    task:
+      id: 53fcffd4-2268-410b-8450-0f59ea2b0747
+      version: -1
+      name: Complete
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: ff7f6ba6-746a-4384-8df6-1818a75ef205
+    type: regular
+    task:
+      id: ff7f6ba6-746a-4384-8df6-1818a75ef205
+      version: -1
+      name: Set
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: formattedIPList
+      value:
+        complex:
+          root: inputs.ips
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 26a930c9-c4d0-4b6d-8fd6-f43808ac802c
+    type: regular
+    task:
+      id: 26a930c9-c4d0-4b6d-8fd6-f43808ac802c
+      version: -1
+      name: removeFromList
+      description: Remove data from list
+      script: Builtin|||removeFromList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      listData:
+        complex:
+          root: formattedIPList
+      listName:
+        simple: IPsToBlock
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 985,
+        "width": 700,
+        "x": -270,
+        "y": -200
+      }
+    }
+  }
+inputs:
+- key: ips
+  value: {}
+  required: true
+  description: Comma separated list of IP addresses (not a list)
+- key: alias
+  value: {}
+  required: true
+  description: Alias list name in OPNsense
+- key: list
+  value: {}
+  required: false
+  description: The list name from which the IPs were taken from
+outputs: []

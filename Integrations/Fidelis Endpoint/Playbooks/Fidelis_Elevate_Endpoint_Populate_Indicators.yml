@@ -1,0 +1,69 @@
+id: 31515f49-1323-4aa7-8287-82e8b0ff7b85
+version: 1
+name: Fidelis Elevate Endpoint Populate Indicators
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 662365a4-bad5-46f9-8bd7-7c418bff9f86
+    type: start
+    task:
+      id: 662365a4-bad5-46f9-8bd7-7c418bff9f86
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 63f777cc-5836-4069-8eb2-38797ee4168e
+    type: regular
+    task:
+      id: 63f777cc-5836-4069-8eb2-38797ee4168e
+      version: -1
+      name: FidelisElevateEndpointPopulateIndicators
+      scriptName: FidelisElevateEndpointPopulateIndicators
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      incidentID:
+        simple: ${incident.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

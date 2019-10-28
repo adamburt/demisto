@@ -1,0 +1,67 @@
+id: 231650e6-ba91-4432-869a-a7daa2a053d4
+version: 7
+name: OPNsense Check Firmware Upgrade Status
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 597cd4aa-7003-42a4-8924-c65d23508188
+    type: start
+    task:
+      id: 597cd4aa-7003-42a4-8924-c65d23508188
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: bb512fc8-f2c6-4059-8266-1d00f788cecc
+    type: regular
+    task:
+      id: bb512fc8-f2c6-4059-8266-1d00f788cecc
+      version: -1
+      name: opnsense-upgrade-firmware-status
+      description: Gets the status of a current firmware upgrade
+      script: OPNsense|||opnsense-upgrade-firmware-status
+      type: regular
+      iscommand: true
+      brand: OPNsense
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

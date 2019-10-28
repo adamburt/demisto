@@ -1,0 +1,261 @@
+{
+	"brandName": "syslog",
+	"custom": true,
+	"defaultIncidentType": "OPNsense Alert",
+	"id": "a65e274d-6fc6-4b18-8589-862db6d8a4cc",
+	"incidentSamples": [],
+	"instanceId": "98bc1dcb-32c4-4324-8441-cd05cacadd5a",
+	"instanceName": "syslog_instance",
+	"isDefault": false,
+	"keyTypeMap": {
+		"filterlog": "OPNsense Alert"
+	},
+	"mapping": {
+		"OPNsense Alert": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Destination IP": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "content",
+						"transformers": [
+							{
+								"args": {
+									"delimiter": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": ","
+										}
+									}
+								},
+								"operator": "split"
+							},
+							{
+								"args": {
+									"index": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "19"
+										}
+									}
+								},
+								"operator": "atIndex"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"Destination Port": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "content",
+						"transformers": [
+							{
+								"args": {
+									"delimiter": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": ","
+										}
+									}
+								},
+								"operator": "split"
+							},
+							{
+								"args": {
+									"index": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "21"
+										}
+									}
+								},
+								"operator": "atIndex"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"Interface": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "content",
+						"transformers": [
+							{
+								"args": {
+									"delimiter": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": ","
+										}
+									}
+								},
+								"operator": "split"
+							},
+							{
+								"args": {
+									"index": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "4"
+										}
+									}
+								},
+								"operator": "atIndex"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"Log Type": {
+					"complex": null,
+					"simple": "tag"
+				},
+				"Source IP": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "content",
+						"transformers": [
+							{
+								"args": {
+									"delimiter": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": ","
+										}
+									}
+								},
+								"operator": "split"
+							},
+							{
+								"args": {
+									"index": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "18"
+										}
+									}
+								},
+								"operator": "atIndex"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"Source Port": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "content",
+						"transformers": [
+							{
+								"args": {
+									"delimiter": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": ","
+										}
+									}
+								},
+								"operator": "split"
+							},
+							{
+								"args": {
+									"index": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "20"
+										}
+									}
+								},
+								"operator": "atIndex"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"Syslog Message": {
+					"complex": null,
+					"simple": "content"
+				},
+				"name": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "content",
+						"transformers": [
+							{
+								"args": {
+									"delimiter": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": ","
+										}
+									}
+								},
+								"operator": "split"
+							},
+							{
+								"args": {
+									"index": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "18"
+										}
+									}
+								},
+								"operator": "atIndex"
+							},
+							{
+								"args": {
+									"prefix": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "Connection from '"
+										}
+									},
+									"suffix": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "' blocked"
+										}
+									}
+								},
+								"operator": "concat"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"sourceBrand": {
+					"complex": null,
+					"simple": "hostname"
+				}
+			}
+		}
+	},
+	"transformer": {
+		"complex": null,
+		"simple": "tag"
+	},
+	"unclassifiedCases": {},
+	"version": 10
+}

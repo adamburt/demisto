@@ -1,0 +1,47 @@
+[
+	{
+		"id": "73df801f-e5b7-4a50-8488-7d553e328ded",
+		"version": 11,
+		"modified": "2019-08-22T10:06:16.237389126Z",
+		"sortValues": null,
+		"commitMessage": "",
+		"shouldPublish": false,
+		"shouldCommit": false,
+		"regex": "\\bT[\\d]{4}\\b",
+		"details": "MITRE ATT\u0026CK",
+		"prevDetails": "MITRE ATT\u0026CK",
+		"reputationScriptName": "MitreAttackReputation",
+		"reputationCommand": "",
+		"enhancementScriptNames": [],
+		"system": false,
+		"locked": false,
+		"disabled": false,
+		"file": false,
+		"updateAfter": 0,
+		"mergeContext": false,
+		"formatScript": "",
+		"contextPath": "",
+		"contextValue": "",
+		"excludedBrands": [],
+		"defaultMapping": null,
+		"manualMapping": {
+			"name": {
+				"simple": "MitreAtt\u0026ck.Name",
+				"complex": null
+			},
+			"reference": {
+				"simple": "MitreAtt\u0026ck.Reference",
+				"complex": null
+			},
+			"tactic": {
+				"simple": "MitreAtt\u0026ck.Type",
+				"complex": null
+			},
+			"url": {
+				"simple": "MitreAtt\u0026ck.URL",
+				"complex": null
+			}
+		},
+		"fileHashesPriority": null
+	}
+]

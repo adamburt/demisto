@@ -1,0 +1,37 @@
+commonfields:
+  id: 7050d676-6245-498e-8165-ba0607682c0d
+  version: 2
+name: FidelisElevateEndpointGetEventForAlert
+script: |
+  #####################
+  # Get the alert ID
+  #####################
+  alertId = None
+  try:
+      alertId = demisto.args()["alertId"]
+  except:
+      alertId = None
+
+  if alertId is None:
+      try:
+          alertId = demisto.get(demisto.context(), "Fidelis.Endpoint.Alert.Id")
+      except:
+          alertId = None
+
+
+  #####################
+  # Execute the script
+  #####################
+  demisto.executeCommand("DeleteContext", {"key": "Fidelis.Endpoint.Alert.Event" })
+  demisto.results(demisto.executeCommand("fidelis-edr-get-event-for-alert", {"alertId": alertId}))
+type: python
+tags: []
+comment: Attempts to retrieve the event associated with an alert
+enabled: true
+args:
+- name: alertId
+  description: The alert ID to get the event for
+scripttarget: 0
+subtype: python3
+runonce: false
+runas: DBotWeakRole

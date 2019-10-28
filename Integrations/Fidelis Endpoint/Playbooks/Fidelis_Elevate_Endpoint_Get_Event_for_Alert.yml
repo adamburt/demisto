@@ -1,0 +1,327 @@
+id: ffcd505b-7a89-40c0-86bb-8b59ab5e0bb8
+version: 4
+name: Fidelis Elevate Endpoint Get Event for Alert
+description: Attempts to look up the event data associated with an alert generated
+  by Fidelis Elevate Endpoint
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6b90e8f3-c2a6-4908-87e1-cf08560a9ba8
+    type: start
+    task:
+      id: 6b90e8f3-c2a6-4908-87e1-cf08560a9ba8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 5fda236c-c838-434a-8426-9eba620897be
+    type: regular
+    task:
+      id: 5fda236c-c838-434a-8426-9eba620897be
+      version: -1
+      name: Set the event found context
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: Fidelis.Endpoint.Alert.Event Found
+      value:
+        simple: "True"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 530
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Event at ${incident.eventtime} matched alert
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 18a0d964-15ab-4402-813e-87aa764ea41b
+    type: condition
+    task:
+      id: 18a0d964-15ab-4402-813e-87aa764ea41b
+      version: -1
+      name: Was the event found and populated
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "2"
+    scriptarguments:
+      value:
+        simple: ${Fidelis.Endpoint.Alert.Event}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: ba55d9f4-748e-4aa9-8155-0b56ead79bf7
+    type: regular
+    task:
+      id: ba55d9f4-748e-4aa9-8155-0b56ead79bf7
+      version: -1
+      name: Sleep for sleepTime
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      seconds:
+        simple: ${inputs.sleepTime}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: a023827d-18ce-49bb-8bbc-c4020f1a87b1
+    type: regular
+    task:
+      id: a023827d-18ce-49bb-8bbc-c4020f1a87b1
+      version: -1
+      name: Increase the event retries by 1
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: Fidelis.Endpoint.Alert.Event Retries
+      value:
+        complex:
+          root: Fidelis
+          accessor: Endpoint.Alert.Event Retries
+          transformers:
+          - operator: addition
+            args:
+              by:
+                value:
+                  simple: "1"
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 805
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 0093aad4-472f-4881-8e1f-d248cbef98a2
+    type: regular
+    task:
+      id: 0093aad4-472f-4881-8e1f-d248cbef98a2
+      version: -1
+      name: Set the event retries to 1
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: Fidelis.Endpoint.Alert.Event Retries
+      value:
+        simple: "1"
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1120,
+          "y": 805
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 8427449c-0b6a-4342-837b-90d280405718
+    type: title
+    task:
+      id: 8427449c-0b6a-4342-837b-90d280405718
+      version: -1
+      name: Complete
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 597b3828-201c-4cbe-8e16-03c15f8d5dc9
+    type: condition
+    task:
+      id: 597b3828-201c-4cbe-8e16-03c15f8d5dc9
+      version: -1
+      name: Does the retry count exist?
+      description: Sets a value into the context with the given context key
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "5"
+    continueonerror: true
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Fidelis.Endpoint.Alert.Event Retries
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: fcb20604-db24-446f-80c6-ec5542de2224
+    type: regular
+    task:
+      id: fcb20604-db24-446f-80c6-ec5542de2224
+      version: -1
+      name: FidelisElevateEndpointGetEventForAlert
+      description: Attempts to retrieve the event associated with an alert
+      scriptName: FidelisElevateEndpointGetEventForAlert
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      alertId:
+        simple: ${inputs.alertId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1295,
+        "width": 1280,
+        "x": 220,
+        "y": 20
+      }
+    }
+  }
+inputs:
+- key: alertId
+  value: {}
+  required: true
+  description: Alert ID to find event data for
+- key: sleepTime
+  value: {}
+  required: false
+  description: Sleep duration (in minutes)
+outputs:
+- contextPath: Found Event
+  description: Whether the event was found or not
+  type: boolean
+- contextPath: Fidelis.Endpoint.Alert.Event
+  description: Event data
+  type: string

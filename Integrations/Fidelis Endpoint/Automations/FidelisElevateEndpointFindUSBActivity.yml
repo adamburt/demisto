@@ -1,0 +1,87 @@
+commonfields:
+  id: 1598dab1-ba4b-4b79-8a5c-817e3a4cd257
+  version: 2
+name: FidelisElevateEndpointFindUSBActivity
+script: |
+  #####################
+  # Get the hostname
+  #####################
+  hostname = None
+  try:
+      hostname = demisto.args()["hostname"]
+  except:
+      hostname = None
+  if hostname is None:
+      hostname = demisto.get(demisto.context(), "Fidelis.Endpoint.Alert.Target")
+  if hostname == "*":
+      hostname = None
+
+  #####################
+  # Get the hash
+  #####################
+  serial = None
+  try:
+      serial = demisto.args()["serial"]
+  except:
+      serial = None
+
+  #####################
+  # Get the duration
+  #####################
+  duration = None
+  try:
+      duration = demisto.args()["duration"]
+  except:
+      duration = None
+
+  #####################
+  # Get the limit
+  #####################
+  limit = None
+  try:
+      limit = demisto.args()["limit"]
+  except:
+      limit = None
+
+  ###########################
+  # Get the removeduplicates
+  ###########################
+  removeduplicates = None
+  try:
+      removeduplicates = demisto.args()["removeduplicates"]
+  except:
+      removeduplicates = None
+
+
+
+  #####################
+  # Execute the script
+  #####################
+  demisto.results(demisto.executeCommand("fidelis-edr-USB-activity", {"hostname": hostname, "serial": serial, "duration": duration, "limit": limit, "removeduplicates": removeduplicates}))
+type: python
+tags: []
+comment: Searches file events on the FIdelis Elevate Endpoint Plaform that matches
+  the hash provided.
+enabled: true
+args:
+- name: hostname
+  description: Host Name to target
+- name: serial
+  description: USB serial number to search for
+- name: duration
+  description: How many hours to look back (default is 24 hours)
+  defaultValue: "24"
+- name: limit
+  description: Maximum number of events to bring back
+  defaultValue: "100"
+- name: removeduplicates
+  auto: PREDEFINED
+  predefined:
+  - "True"
+  - "False"
+  description: Only return 1 event per endpoint
+  defaultValue: "False"
+scripttarget: 0
+subtype: python3
+runonce: false
+runas: DBotWeakRole

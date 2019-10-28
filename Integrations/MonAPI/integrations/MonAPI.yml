@@ -1,0 +1,265 @@
+commonfields:
+  id: MonAPI
+  version: -1
+name: MonAPI
+display: MonAPI
+category: Data Enrichment & Threat Intelligence
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAL4AAABQCAYAAAHQPf/5AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyppVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTMyIDc5LjE1OTI4NCwgMjAxNi8wNC8xOS0xMzoxMzo0MCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUuNSAoTWFjaW50b3NoKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozODExQTY4NzRENjQxMUU4OTc5MkNEQUIyMTM3QTM4RiIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozODExQTY4ODRENjQxMUU4OTc5MkNEQUIyMTM3QTM4RiI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjM4MTFBNjg1NEQ2NDExRTg5NzkyQ0RBQjIxMzdBMzhGIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjM4MTFBNjg2NEQ2NDExRTg5NzkyQ0RBQjIxMzdBMzhGIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+c6dl8wAADB5JREFU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
+configuration:
+- display: API Key
+  name: apikey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Trust any certificate (insecure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Use system proxy
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Suspicious threshold (How many blacklists must an item appear on, where
+    applicable, to be suspicious)
+  name: suspicious
+  defaultvalue: "1"
+  type: 0
+  required: false
+- display: Bad threshold (How many blacklists must an item appear on, where applicable,
+    to be bad)
+  name: bad
+  defaultvalue: "2"
+  type: 0
+  required: false
+script:
+  script: |
+    ''' IMPORTS '''
+
+    import json
+    import requests
+
+    MONAPIURL = 'https://api.monapi.io'
+    THREAT_LEVELS = {
+        'high': 3,
+        'medium': 2,
+        'low': 1
+    }
+    ERROR_CODES = {
+        '400': 'Bad Request -- Your request is invalid.',
+        '401': 'Unauthorized -- Your API key is wrong.',
+        '403': 'Forbidden -- The digital asset requested is hidden for administrators only.',
+        '404': 'Not Found -- The specified digital asset could not be found.',
+        '405': 'Method Not Allowed -- You tried to access a digital asset with an invalid method.',
+        '406': 'Not Acceptable -- You requested a format that is not json.',
+        '410': 'Gone -- The digital asset requested has been removed from our servers.',
+        '418': 'Im a teapot.',
+        '429': 'Too Many Requests -- You are requesting too many digital assets! Slow down!',
+        '500': 'Internal Server Error -- We had a problem with our server. Try again later.',
+        '503': 'Service Unavailable -- We are temporarily offline for maintenance. Please try again later.'
+    }
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    class Client:
+        def __init__(self, url, apikey, verify, ):
+            self.base_url = url
+            self.apikey = apikey
+            self.verify = verify
+            self.headers = {
+                'Authorization': 'Token {}'.format(self.apikey)
+            }
+
+        def http_request(self, method, url_suffix, params=None, data=None, headers=None):
+            if headers is None:
+                headers = self.headers
+            full_url = self.base_url + url_suffix
+            res = requests.request(
+                method,
+                full_url,
+                verify=self.verify,
+                headers=headers,
+                params=params,
+                json=data
+            )
+
+            if res.status_code not in [200]:
+                if res.status_code in ERROR_CODES.keys():
+                    raise ValueError('[%d] - %s' % (res.status_code, ERROR_CODES[res.status_code]))
+                else:
+                    raise ValueError('Error in API call to MonAPI [%d]. Reason: %s' % (res.status_code, res.text))
+
+            try:
+                return res.json()
+            except Exception:
+                raise ValueError(
+                    "Failed to parse http response to JSON format. Original response body: \n{}".format(res.text))
+
+        def test(self):
+            res = self.http_request('get', '')
+            try:
+                if 'welcome' in res['message']:
+                    pass
+                else:
+                    return_error(res['message'])
+                    sys.exit(-1)
+            except Exception as err:
+                return_error(err)
+                sys.exit(-1)
+
+        def ip(self, ip):
+            if not is_ip_valid(ip):
+                return_error('{} is not a valid IP address'.format(ip))
+                sys.exit(-1)
+            url = '/v1/ip/{}'.format(ip)
+            res = self.http_request('get', url)
+            if res:
+                # Get the score
+                score = 0
+                if res['threat_level'] in THREAT_LEVELS.keys():
+                    score = THREAT_LEVELS[res['threat_level']]
+
+                #Generate a table view of the results
+                overview = {}
+                for x in res:
+                    overview[x.title()] = res[x]
+                md = tableToMarkdown('MonAPI information on {}'.format(ip), overview)
+
+                #Create an entry for the DBot score
+                entry = {
+                    'DBotScore': {
+                        'Indicator': ip,
+                        'Score': score,
+                        'Type': 'ip',
+                        'Vendor': 'MonAPI'
+                    },
+                    'IP': {
+                        'Address': ip,
+                        'MonAPI': res
+                    }
+                }
+
+                # Add the entry
+                demisto.results({
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': score,
+                    'ReadableContentsFormat' : formats['markdown'],
+                    'HumanReadable': md,
+                    'EntryContext': entry
+                })
+
+        def domain(self, domain, suspicious, bad):
+            url = '/v1/domain/{}'.format(domain)
+            res = self.http_request('get', url)
+            if res:
+                # Get the score
+                score = 0
+                if len(res['blacklist']) >= suspicious:
+                    score = 1
+                if len(res['blacklist']) >= bad:
+                    score = 2
+
+                #Generate a table view of the results
+                overview = {}
+                for x in res:
+                    overview[x.title()] = res[x]
+                md = tableToMarkdown('MonAPI information on {}'.format(domain), overview)
+
+                #Create an entry for the DBot score
+                entry = {
+                    'DBotScore': {
+                        'Indicator': domain,
+                        'Score': score,
+                        'Type': 'Domain',
+                        'Vendor': 'MonAPI'
+                    },
+                    'Domain': {
+                        'Name': domain,
+                        'MonAPI': res
+                    }
+                }
+
+                # Add the entry
+                demisto.results({
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': score,
+                    'ReadableContentsFormat' : formats['markdown'],
+                    'HumanReadable': md,
+                    'EntryContext': entry
+                })
+
+
+
+    def test_module(client):
+        """
+        Performs basic get request to get item samples
+        """
+        client.test()
+
+        # test was successful
+        demisto.results('ok')
+
+
+
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+
+
+    def main():
+        """
+        PARSE AND VALIDATE INTEGRATION PARAMS
+        """
+        apikey = demisto.get(demisto.params(), 'apikey')
+        verify_certificate = not demisto.params().get('insecure', False)
+        suspicious = int(demisto.params().get('suspicious', 1))
+        bad = int(demisto.params().get('bad', 2))
+
+        # Remove proxy if not set to true in params
+        handle_proxy()
+
+        LOG('Command being called is %s' % (demisto.command()))
+
+        try:
+            client = Client(MONAPIURL, apikey, verify_certificate)
+
+            if demisto.command() == 'test-module':
+                test_module(client)
+
+            elif demisto.command() == 'ip':
+                client.ip(demisto.get(demisto.args(), 'ip'))
+
+            elif demisto.command() == 'domain':
+                client.domain(demisto.get(demisto.args(), 'domain'), suspicious, bad)
+
+        except Exception as e:
+            return_error(str(e))
+
+
+    if __name__ in ['__main__', 'builtin', 'builtins']:
+        main()
+  type: python
+  commands:
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      description: IP address to look up
+    outputs:
+    - contextPath: MonAPI.IP
+    description: Gathers information about an ip address
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      description: Domain to look up
+    - name: threashold
+      description: Max number of blacklists before the domain is considered bad
+      defaultValue: "1"
+    outputs:
+    - contextPath: MonAPI.Domain
+  dockerimage: demisto/python3:3.7.4.977
+  runonce: false
+  subtype: python3

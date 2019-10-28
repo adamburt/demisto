@@ -1,0 +1,65 @@
+commonfields:
+  id: e7d4bf91-e3b2-4a06-8d0d-b89995c8abea
+  version: 2
+name: FidelisPopulateTasks
+script: |
+  # No constant and mandatory arguments
+  listname = demisto.args()["listname"]
+  # No optional arguments
+
+  # No optional arguments with defaults
+
+  # Call the Fidelis routine to obtain a list of task from the platform
+  res = demisto.executeCommand("fidelis-edr-populate-tasks",{})
+
+
+  try:
+      #If the result is not a list then error and exit
+      if type(res) != list:
+          demisto.results("Error retrieving list of task names")
+          sys.exit(0)
+
+      #Grab the data portion of the results - Should be a list of tasks
+      data = res[0]["Contents"]["tasklist"]
+
+      #Check to see if the list exists or not
+      listExists = demisto.executeCommand("IsListExist ", {"listName": listname})
+
+      #If the list does not exist, then create it
+      if "no" in listExists:
+          res = demisto.executeCommand("setList", {"listName": listname, "listData": "\n".join(data)})[0]["Contents"]
+
+      #Otherwise overwrite the existing list
+      else:
+          res = demisto.executeCommand("createList", {"listName": listname, "listData": "\n".join(data)})[0]["Contents"]
+
+
+      #Populate the list name and post the result
+      res = demisto.executeCommand("setList", {"listName": listname, "listData": "\n".join(data)})[0]["Contents"]
+      demisto.debug("Added {0} values to the list {1}".format(len(data), listname))
+      demisto.results(res)
+
+  except Exception as err:
+      demisto.results({"error": err})
+      sys.exit(-1)
+
+  sys.exit(0)
+type: python
+tags: []
+enabled: true
+args:
+- name: listname
+  required: true
+  secret: true
+  description: The list name to update (defaults to "Fidelis Task List")
+  defaultValue: Fidelis Endpoint Tasks
+scripttarget: 0
+subtype: python3
+dependson:
+  must: []
+  should:
+  - '|||fidelis-edr-populate-tasks'
+timeout: 60ns
+runonce: false
+dockerimage: demisto/python3:3.7.3.221
+runas: DBotWeakRole

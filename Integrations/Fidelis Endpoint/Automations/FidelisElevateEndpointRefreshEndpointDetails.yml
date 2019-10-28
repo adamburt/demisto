@@ -1,0 +1,55 @@
+commonfields:
+  id: 1638d4a3-7e6e-47ad-83aa-30f7525b46ee
+  version: 2
+name: FidelisElevateEndpointRefreshEndpointDetails
+script: |
+  ##############################################################
+  # Execute the endpoint get details
+  ##############################################################
+  hostname = None
+  try:
+      hostname = demisto.args()["hostname"]
+  except:
+      hostname = None
+  if hostname is None:
+      try:
+          hostname = demisto.get(demisto.context(), "Fidelis.Endpoint.Alert.Target")
+      except:
+          hostname = None
+  if hostname is None:
+      demisto.results("No hostname provided")
+      exit(-1)
+  demisto.executeCommand("DeleteContext", {"key": "Fidelis.Endpoint.Alert.Endpoint" })
+  demisto.results(demisto.executeCommand("fidelis-edr-get-endpoint-info", {"hostname": demisto.get(demisto.context(), "Fidelis.Endpoint.Alert.Target") }))
+
+  endpointFields = {
+      "endpointname": "Fidelis.Endpoint.Alert.Endpoint.Host Name",
+      "endpointos": "Fidelis.Endpoint.Alert.Endpoint.Os",
+      "endpointipaddress": "Fidelis.Endpoint.Alert.Endpoint.Ip Address",
+      "endpointmacaddress": "Fidelis.Endpoint.Alert.Endpoint.Mac Address",
+      "endpointagentid": "Fidelis.Endpoint.Alert.Endpoint.Agent Id",
+      "endpointisisolated": "Fidelis.Endpoint.Alert.Endpoint.Isolated",
+      "endpointdescription": "Fidelis.Endpoint.Alert.Endpoint.Description",
+      "endpointagenttag": "Fidelis.Endpoint.Alert.Endpoint.Agent Tag",
+      "lastagentcontact": "Fidelis.Endpoint.Alert.Endpoint.Last Contact Date",
+      "grouplist": "Fidelis.Endpoint.Alert.Endpoint.Group List"
+  }
+
+
+  ##############################################################
+  # Get the endpoint details and populate the relevant fields
+  ##############################################################
+  for item in endpointFields:
+      demisto.executeCommand("setIncident", {item: demisto.get(demisto.context(), endpointFields[item]) })
+type: python
+tags:
+- field-change-triggered
+comment: Attempts to refresh the endpoint details associated with the incident
+enabled: true
+args:
+- name: hostname
+  description: Hostname
+scripttarget: 0
+subtype: python3
+runonce: false
+runas: DBotWeakRole

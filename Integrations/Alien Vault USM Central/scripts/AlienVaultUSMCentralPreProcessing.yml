@@ -1,0 +1,42 @@
+commonfields:
+  id: 0771d052-9cad-45ec-8604-9a4277e797a9
+  version: 33
+name: AlienVaultUSMCentralPreProcessing
+script: |
+  # Mappings to map over.
+  # The key should be the name of the field in the incident
+  # and the value is the name of the field to map to in the incident.
+  # The hash tag preceeding a value indicates that it is required to be
+  # formatted as json and not text
+
+  mappings = {
+      'labels': {
+          'tenantId': 'tenantid'
+          }
+  }
+
+  # Get the current incident we are working with
+  thisIncident = demisto.incidents()[0]
+
+  # Grab the labels
+  labels = thisIncident['labels']
+
+  # Parse through labels
+  for label in labels:
+      # Check each labels mapping in the "mappings['labels']" json, above
+      for mapping in mappings['labels']:
+          if mapping in label['type']:
+              demisto.executeCommand('setIncident', {'id': thisIncident['id'], mappings['labels'][mapping]: label['value']})
+
+  # Always create the incident
+  demisto.results(True)
+type: python
+tags:
+- preProcessing
+comment: Maps important fields into the incident
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.7.4.977
+runas: DBotWeakRole

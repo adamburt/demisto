@@ -1,0 +1,53 @@
+commonfields:
+  id: 4eb99d60-083f-4d38-8805-adfa4e9d9f21
+  version: 28
+name: AlienVaultUSMCentralMapping
+script: |
+  # Get the mapping fields
+  incidentid = demisto.get(demisto.args(), 'incidentid')
+  eventsField = demisto.get(demisto.args(), 'events')
+  alarmField = demisto.get(demisto.args(), 'alarm')
+  assetsField = demisto.get(demisto.args(), 'assets')
+
+  # Get the current incident
+  thisIncident = (demisto.executeCommand('getIncidents', {'id': incidentid}))[0]['Contents']['data'][0]
+
+  # Find the source fields
+  for x in thisIncident['labels']:
+      if x['type'] == 'events':
+          demisto.setContext(eventsField, json.loads(x['value']))
+          #demisto.executeCommand('setIncident', {'id': incidentid, eventsField: x['value']})
+      if x['type'] == 'alarm':
+          demisto.setContext(alarmField, json.loads(x['value']))
+          #demisto.executeCommand('setIncident', {'id': incidentid, alarmField: x['value']})
+      if x['type'] == 'assets':
+          demisto.setContext(assetsField, json.loads(x['value']))
+          #demisto.executeCommand('setIncident', {'id': incidentid, assetsField: x['value']})
+type: python
+tags: []
+comment: Maps labels to AlienVault.fields
+enabled: true
+args:
+- name: incidentid
+  required: true
+  description: Alien Vault incident ID
+- name: events
+  description: Which incident field to map events to
+  defaultValue: AlienVault.Events
+- name: alarm
+  description: Which incident field to map the alarm to
+  defaultValue: AlienVault.Alarm
+- name: assets
+  description: Which incident field to map the assets to
+  defaultValue: AlienVault.Assets
+outputs:
+- contextPath: AlienVault.Events
+  description: Alien Vault Events
+- contextPath: AlienVault.Alarm
+  description: Alien Vault Alarm
+- contextPath: AlienVault.Assets
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.7.4.977
+runas: DBotWeakRole
